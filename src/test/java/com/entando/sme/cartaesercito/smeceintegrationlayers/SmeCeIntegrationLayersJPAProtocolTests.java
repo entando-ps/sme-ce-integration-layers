@@ -1,29 +1,14 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabistanza;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabresidenze;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabsoggetto;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.TabistanzaJPARepository;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.TabresidenzeJPARepository;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.TabsoggettoJPARepository;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.*;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Calendar;
-import java.util.Date;
 
 @SpringBootTest
 class SmeCeIntegrationLayersJPAProtocolTests {
@@ -35,6 +20,11 @@ class SmeCeIntegrationLayersJPAProtocolTests {
     TabresidenzeJPARepository tabresidenzeJPARepository;
     @Autowired
     TabistanzaJPARepository tabistanzaJPARepository;
+    @Autowired
+    TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository;
+
+    @Autowired
+    TabnucleifullJPARepository tabnucleifullJPARepository;
 
     @Test
     @Transactional
@@ -102,6 +92,19 @@ class SmeCeIntegrationLayersJPAProtocolTests {
 
         tabistanzaJPARepository.save(tabistanza);
 
+        Tabsoggettiistanze tabsoggettiistanzeSponsor = new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), sponsor.getIdSoggetto()));
+        Tabsoggettiistanze tabsoggettiistanzeFiglio = new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), figlio.getIdSoggetto()));
+
+        tabsoggettiistanzeJPARepository.save(tabsoggettiistanzeSponsor);
+        tabsoggettiistanzeJPARepository.save(tabsoggettiistanzeFiglio);
+
+        Tabnucleifull tabnucleifullSponsor = new Tabnucleifull(true,true,tabistanza.getIdIstanza(),-1, sponsor.getIdSoggetto());
+        tabnucleifullJPARepository.save(tabnucleifullSponsor);
+        tabnucleifullSponsor.setRifNucleo(tabnucleifullSponsor.getId());
+        tabnucleifullJPARepository.save(tabnucleifullSponsor);
+
+        Tabnucleifull tabnucleifullFiglio = new Tabnucleifull(false,false,tabistanza.getIdIstanza(),tabnucleifullSponsor.getId(), figlio.getIdSoggetto());
+        tabnucleifullJPARepository.save(tabnucleifullFiglio);
 
     }
 
