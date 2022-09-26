@@ -10,6 +10,7 @@ import java.sql.Timestamp;
  *
  */
 @Entity
+@Table(name = "tabsoggetto")
 @NamedQuery(name="Tabsoggetto.findAll", query="SELECT t FROM Tabsoggetto t")
 public class Tabsoggetto implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -20,7 +21,7 @@ public class Tabsoggetto implements Serializable {
 
 	private int anagraficaVerificataDa;
 
-	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String avviso;
 
 	private String codiceFiscale;
@@ -49,16 +50,16 @@ public class Tabsoggetto implements Serializable {
 
 	private String nome;
 
-	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String nota;
 
-	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String notaPerditaRequisiti;
 
-	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String notaRespinta;
 
-	@Lob
+	@Column(columnDefinition = "TEXT")
 	private String notaRespintaFoto;
 
 	private int nuovaDirettiva;

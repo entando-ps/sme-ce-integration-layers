@@ -11,6 +11,7 @@ import java.util.Date;
  *
  */
 @Entity
+@Table(name = "tabistanza")
 @NamedQuery(name="Tabistanza.findAll", query="SELECT t FROM Tabistanza t")
 public class Tabistanza implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -127,5 +128,25 @@ public class Tabistanza implements Serializable {
 	}
 
 
+	/*
+	INSERT INTO tabistanza (
+id_sponsor,
+rif_tipoIstanza, -- vedi vocabolario
+rif_canale, -- vedi vocabolario fisso a Aggate 1
+rif_statoIstanza, -- tabella tipo stato istanza inserire nuovo tipo
+7 ( pagata da registrare)
+dataIstanza,
+rif_ops, --- sempre nullo
+rif_operatore) -- stesso operatore fittizio di tab sggetto
+VALUES (?, ?, ?, ?, ?, ?, ?)
+	 */
 
+	public Tabistanza(Date dataIstanza, int idSponsor, int rifCanale, int rifOperatore, int rif_statoIstanza, int rif_tipoIstanza) {
+		this.dataIstanza = dataIstanza;
+		this.idSponsor = idSponsor;
+		this.rifCanale = rifCanale;
+		this.rifOperatore = rifOperatore;
+		this.rif_statoIstanza = rif_statoIstanza;
+		this.rif_tipoIstanza = rif_tipoIstanza;
+	}
 }
