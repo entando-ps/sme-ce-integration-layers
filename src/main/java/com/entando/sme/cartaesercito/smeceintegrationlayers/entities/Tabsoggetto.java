@@ -3,6 +3,7 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 
 /**
@@ -381,4 +382,28 @@ public class Tabsoggetto implements Serializable {
 		this.telUfficio = telUfficio;
 		this.rifStato = rifStato;
 	}
+
+	public Tabsoggetto(String[] attributes){
+		this(
+				Integer.parseInt(attributes[0]),
+				attributes[1],
+				attributes[2],
+				attributes[3],
+				attributes[4],
+				attributes[5],
+				attributes[6],
+				attributes[7],
+				attributes[8],
+				attributes[9],
+				attributes[10],
+				Integer.parseInt(attributes[11]),
+				Integer.parseInt(attributes[12]),
+				Integer.parseInt(attributes[13]),
+				attributes[14],
+				attributes[15],
+				attributes[16],
+				attributes[17]
+		);
+	}
+
 }
