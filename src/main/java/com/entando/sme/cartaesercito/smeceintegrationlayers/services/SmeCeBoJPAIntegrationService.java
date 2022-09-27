@@ -2,9 +2,9 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.*;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,22 +15,32 @@ import static com.entando.sme.cartaesercito.smeceintegrationlayers.Utils.readCsv
 @Service
 public class SmeCeBoJPAIntegrationService {
 
-    @Autowired
+    final
     TabsoggettoJPARepository tabsoggettoJPARepository;
-    @Autowired
+    final
     TabresidenzeJPARepository tabresidenzeJPARepository;
-    @Autowired
+    final
     TabistanzaJPARepository tabistanzaJPARepository;
-    @Autowired
+    final
     TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository;
-    @Autowired
+    final
     TabnucleifullJPARepository tabnucleifullJPARepository;
-    @Autowired
+    final
     TabmandatoJPARepository tabmandatoJPARepository;
-    @Autowired
+    final
     TabmandatopvcJPARepository tabmandatopvcJPARepository;
 
-    public Pair<Tabsoggetto, List<Tabsoggetto>> insertSoggetti(String csvSponsor, String csvSoggettiNucleoPrincipale) {
+    public SmeCeBoJPAIntegrationService(TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository) {
+        this.tabsoggettoJPARepository = tabsoggettoJPARepository;
+        this.tabresidenzeJPARepository = tabresidenzeJPARepository;
+        this.tabistanzaJPARepository = tabistanzaJPARepository;
+        this.tabsoggettiistanzeJPARepository = tabsoggettiistanzeJPARepository;
+        this.tabnucleifullJPARepository = tabnucleifullJPARepository;
+        this.tabmandatoJPARepository = tabmandatoJPARepository;
+        this.tabmandatopvcJPARepository = tabmandatopvcJPARepository;
+    }
+
+    protected Pair<Tabsoggetto, List<Tabsoggetto>> insertSoggetti(String csvSponsor, String csvSoggettiNucleoPrincipale) {
         //creazione sponsor
         List<String[]> sponsorProperties = readCsv(csvSponsor);
         Tabsoggetto sponsor = new Tabsoggetto(sponsorProperties.get(0));
@@ -45,7 +55,7 @@ public class SmeCeBoJPAIntegrationService {
 
     }
 
-    public void insertResidenze(Tabsoggetto sponsor, String csvResidenzaSponsor, List<Tabsoggetto> parentinucleoprincipale, String csvResidenzeNucleoPrincipale) {
+    protected void insertResidenze(Tabsoggetto sponsor, String csvResidenzaSponsor, List<Tabsoggetto> parentinucleoprincipale, String csvResidenzeNucleoPrincipale) {
         Tabresidenze residenzaSponsor = new Tabresidenze(readCsv(csvResidenzaSponsor).get(0));
         residenzaSponsor.setRifSoggetto(sponsor.getIdSoggetto());
         tabresidenzeJPARepository.save(residenzaSponsor);
@@ -61,7 +71,7 @@ public class SmeCeBoJPAIntegrationService {
 
     }
 
-    public Tabistanza insertIstanza(String csvIstanzaNucleoPrincipale, Tabsoggetto sponsor, List<Tabsoggetto> parentinucleoprincipale) {
+    protected Tabistanza insertIstanza(String csvIstanzaNucleoPrincipale, Tabsoggetto sponsor, List<Tabsoggetto> parentinucleoprincipale) {
         Tabistanza tabistanza = new Tabistanza(readCsv(csvIstanzaNucleoPrincipale).get(0));
         tabistanza.setIdSponsor(sponsor.getIdSoggetto());
         tabistanzaJPARepository.save(tabistanza);
@@ -74,7 +84,7 @@ public class SmeCeBoJPAIntegrationService {
     }
 
 
-    public Tabnucleifull insertNucleoFull(Tabsoggetto sponsor, List<Tabsoggetto> parentinucleoprincipale, Tabistanza tabistanza) {
+    protected Tabnucleifull insertNucleoFull(Tabsoggetto sponsor, List<Tabsoggetto> parentinucleoprincipale, Tabistanza tabistanza) {
         Tabnucleifull tabnucleifullSponsor = new Tabnucleifull(true, true, tabistanza.getIdIstanza(), -1, sponsor.getIdSoggetto());
         tabnucleifullJPARepository.save(tabnucleifullSponsor);
         tabnucleifullSponsor.setRifNucleo(tabnucleifullSponsor.getId());
@@ -87,7 +97,7 @@ public class SmeCeBoJPAIntegrationService {
         return tabnucleifullSponsor;
     }
 
-    public void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullSponsor, String csvMandatoPagamento, String csvMandatoPagamentoPVC) {
+    protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullSponsor, String csvMandatoPagamento, String csvMandatoPagamentoPVC) {
         Tabmandato tabmandato = new Tabmandato(readCsv(csvMandatoPagamento).get(0));
         tabmandato.setRifSponsor(sponsor.getIdSoggetto());
         tabmandato.setRifNucleofull(tabnucleifullSponsor.getId());
@@ -102,15 +112,18 @@ public class SmeCeBoJPAIntegrationService {
 
     }
 
+    @Transactional
     public void istanzaNucleoPrincipaleConNuoviSoggetti(
-            String csvSponsor,
-            String csvSoggettiNucleoPrincipale,
-            String csvResidenzaSponsor,
-            String csvResidenzeNucleoPrincipale,
-            String csvIstanzaNucleoPrincipale,
-            String csvMandatoPagamento,
-            String csvMandatoPagamentoPVC) {
+            String csvPath
+    ) {
 
+        String csvSponsor = csvPath + CSVFileNames.SPONSOR;
+        String csvSoggettiNucleoPrincipale = csvPath + CSVFileNames.SOGGETTINUCLEOPRINCIPALE;
+        String csvResidenzaSponsor = csvPath + CSVFileNames.RESIDENZASPONSOR;
+        String csvResidenzeNucleoPrincipale = csvPath + CSVFileNames.RESIDENZENUCLEOPRINCIPALE;
+        String csvIstanzaNucleoPrincipale = csvPath + CSVFileNames.ISTANZANUCLEOPRINCIPALE;
+        String csvMandatoPagamento = csvPath + CSVFileNames.MANDATOPAGAMENTO;
+        String csvMandatoPagamentoPVC = csvPath + CSVFileNames.MANDATOPAGAMENTOPVC;
 
         //creazione dei soggetti
         Pair<Tabsoggetto, List<Tabsoggetto>> tabsoggettoPair = insertSoggetti(csvSponsor, csvSoggettiNucleoPrincipale);
