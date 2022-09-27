@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.entando.sme.cartaesercito.smeceintegrationlayers.Utils.parseString;
 
 @SpringBootTest
 class SmeCeIntegrationLayersJPAProtocolTests {
@@ -28,9 +31,12 @@ class SmeCeIntegrationLayersJPAProtocolTests {
     TabistanzaJPARepository tabistanzaJPARepository;
     @Autowired
     TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository;
-
     @Autowired
     TabnucleifullJPARepository tabnucleifullJPARepository;
+    @Autowired
+    TabmandatoJPARepository tabmandatoJPARepository;
+    @Autowired
+    TabmandatopvcJPARepository tabmandatopvcJPARepository;
 
     @Test
     @Transactional
@@ -42,6 +48,8 @@ class SmeCeIntegrationLayersJPAProtocolTests {
         String csvResidenzaSponsor = "/Users/germano/projects/SME/sme-ce-integration-layers/files/residenzasponsor.csv";
         String csvResidenzeNucleoPrincipale = "/Users/germano/projects/SME/sme-ce-integration-layers/files/residenzaparentinucleoprincipale.csv";
         String csvIstanzaNucleoPrincipale = "/Users/germano/projects/SME/sme-ce-integration-layers/files/istanzanucleoprincipale.csv";
+        String csvMandatoPagamento = "/Users/germano/projects/SME/sme-ce-integration-layers/files/mandatopagamento.csv";
+        String csvMandatoPagamentoPVC = "/Users/germano/projects/SME/sme-ce-integration-layers/files/mandatopagamentopvc.csv";
 
         List<String[]> sponsorProperties = readCsv(csvSponsor);
         Tabsoggetto sponsor = new Tabsoggetto(sponsorProperties.get(0));
@@ -56,7 +64,7 @@ class SmeCeIntegrationLayersJPAProtocolTests {
         tabresidenzeJPARepository.save(residenzaSponsor);
 
         List<String[]> residenzeNucleoPrincipale = readCsv(csvResidenzeNucleoPrincipale);
-        List<Tabresidenze> residenzeParentiNucleoPrincipale = IntStream.range(0,residenzeNucleoPrincipale.size()).mapToObj(index -> {
+        List<Tabresidenze> residenzeParentiNucleoPrincipale = IntStream.range(0, residenzeNucleoPrincipale.size()).mapToObj(index -> {
             Tabresidenze tabresidenze = new Tabresidenze(residenzeNucleoPrincipale.get(index));
             tabresidenze.setRifSoggetto(parentinucleoprincipale.get(index).getIdSoggetto());
             return tabresidenze;
@@ -79,14 +87,25 @@ class SmeCeIntegrationLayersJPAProtocolTests {
         tabnucleifullSponsor.setRifNucleo(tabnucleifullSponsor.getId());
 
 
-
-        List<Tabnucleifull> tabNucleiFullParenti=parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabnucleifull(false, false, tabistanza.getIdIstanza(),tabnucleifullSponsor.getId(),tabsoggettoNucleoFamiliare.getIdSoggetto())).collect(Collectors.toList());
+        List<Tabnucleifull> tabNucleiFullParenti = parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabnucleifull(false, false, tabistanza.getIdIstanza(), tabnucleifullSponsor.getId(), tabsoggettoNucleoFamiliare.getIdSoggetto())).collect(Collectors.toList());
         tabNucleiFullParenti.add(tabnucleifullSponsor);
         tabnucleifullJPARepository.saveAll(tabNucleiFullParenti);
 
 
-    }
+        Tabmandato tabmandato = new Tabmandato(readCsv(csvMandatoPagamento).get(0));
+        tabmandato.setRifSponsor(sponsor.getIdSoggetto());
+        tabmandato.setRifNucleofull(tabnucleifullSponsor.getId());
 
+        Tabmandatopvc tabmandatopvc = new Tabmandatopvc(readCsv(csvMandatoPagamentoPVC).get(0));
+
+        tabmandatopvc.setRifSponsor(sponsor.getIdSoggetto());
+        tabmandatopvc.setRifNucleoFull(tabnucleifullSponsor.getId());
+        //il salvataggio avviene semmpre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
+        tabmandatoJPARepository.save(tabmandato);
+        tabmandatopvcJPARepository.save(tabmandatopvc);
+
+
+    }
 
 
     public List<String[]> readCsv(String csvFile) {
@@ -111,4 +130,6 @@ class SmeCeIntegrationLayersJPAProtocolTests {
             throw new RuntimeException(ioe);
         }
     }
+
+
 }
