@@ -64,31 +64,30 @@ class SmeCeIntegrationLayersJPAProtocolTests {
 
         tabresidenzeJPARepository.saveAll(residenzeParentiNucleoPrincipale);
 
-
         Tabistanza tabistanza = new Tabistanza(readCsv(csvIstanzaNucleoPrincipale).get(0));
         tabistanza.setIdSponsor(sponsor.getIdSoggetto());
         tabistanzaJPARepository.save(tabistanza);
 
-/*
         Tabsoggettiistanze tabsoggettiistanzeSponsor = new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), sponsor.getIdSoggetto()));
 
-
-        Tabsoggettiistanze tabsoggettiistanzeFiglio = new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), figlio.getIdSoggetto()));
-
-        tabsoggettiistanzeJPARepository.save(tabsoggettiistanzeSponsor);
-        tabsoggettiistanzeJPARepository.save(tabsoggettiistanzeFiglio);
+        List<Tabsoggettiistanze> tabsoggettiistanzeList = parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), tabsoggettoNucleoFamiliare.getIdSoggetto()))).collect(Collectors.toList());
+        tabsoggettiistanzeList.add(tabsoggettiistanzeSponsor);
+        tabsoggettiistanzeJPARepository.saveAll(tabsoggettiistanzeList);
 
         Tabnucleifull tabnucleifullSponsor = new Tabnucleifull(true, true, tabistanza.getIdIstanza(), -1, sponsor.getIdSoggetto());
         tabnucleifullJPARepository.save(tabnucleifullSponsor);
         tabnucleifullSponsor.setRifNucleo(tabnucleifullSponsor.getId());
-        tabnucleifullJPARepository.save(tabnucleifullSponsor);
 
-        Tabnucleifull tabnucleifullFiglio = new Tabnucleifull(false, false, tabistanza.getIdIstanza(), tabnucleifullSponsor.getId(), figlio.getIdSoggetto());
-        tabnucleifullJPARepository.save(tabnucleifullFiglio);
-*/
+
+
+        List<Tabnucleifull> tabNucleiFullParenti=parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabnucleifull(false, false, tabistanza.getIdIstanza(),tabnucleifullSponsor.getId(),tabsoggettoNucleoFamiliare.getIdSoggetto())).collect(Collectors.toList());
+        tabNucleiFullParenti.add(tabnucleifullSponsor);
+        tabnucleifullJPARepository.saveAll(tabNucleiFullParenti);
 
 
     }
+
+
 
     public List<String[]> readCsv(String csvFile) {
         try {
