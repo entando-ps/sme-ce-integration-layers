@@ -1,9 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -20,6 +17,7 @@ public class Tabmandatopvc implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idMandatoPVC;
 
     private String attestazionePagamento;

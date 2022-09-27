@@ -1,7 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.SmeCeBoJPAIntegrationService;
-import net.bytebuddy.implementation.bind.annotation.IgnoreForBinding;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,7 @@ class SmeCeIntegrationLayersJPAProtocolTests {
     @Rollback(value = false)
     @Disabled
     public void istanzaNucleoPrincipaleConNuoviSoggetti() {
-        smeCeBoJPAIntegrationService.istanzaNucleoPrincipaleConNuoviSoggetti(csvPath);
+        smeCeBoJPAIntegrationService.IstanzaConNuoviSoggetti(csvPath);
 
     }
 }

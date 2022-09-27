@@ -1,0 +1,2 @@
+attestazionePagamento, convalidaMandatoCovid, dataConvalida, dataEmissione, dataMandato, dataScadenza, dataVersamento, gruppo, nota, notaAnnullamento, notaConvalida, quotaMandato, quotaVersata, rifOperatore, rifOperatorePagamento, rifOps, rifOpsPagamento, rifStabilimento, rifStabilimentoPagamento, rif_statoMandato, rif_tipoPagamento
+attestazionepagamentoesterno,0,01/10/2023,01/10/2024,datamandato,31/12/2040,31/12/2011,1,nota,notaannullamento,notaconvalida,10,10,1,1,1,1,1,1,1,1
