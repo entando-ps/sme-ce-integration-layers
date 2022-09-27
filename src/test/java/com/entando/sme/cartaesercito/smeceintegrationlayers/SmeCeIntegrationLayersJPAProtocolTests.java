@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -37,23 +35,27 @@ class SmeCeIntegrationLayersJPAProtocolTests {
     @Test
     @Transactional
     @Rollback(value = false)
-    public void create() {
+    public void istanzaNucleoPrincipaleConNuoviSoggetti() {
 
-        List<String[]> sponsorProperties = readCsv("/Users/germano/projects/SME/sme-ce-integration-layers/files/sponsor.csv");
+        String csvSponsor = "/Users/germano/projects/SME/sme-ce-integration-layers/files/sponsor.csv";
+        String csvNucleoPrincipale = "/Users/germano/projects/SME/sme-ce-integration-layers/files/nucleoprincipale.csv";
+        String csvResidenzaSponsor = "/Users/germano/projects/SME/sme-ce-integration-layers/files/residenzasponsor.csv";
+        String csvResidenzeNucleoPrincipale = "/Users/germano/projects/SME/sme-ce-integration-layers/files/residenzaparentinucleoprincipale.csv";
+        String csvIstanzaNucleoPrincipale = "/Users/germano/projects/SME/sme-ce-integration-layers/files/istanzanucleoprincipale.csv";
+
+        List<String[]> sponsorProperties = readCsv(csvSponsor);
         Tabsoggetto sponsor = new Tabsoggetto(sponsorProperties.get(0));
-        List<String[]> nucleoPrincipale = readCsv("/Users/germano/projects/SME/sme-ce-integration-layers/files/nucleoprincipale.csv");
+        List<String[]> nucleoPrincipale = readCsv(csvNucleoPrincipale);
         List<Tabsoggetto> parentinucleoprincipale = nucleoPrincipale.stream().map(Tabsoggetto::new).collect(Collectors.toList());
 
         tabsoggettoJPARepository.save(sponsor);
         tabsoggettoJPARepository.saveAll(parentinucleoprincipale);
 
-
-        Tabresidenze residenzaSponsor = new Tabresidenze(readCsv("/Users/germano/projects/SME/sme-ce-integration-layers/files/residenzasponsor.csv").get(0));
+        Tabresidenze residenzaSponsor = new Tabresidenze(readCsv(csvResidenzaSponsor).get(0));
         residenzaSponsor.setRifSoggetto(sponsor.getIdSoggetto());
         tabresidenzeJPARepository.save(residenzaSponsor);
 
-
-        List<String[]> residenzeNucleoPrincipale = readCsv("/Users/germano/projects/SME/sme-ce-integration-layers/files/residenzaparentinucleoprincipale.csv");
+        List<String[]> residenzeNucleoPrincipale = readCsv(csvResidenzeNucleoPrincipale);
         List<Tabresidenze> residenzeParentiNucleoPrincipale = IntStream.range(0,residenzeNucleoPrincipale.size()).mapToObj(index -> {
             Tabresidenze tabresidenze = new Tabresidenze(residenzeNucleoPrincipale.get(index));
             tabresidenze.setRifSoggetto(parentinucleoprincipale.get(index).getIdSoggetto());
@@ -62,18 +64,12 @@ class SmeCeIntegrationLayersJPAProtocolTests {
 
         tabresidenzeJPARepository.saveAll(residenzeParentiNucleoPrincipale);
 
-/*
-        Tabistanza tabistanza = new Tabistanza(
-                new java.sql.Date(Calendar.getInstance().getTime().getTime()),
-                sponsor.getIdSoggetto(),
-                1,
-                0,
-                1,
-                1
-        );
 
+        Tabistanza tabistanza = new Tabistanza(readCsv(csvIstanzaNucleoPrincipale).get(0));
+        tabistanza.setIdSponsor(sponsor.getIdSoggetto());
         tabistanzaJPARepository.save(tabistanza);
 
+/*
         Tabsoggettiistanze tabsoggettiistanzeSponsor = new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), sponsor.getIdSoggetto()));
 
 
@@ -90,6 +86,7 @@ class SmeCeIntegrationLayersJPAProtocolTests {
         Tabnucleifull tabnucleifullFiglio = new Tabnucleifull(false, false, tabistanza.getIdIstanza(), tabnucleifullSponsor.getId(), figlio.getIdSoggetto());
         tabnucleifullJPARepository.save(tabnucleifullFiglio);
 */
+
 
     }
 
