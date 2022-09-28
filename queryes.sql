@@ -47,9 +47,9 @@ select idIstanza from tabistanza
 select * from tabnucleifull where rif_istanza = 42;
 
 -- recupero dei facenti parte il nucleo esterno
-select * from tabnucleifull where rif_istanza = 43;
-
-
+select * from tabnucleifull where rif_istanza = 47;
 
 
 select * from tabcartaesercito
+    join tabnucleifull on tabcartaesercito.rif_soggetto = tabnucleifull.rif_soggetto
+where tabnucleifull.rif_istanza = 42
