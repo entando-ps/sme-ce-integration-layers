@@ -40,41 +40,26 @@ public class SmeCeBoJPAIntegrationService {
     }
 
 
-    protected Tabsoggetto insertSponsor(String csvSponsor) {
-        //creazione sponsor
-        List<String[]> sponsorProperties = readCsv(csvSponsor);
-        Tabsoggetto sponsor = new Tabsoggetto(sponsorProperties.get(0));
+    protected List<Tabsoggetto> insertSoggetti(String csvSoggetti) {
         //creazione sponsor nucleo
-        tabsoggettoJPARepository.save(sponsor);
-        return sponsor;
+        List<String[]> nucleoPrincipale = readCsv(csvSoggetti);
+        List<Tabsoggetto> soggetti = nucleoPrincipale.stream().map(Tabsoggetto::new).collect(Collectors.toList());
+
+        tabsoggettoJPARepository.saveAll(soggetti);
+        return soggetti;
 
     }
 
-    protected List<Tabsoggetto> insertAltriSoggetti(String csvSoggettiNucleoPrincipale) {
-        //creazione sponsor nucleo
-        List<String[]> nucleoPrincipale = readCsv(csvSoggettiNucleoPrincipale);
-        List<Tabsoggetto> parentinucleoprincipale = nucleoPrincipale.stream().map(Tabsoggetto::new).collect(Collectors.toList());
 
-        tabsoggettoJPARepository.saveAll(parentinucleoprincipale);
-        return parentinucleoprincipale;
-
-    }
-
-    protected void insertResidenzaSponsor(Tabsoggetto sponsor, String csvResidenzaSponsor) {
-        Tabresidenze residenzaSponsor = new Tabresidenze(readCsv(csvResidenzaSponsor).get(0));
-        residenzaSponsor.setRifSoggetto(sponsor.getIdSoggetto());
-        tabresidenzeJPARepository.save(residenzaSponsor);
-    }
-
-    protected void insertResidenzeAltri(List<Tabsoggetto> parentinucleoprincipale, String csvResidenzeNucleoPrincipale) {
-        List<String[]> residenzeNucleoPrincipale = readCsv(csvResidenzeNucleoPrincipale);
-        List<Tabresidenze> residenzeParentiNucleoPrincipale = IntStream.range(0, residenzeNucleoPrincipale.size()).mapToObj(index -> {
-            Tabresidenze tabresidenze = new Tabresidenze(residenzeNucleoPrincipale.get(index));
-            tabresidenze.setRifSoggetto(parentinucleoprincipale.get(index).getIdSoggetto());
+    protected void insertResidenzeSoggetti(List<Tabsoggetto> soggetti, String csvResidenzeSoggetti) {
+        List<String[]> residenzeSoggetti = readCsv(csvResidenzeSoggetti);
+        List<Tabresidenze> tabResidenzeSoggetti = IntStream.range(0, residenzeSoggetti.size()).mapToObj(index -> {
+            Tabresidenze tabresidenze = new Tabresidenze(residenzeSoggetti.get(index));
+            tabresidenze.setRifSoggetto(soggetti.get(index).getIdSoggetto());
             return tabresidenze;
         }).collect(Collectors.toList());
 
-        tabresidenzeJPARepository.saveAll(residenzeParentiNucleoPrincipale);
+        tabresidenzeJPARepository.saveAll(tabResidenzeSoggetti);
 
     }
 
@@ -82,26 +67,20 @@ public class SmeCeBoJPAIntegrationService {
         Tabistanza tabistanza = new Tabistanza(readCsv(csvIstanzaNucleoPrincipale).get(0));
         tabistanza.setIdSponsor(sponsor.getIdSoggetto());
         tabistanzaJPARepository.save(tabistanza);
-        Tabsoggettiistanze tabsoggettiistanzeSponsor = new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), sponsor.getIdSoggetto()));
         List<Tabsoggettiistanze> tabsoggettiistanzeList = parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), tabsoggettoNucleoFamiliare.getIdSoggetto()))).collect(Collectors.toList());
-        tabsoggettiistanzeList.add(tabsoggettiistanzeSponsor);
         tabsoggettiistanzeJPARepository.saveAll(tabsoggettiistanzeList);
         return tabistanza;
 
     }
 
-
-    protected Tabnucleifull insertNucleoFullForSponsorOCapofamiglia(Tabsoggetto sponsorOCapofamiglia, boolean isSponsor, Tabistanza tabistanza) {
-        Tabnucleifull tabnucleifullSponsor = new Tabnucleifull(true, isSponsor, tabistanza.getIdIstanza(), -1, sponsorOCapofamiglia.getIdSoggetto());
-        tabnucleifullJPARepository.save(tabnucleifullSponsor);
-        tabnucleifullSponsor.setRifNucleo(tabnucleifullSponsor.getId());
-        tabnucleifullJPARepository.save(tabnucleifullSponsor);
-        return tabnucleifullSponsor;
-    }
-
-    protected void insertNucleoFullPerAltri(Tabnucleifull tabnucleifullSponsor, List<Tabsoggetto> parentinucleoprincipale, Tabistanza tabistanza) {
-        List<Tabnucleifull> tabNucleiFullParenti = parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabnucleifull(false, false, tabistanza.getIdIstanza(), tabnucleifullSponsor.getId(), tabsoggettoNucleoFamiliare.getIdSoggetto())).collect(Collectors.toList());
-        tabnucleifullJPARepository.saveAll(tabNucleiFullParenti);
+    protected Tabnucleifull insertNucleiFullPerISoggetti(boolean capofamigliaESponsor, List<Tabsoggetto> soggetti, Tabistanza tabistanza) {
+        Tabnucleifull tabnucleifullCapofamigliaoSponsor = new Tabnucleifull(true, capofamigliaESponsor, tabistanza.getIdIstanza(), -1, soggetti.get(0).getIdSoggetto());
+        tabnucleifullJPARepository.save(tabnucleifullCapofamigliaoSponsor);
+        tabnucleifullCapofamigliaoSponsor.setRifNucleo(tabnucleifullCapofamigliaoSponsor.getId());
+        tabnucleifullJPARepository.save(tabnucleifullCapofamigliaoSponsor);
+        List<Tabnucleifull> tabNucleiFullRestantiSoggetti = soggetti.subList(1, soggetti.size()).stream().map(tabsoggettoNucleoFamiliare -> new Tabnucleifull(false, false, tabistanza.getIdIstanza(), tabnucleifullCapofamigliaoSponsor.getId(), tabsoggettoNucleoFamiliare.getIdSoggetto())).collect(Collectors.toList());
+        tabnucleifullJPARepository.saveAll(tabNucleiFullRestantiSoggetti);
+        return tabnucleifullCapofamigliaoSponsor;
     }
 
     protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullCapofamiglia, String csvMandatoPagamento, String csvMandatoPagamentoPVC) {
@@ -124,23 +103,18 @@ public class SmeCeBoJPAIntegrationService {
             String csvPath
     ) {
 
-        String csvSponsor = csvPath + CSVFileNames.SPONSOR;
         String csvSoggettiNucleoPrincipale = csvPath + CSVFileNames.SOGGETTINUCLEOPRINCIPALE;
-        String csvResidenzaSponsor = csvPath + CSVFileNames.RESIDENZASPONSOR;
         String csvResidenzeNucleoPrincipale = csvPath + CSVFileNames.RESIDENZENUCLEOPRINCIPALE;
         String csvIstanzaNucleoPrincipale = csvPath + CSVFileNames.ISTANZANUCLEOPRINCIPALE;
         String csvMandatoPagamentoPrincipale = csvPath + CSVFileNames.MANDATOPAGAMENTONUCLEOPRINCIPALE;
         String csvMandatoPagamentoPVCPrincipale = csvPath + CSVFileNames.MANDATOPAGAMENTOPVCNUCLEOPRINCIPALE;
 
-        //creazione dello sponsor
-        Tabsoggetto sponsor = insertSponsor(csvSponsor);
-        //creazione degli altri soggetti
-        List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertAltriSoggetti(csvSoggettiNucleoPrincipale);
+        //creazione dei soggetti
+        List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertSoggetti(csvSoggettiNucleoPrincipale);
+        Tabsoggetto sponsor = listaSoggettiDelNucleoPrincipale.get(0);
 
-        //inserimento residenza sponsor
-        insertResidenzaSponsor(sponsor, csvResidenzaSponsor);
-        //aggancio delle residenze altri
-        insertResidenzeAltri(
+        //aggancio delle residenze ai soggetti
+        insertResidenzeSoggetti(
                 listaSoggettiDelNucleoPrincipale,
                 csvResidenzeNucleoPrincipale
         );
@@ -153,15 +127,9 @@ public class SmeCeBoJPAIntegrationService {
                 listaSoggettiDelNucleoPrincipale
         );
 
-        //creazione del nucleo familiare: sponsor e capofamiglia
-        Tabnucleifull tabnucleifullSponsor = insertNucleoFullForSponsorOCapofamiglia(
-                sponsor,
+        //creazione del nucleo familiare principale: il capofamiglia è sponsor
+        Tabnucleifull tabnucleifullSponsorECapofamiglia = insertNucleiFullPerISoggetti(
                 true,
-                tabistanza
-        );
-        //creazione del nucleo familiare: altri
-        insertNucleoFullPerAltri(
-                tabnucleifullSponsor,
                 listaSoggettiDelNucleoPrincipale,
                 tabistanza
         );
@@ -169,7 +137,7 @@ public class SmeCeBoJPAIntegrationService {
         //inserimento dei mandati di pagamento
         insertMandati(
                 sponsor,
-                tabnucleifullSponsor,
+                tabnucleifullSponsorECapofamiglia,
                 csvMandatoPagamentoPrincipale,
                 csvMandatoPagamentoPVCPrincipale
         );
@@ -182,9 +150,9 @@ public class SmeCeBoJPAIntegrationService {
         String csvMandatoPagamentoPVCEsterno = csvPath + CSVFileNames.MANDATOPAGAMENTOPVCNUCLEOESTERNO;
 
         //creazione degli altri soggetti
-        List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertAltriSoggetti(csvSoggettiNucleoEsterno);
+        List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggetti(csvSoggettiNucleoEsterno);
         //aggancio delle residenze altri
-        insertResidenzeAltri(
+        insertResidenzeSoggetti(
                 listaSoggettiDelNucleoEsterno,
                 csvResidenzeNucleoEsterno
         );
@@ -195,23 +163,17 @@ public class SmeCeBoJPAIntegrationService {
                 sponsor,
                 listaSoggettiDelNucleoEsterno
         );
-        //creazione del nucleo familiare esterno: il capofamiglia è la prima riga del csv
-        Tabnucleifull tabnucleifullCapofamigliaEsterno = insertNucleoFullForSponsorOCapofamiglia(
-                listaSoggettiDelNucleoEsterno.get(0),
+        //creazione del nucleo familiare esterno: il capofamiglia (il primo soggetto nel csv del nucleo esterno) non è sponsor
+        Tabnucleifull tabnucleifullCapofamiglia = insertNucleiFullPerISoggetti(
                 false,
-                tabistanzaNucleoEsterno
-        );
-        //creazione del nucleo familiare: altri (elimino il capofamiglia)
-        insertNucleoFullPerAltri(
-                tabnucleifullCapofamigliaEsterno,
-                listaSoggettiDelNucleoEsterno.subList(1,listaSoggettiDelNucleoEsterno.size()),
+                listaSoggettiDelNucleoEsterno,
                 tabistanzaNucleoEsterno
         );
 
         //inserimento dei mandati di pagamento per il nucleo esterno
         insertMandati(
                 sponsor,
-                tabnucleifullCapofamigliaEsterno,
+                tabnucleifullCapofamiglia,
                 csvMandatoPagamentoEsterno,
                 csvMandatoPagamentoPVCEsterno
         );

@@ -1,10 +1,8 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
 public class CSVFileNames {
-    public static final String SPONSOR = "sponsor.csv";
     public static final String SOGGETTINUCLEOPRINCIPALE = "nucleoprincipale.csv";
     public static final String SOGGETTINUCLEOESTERNO = "nucleoesterno.csv";
-    public static final String RESIDENZASPONSOR = "residenzasponsor.csv";
     public static final String RESIDENZENUCLEOPRINCIPALE = "residenzaparentinucleoprincipale.csv";
     public static final String RESIDENZENUCLEOESTERNO = "residenzaparentinucleoesterno.csv";
     public static final String ISTANZANUCLEOPRINCIPALE = "istanzanucleoprincipale.csv";
