@@ -30,6 +30,6 @@ public class SmeCeIntegrationLayersApplication implements CommandLineRunner {
     @Override
     public void run(String... args) {
         log.info("csv folder path: {}",csvPath);
-        smeCeBoJPAIntegrationService.IstanzaConNuoviSoggetti(csvPath);
+        //smeCeBoJPAIntegrationService.IstanzaConNuoviSoggetti(csvPath);
     }
 }
