@@ -34,3 +34,22 @@ delete from tabMandatoPVC where rifSponsor in (select idSoggetto from tabsoggett
 
 
 delete from tabsoggetto where codiceFiscale in  ('GDFGMN70D16H501T','GDLGMN70D16H501R','GDLGMN70D18H501F','GDLGMN70D18H501H','GDFGMN70D16H501R','GDFGMN70D18H501F','GDFGMN70D18H501H');
+
+-- recupero dell'ultima istanza nucleo principale (1 iniziale, 3 modificata)
+select idIstanza from tabistanza
+                 where id_sponsor=(select idSoggetto from tabsoggetto where codiceFiscale='GDFGMN70D16H501T') and rif_tipoIstanza in (1, 3) ORDER BY idIstanza DESC LIMIT 1;
+
+-- recupero dell'ultima istanza nucleo esterno (4 iniziale, 5 modificata)
+select idIstanza from tabistanza
+                 where id_sponsor=(select idSoggetto from tabsoggetto where codiceFiscale='GDFGMN70D16H501T') and rif_tipoIstanza in (4, 5) ORDER BY idIstanza DESC LIMIT 1;
+
+-- recupero dei facenti parte il nucleo principale
+select * from tabnucleifull where rif_istanza = 42;
+
+-- recupero dei facenti parte il nucleo esterno
+select * from tabnucleifull where rif_istanza = 43;
+
+
+
+
+select * from tabcartaesercito
