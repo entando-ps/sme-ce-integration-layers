@@ -11,6 +11,21 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
       ddl-auto: validate
 app:
+  bo-protocol-config:
+    soggettoRifStato: 1
+    istanzaRifCanale: 1
+    istanzaRifOperatore: 1
+    istanzaRifStatoIstanza: 1
+    instanzaNucleoPrincipale: 1
+    instanzaItegrNucleoPrincipale: 3
+    instanzaNucleoEsterno: 4
+    instanzaIntegrNucleoEsterno: 5
+    instanzaRinnovoCE: 2
+
+    mandatoRifOperatore:
+    mandatoRifOperatorePagamento:
+    mandatoRifStatoMandato:
+    mandatoRifTipoPagamento:
   csv:
     folder: /Users/germano/projects/SME/sme-ce-integration-layers/files/
   query:

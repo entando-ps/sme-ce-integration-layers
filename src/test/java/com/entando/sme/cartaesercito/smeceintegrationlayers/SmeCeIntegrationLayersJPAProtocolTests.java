@@ -20,7 +20,6 @@ class SmeCeIntegrationLayersJPAProtocolTests {
     @Test
     @Transactional
     @Rollback(value = false)
-    @Disabled
     public void istanzaNucleoPrincipaleConNuoviSoggetti() {
         smeCeBoJPAIntegrationService.IstanzaConNuoviSoggetti(csvPath);
 

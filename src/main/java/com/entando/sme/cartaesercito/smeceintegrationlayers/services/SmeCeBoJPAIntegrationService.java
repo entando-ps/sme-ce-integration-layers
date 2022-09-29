@@ -2,9 +2,11 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.*;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.*;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.SmeCEBOJdbcProtocolConfigurationParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -13,6 +15,9 @@ import static com.entando.sme.cartaesercito.smeceintegrationlayers.Utils.readCsv
 
 @Service
 public class SmeCeBoJPAIntegrationService {
+
+    final
+    SmeCEBOJdbcProtocolConfigurationParameters configParameters;
 
     final
     TabsoggettoJPARepository tabsoggettoJPARepository;
@@ -29,7 +34,7 @@ public class SmeCeBoJPAIntegrationService {
     final
     TabmandatopvcJPARepository tabmandatopvcJPARepository;
 
-    public SmeCeBoJPAIntegrationService(TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository) {
+    public SmeCeBoJPAIntegrationService(TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, SmeCEBOJdbcProtocolConfigurationParameters configParameters) {
         this.tabsoggettoJPARepository = tabsoggettoJPARepository;
         this.tabresidenzeJPARepository = tabresidenzeJPARepository;
         this.tabistanzaJPARepository = tabistanzaJPARepository;
@@ -37,14 +42,14 @@ public class SmeCeBoJPAIntegrationService {
         this.tabnucleifullJPARepository = tabnucleifullJPARepository;
         this.tabmandatoJPARepository = tabmandatoJPARepository;
         this.tabmandatopvcJPARepository = tabmandatopvcJPARepository;
+        this.configParameters = configParameters;
     }
 
 
     protected List<Tabsoggetto> insertSoggetti(String csvSoggetti) {
         //creazione sponsor nucleo
         List<String[]> nucleoPrincipale = readCsv(csvSoggetti);
-        List<Tabsoggetto> soggetti = nucleoPrincipale.stream().map(Tabsoggetto::new).collect(Collectors.toList());
-
+        List<Tabsoggetto> soggetti = nucleoPrincipale.stream().map(csvAttributes -> new Tabsoggetto(configParameters.getSoggettoRifStato(), csvAttributes)).collect(Collectors.toList());
         tabsoggettoJPARepository.saveAll(soggetti);
         return soggetti;
 
@@ -63,11 +68,11 @@ public class SmeCeBoJPAIntegrationService {
 
     }
 
-    protected Tabistanza insertIstanza(String csvIstanzaNucleoPrincipale, Tabsoggetto sponsor, List<Tabsoggetto> parentinucleoprincipale) {
-        Tabistanza tabistanza = new Tabistanza(readCsv(csvIstanzaNucleoPrincipale).get(0));
+    protected Tabistanza insertIstanza (Integer rifTipoIstanza, Tabsoggetto sponsor, List<Tabsoggetto> parentinucleo) {
+        Tabistanza tabistanza = new Tabistanza(new java.sql.Date(Calendar.getInstance().getTime().getTime()), configParameters.getIstanzaRifCanale(), configParameters.getIstanzaRifOperatore(), configParameters.getIstanzaRifStatoIstanza(), rifTipoIstanza);
         tabistanza.setIdSponsor(sponsor.getIdSoggetto());
         tabistanzaJPARepository.save(tabistanza);
-        List<Tabsoggettiistanze> tabsoggettiistanzeList = parentinucleoprincipale.stream().map(tabsoggettoNucleoFamiliare -> new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), tabsoggettoNucleoFamiliare.getIdSoggetto()))).collect(Collectors.toList());
+        List<Tabsoggettiistanze> tabsoggettiistanzeList = parentinucleo.stream().map(tabsoggettoNucleoFamiliare -> new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), tabsoggettoNucleoFamiliare.getIdSoggetto()))).collect(Collectors.toList());
         tabsoggettiistanzeJPARepository.saveAll(tabsoggettiistanzeList);
         return tabistanza;
 
@@ -105,7 +110,6 @@ public class SmeCeBoJPAIntegrationService {
 
         String csvSoggettiNucleoPrincipale = csvPath + CSVFileNames.SOGGETTINUCLEOPRINCIPALE;
         String csvResidenzeNucleoPrincipale = csvPath + CSVFileNames.RESIDENZENUCLEOPRINCIPALE;
-        String csvIstanzaNucleoPrincipale = csvPath + CSVFileNames.ISTANZANUCLEOPRINCIPALE;
         String csvMandatoPagamentoPrincipale = csvPath + CSVFileNames.MANDATOPAGAMENTONUCLEOPRINCIPALE;
         String csvMandatoPagamentoPVCPrincipale = csvPath + CSVFileNames.MANDATOPAGAMENTOPVCNUCLEOPRINCIPALE;
 
@@ -122,7 +126,7 @@ public class SmeCeBoJPAIntegrationService {
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo familiare
         // e aggancio dei soggetti all'istanza
         Tabistanza tabistanza = insertIstanza(
-                csvIstanzaNucleoPrincipale,
+                configParameters.getInstanzaNucleoPrincipale(),
                 sponsor,
                 listaSoggettiDelNucleoPrincipale
         );
@@ -145,7 +149,6 @@ public class SmeCeBoJPAIntegrationService {
 
         String csvSoggettiNucleoEsterno = csvPath + CSVFileNames.SOGGETTINUCLEOESTERNO;
         String csvResidenzeNucleoEsterno = csvPath + CSVFileNames.RESIDENZENUCLEOESTERNO;
-        String csvIstanzaNucleoEsterno = csvPath + CSVFileNames.ISTANZANUCLEOESTERNO;
         String csvMandatoPagamentoEsterno = csvPath + CSVFileNames.MANDATOPAGAMENTONUCLEOESTERNO;
         String csvMandatoPagamentoPVCEsterno = csvPath + CSVFileNames.MANDATOPAGAMENTOPVCNUCLEOESTERNO;
 
@@ -159,7 +162,7 @@ public class SmeCeBoJPAIntegrationService {
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo familiare esterno
         // e aggancio dei soggetti all'istanza
         Tabistanza tabistanzaNucleoEsterno = insertIstanza(
-                csvIstanzaNucleoEsterno,
+                configParameters.getInstanzaNucleoEsterno(),
                 sponsor,
                 listaSoggettiDelNucleoEsterno
         );

@@ -149,13 +149,4 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
         this.rif_tipoIstanza = rif_tipoIstanza;
     }
 
-    public Tabistanza(String[] attributes) {
-        this(new java.sql.Date(Calendar.getInstance().getTime().getTime()),
-                Integer.parseInt(attributes[0]),
-                Integer.parseInt(attributes[1]),
-                Integer.parseInt(attributes[2]),
-                Integer.parseInt(attributes[3])
-        );
-    }
-
 }

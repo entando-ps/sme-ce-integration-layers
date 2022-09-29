@@ -362,8 +362,7 @@ public class Tabsoggetto implements Serializable {
 
 	 */
 
-	public Tabsoggetto(int anagraficaVerificataDa, String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, String pin, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
-		this.anagraficaVerificataDa = anagraficaVerificataDa;
+	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, String pin, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
 		this.codiceFiscale = codiceFiscale;
 		this.cognome = cognome;
 		this.email = email;
@@ -383,9 +382,9 @@ public class Tabsoggetto implements Serializable {
 		this.rifStato = rifStato;
 	}
 
-	public Tabsoggetto(String[] attributes){
+	public Tabsoggetto(String rifStato, String[] attributes){
 		this(
-				Integer.parseInt(attributes[0]),
+				attributes[0],
 				attributes[1],
 				attributes[2],
 				attributes[3],
@@ -395,14 +394,13 @@ public class Tabsoggetto implements Serializable {
 				attributes[7],
 				attributes[8],
 				attributes[9],
-				attributes[10],
+				Integer.parseInt(attributes[10]),
 				Integer.parseInt(attributes[11]),
 				Integer.parseInt(attributes[12]),
-				Integer.parseInt(attributes[13]),
+				attributes[13],
 				attributes[14],
 				attributes[15],
-				attributes[16],
-				attributes[17]
+				rifStato
 		);
 	}
 
