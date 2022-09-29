@@ -9,15 +9,11 @@ import java.util.List;
  * Dati ricevuti per la creazione delle istanze
  */
 @Data
-public class ModuleDTO {
+public class ModuloDTO {
     private Tabsoggetto sponsor;
-    private List<Tabsoggetto> nucleoPrincipale;
-    private List<List<Tabsoggetto>> nucleiEsterni;
-
-    @Data
-    public static class Sponsor extends Soggetto{
-
-    }
+    private List<Soggetto> nucleoPrincipale;
+    private List<List<Soggetto>> nucleiEsterni;
+    private Pagamento pagamento;
 
     @Data
     public static class Soggetto{
@@ -36,10 +32,26 @@ public class ModuleDTO {
         private String sesso;
         private String telCellulare;
         private String telUfficio;
+        private Boolean isSponsor;
+        private Boolean isCapofamiglia;
+        private Residenza residenza;
+    }
 
+    @Data
+    public static class Residenza{
+        private String cap;
+        private String citta;
+        private String civico;
+        private String presso;
+        private String provincia;
+        private String via;
+    }
 
-
-
+    @Data
+    public static class Pagamento{
+        private String cro;
+        private Integer importo;
+        private Integer importoSpedizione;
     }
 }
 
