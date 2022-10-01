@@ -1,5 +1,7 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -129,6 +131,12 @@ VALUES (?,?,?,?,?,?)
                 attributes[3],
                 attributes[4],
                 attributes[5]
+        );
+    }
+
+    public Tabresidenze(ModuloDTO.Residenza residenza) {
+        this(
+                residenza.getCap(), residenza.getCitta(), residenza.getCivico(), residenza.getPresso(), residenza.getProvincia(), residenza.getVia()
         );
     }
 }

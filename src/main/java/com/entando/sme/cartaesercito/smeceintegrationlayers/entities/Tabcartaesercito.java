@@ -1,7 +1,5 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.projections.SoggettoNucleoFamiliareDTOView;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;

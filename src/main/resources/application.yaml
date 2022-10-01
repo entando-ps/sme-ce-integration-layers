@@ -43,3 +43,29 @@ app:
       (select idIstanza from tabistanza 
       where id_sponsor=(select idSoggetto from tabsoggetto where codiceFiscale=:codiceFiscale)
       and rif_tipoIstanza in (4, 5) ORDER BY idIstanza DESC LIMIT 1);
+    cartaEsercitoPerSoggettiNucleoPrincipale: |
+      select *
+      from tabcartaesercito
+      join tabnucleifull on tabcartaesercito.rif_nucleofull = tabnucleifull.id
+      join tabistanza on tabnucleifull.rif_istanza = tabistanza.idIstanza
+      join tabsoggetto on tabcartaesercito.rif_soggetto = tabsoggetto.idSoggetto
+      where tabistanza.idIstanza = (select idIstanza
+      from tabistanza
+      where id_sponsor =
+      (select idSoggetto from tabsoggetto where codiceFiscale = 'GDFGMN70D16H501T')
+      and rif_tipoIstanza in (1, 3)
+      ORDER BY idIstanza DESC
+      LIMIT 1);
+    cartaEsercitoPerSoggettiNucleoEsterno: |
+      select *
+      from tabcartaesercito
+      join tabnucleifull on tabcartaesercito.rif_nucleofull = tabnucleifull.id
+      join tabistanza on tabnucleifull.rif_istanza = tabistanza.idIstanza
+      join tabsoggetto on tabcartaesercito.rif_soggetto = tabsoggetto.idSoggetto
+      where tabistanza.idIstanza = (select idIstanza
+      from tabistanza
+      where id_sponsor =
+      (select idSoggetto from tabsoggetto where codiceFiscale = 'GDFGMN70D16H501T')
+      and rif_tipoIstanza in (4, 5)
+      ORDER BY idIstanza DESC
+      LIMIT 1);

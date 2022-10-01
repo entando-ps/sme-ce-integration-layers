@@ -1,9 +1,10 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.List;
 
 
 /**
@@ -401,6 +402,28 @@ public class Tabsoggetto implements Serializable {
 				attributes[14],
 				attributes[15],
 				rifStato
+		);
+	}
+	public Tabsoggetto(String pin, String rifStato, ModuloDTO.Soggetto soggetto){
+		this(
+				soggetto.getCodiceFiscale(),
+				soggetto.getCognome(),
+				soggetto.getEmail(),
+				soggetto.getEnteAppartenenza(),
+				soggetto.getFototessera(),
+				soggetto.getNascitaData(),
+				soggetto.getNascitaLuogo(),
+				soggetto.getNazionalita(),
+				soggetto.getNome(),
+				pin,
+				soggetto.getRifGradoQualifica(),
+				soggetto.getRifPosizione(),
+				soggetto.getRifRapporto(),
+				soggetto.getSesso(),
+				soggetto.getTelCellulare(),
+				soggetto.getTelUfficio(),
+				rifStato
+
 		);
 	}
 

@@ -1,18 +1,23 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabsoggetto;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Dati ricevuti per la creazione delle istanze
  */
 @Data
 public class ModuloDTO {
-    private Tabsoggetto sponsor;
-    private List<Soggetto> nucleoPrincipale;
-    private List<List<Soggetto>> nucleiEsterni;
+    private Soggetto sponsor;
+    //non contiene lo sponsor
+    private List<Soggetto> nucleoPrincipale = new ArrayList<>();
+    private List<List<Soggetto>> nucleiEsterni = new ArrayList<>();
+
+    //se la residenza di spedizione
+    private Residenza residenzaDiSpedizione;
     private Pagamento pagamento;
 
     @Data
@@ -26,15 +31,22 @@ public class ModuloDTO {
         private String nascitaData;
         private String nascitaLuogo;
         private String nazionalita;
-        private int rif_gradoQualifica;
+        private int rifGradoQualifica;
         private int rifPosizione;
         private int rifRapporto;
         private String sesso;
         private String telCellulare;
         private String telUfficio;
-        private Boolean isSponsor;
-        private Boolean isCapofamiglia;
+        private Boolean isCapofamiglia = false;
+        private Boolean isSponsor = false;
         private Residenza residenza;
+
+        public Soggetto() {
+        }
+
+        public Soggetto(String codiceFiscale) {
+            this.codiceFiscale = codiceFiscale;
+        }
     }
 
     @Data
@@ -50,9 +62,23 @@ public class ModuloDTO {
     @Data
     public static class Pagamento{
         private String cro;
-        private Integer importo;
-        private Integer importoSpedizione;
     }
+
+    public List<Soggetto> getAllSoggettiAsList(){
+        List<Soggetto> ret = new ArrayList<>();
+        ret.add(sponsor);
+        ret.addAll(nucleoPrincipale);
+        nucleiEsterni.forEach(ret::addAll);
+        return ret;
+    }
+
+    public List<Soggetto> getNucleoPrincipaleConSponsor(){
+        List<Soggetto> ret = new ArrayList<>();
+        ret.add(sponsor);
+        ret.addAll(nucleoPrincipale);
+        return ret;
+    }
+
 }
 
 

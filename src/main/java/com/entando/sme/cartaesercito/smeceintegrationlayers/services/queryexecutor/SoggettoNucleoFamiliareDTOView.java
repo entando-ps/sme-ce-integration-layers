@@ -1,4 +1,4 @@
-package com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.projections;
+package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
 
 import lombok.AllArgsConstructor;
