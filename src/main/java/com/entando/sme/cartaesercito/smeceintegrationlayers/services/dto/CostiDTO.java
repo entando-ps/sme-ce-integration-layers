@@ -13,6 +13,9 @@ public class CostiDTO {
     ;
     private List<List<CostoPerSoggettoDTO>> nucleiEsterni = new ArrayList<>();
 
+
+    private Integer costoSpedizione;
+
     @Data
     public static class CostoPerSoggettoDTO {
         private ModuloDTO.Soggetto soggetto;
@@ -22,7 +25,7 @@ public class CostiDTO {
     }
 
     public boolean limiteNucleoPrincipaleSuperato() {
-        return calcolaTotale() > 20 * 100;
+        return calcolaTotaleSenzaSpedizione() > 20 * 100;
     }
 
     public int calcolaTotaleNucleoPrincipaleConSponsor() {
@@ -34,7 +37,7 @@ public class CostiDTO {
         return nucleiEsterni.stream().flatMap(Collection::stream).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
     }
 
-    public int calcolaTotale() {
+    public int calcolaTotaleSenzaSpedizione() {
         return calcolaTotaleNucleiEsterni() + calcolaTotaleNucleoPrincipaleConSponsor();
     }
 

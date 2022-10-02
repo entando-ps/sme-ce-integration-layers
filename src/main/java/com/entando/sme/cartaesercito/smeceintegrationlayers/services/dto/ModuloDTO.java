@@ -1,17 +1,17 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Dati ricevuti per la creazione delle istanze
  */
 @Data
 public class ModuloDTO {
-    private Soggetto sponsor;
+    private Sponsor sponsor;
     //non contiene lo sponsor
     private List<Soggetto> nucleoPrincipale = new ArrayList<>();
     private List<List<Soggetto>> nucleiEsterni = new ArrayList<>();
@@ -50,6 +50,19 @@ public class ModuloDTO {
     }
 
     @Data
+    @EqualsAndHashCode(callSuper = true)
+    public static class Sponsor extends Soggetto{
+        public Sponsor() {
+            this.setIsSponsor(true);
+        }
+
+        public Sponsor(String codiceFiscale) {
+            super(codiceFiscale);
+            this.setIsSponsor(true);
+        }
+    }
+
+    @Data
     public static class Residenza{
         private String cap;
         private String citta;
@@ -78,6 +91,7 @@ public class ModuloDTO {
         ret.addAll(nucleoPrincipale);
         return ret;
     }
+
 
 }
 

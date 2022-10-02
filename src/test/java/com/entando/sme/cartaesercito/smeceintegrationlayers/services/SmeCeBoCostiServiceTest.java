@@ -33,7 +33,7 @@ class SmeCeBoCostiServiceTest {
     @Test
     public void testUno() {
         ModuloDTO moduloDTO = new ModuloDTO();
-        ModuloDTO.Soggetto sponsor = new ModuloDTO.Soggetto();
+        ModuloDTO.Sponsor sponsor = new ModuloDTO.Sponsor();
         sponsor.setCodiceFiscale(codiceFiscaleSponsor);
         sponsor.setIsSponsor(true);
         List<ModuloDTO.Soggetto> nucleoPrincipale = new ArrayList<>();
@@ -49,7 +49,7 @@ class SmeCeBoCostiServiceTest {
     @Test
     public void testDue() {
         ModuloDTO moduloDTO = new ModuloDTO();
-        ModuloDTO.Soggetto sponsor = new ModuloDTO.Soggetto();
+        ModuloDTO.Sponsor sponsor = new ModuloDTO.Sponsor();
         sponsor.setCodiceFiscale(codiceFiscaleSponsor);
         sponsor.setIsSponsor(true);
         List<ModuloDTO.Soggetto> nucleoPrincipale = new ArrayList<>();
@@ -64,7 +64,7 @@ class SmeCeBoCostiServiceTest {
         moduloDTO.setNucleiEsterni(nucleiEsterni);
         CostiDTO costiDTO = smeCeBoCostiService.calcoloCosti(moduloDTO);
         System.out.println("costiDTO = " + costiDTO);
-        System.out.println("costiDTO calcolaTotale = " + costiDTO.calcolaTotale());
+        System.out.println("costiDTO calcolaTotale = " + costiDTO.calcolaTotaleSenzaSpedizione());
         System.out.println("costiDTO calcolaTotaleNucleiEsterni = " + costiDTO.calcolaTotaleNucleiEsterni());
         System.out.println("costiDTO calcolaTotaleNucleoPrincipaleConSponsor = " + costiDTO.calcolaTotaleNucleoPrincipaleConSponsor());
     }

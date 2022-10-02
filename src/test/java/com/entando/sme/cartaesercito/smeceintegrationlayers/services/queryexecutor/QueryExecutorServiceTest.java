@@ -37,7 +37,7 @@ class QueryExecutorServiceTest {
     @Test
     void carteEsercitoPerNucleoFamiliarePrincipaleSponsor(){
         ModuloDTO moduloDTO = new ModuloDTO();
-        ModuloDTO.Soggetto sponsor = new ModuloDTO.Soggetto();
+        ModuloDTO.Sponsor sponsor = new ModuloDTO.Sponsor();
         sponsor.setCodiceFiscale(codiceFiscaleSponsor);
         List<ModuloDTO.Soggetto> nucleoPrincipale = new ArrayList<>();
         nucleoPrincipale.add(new ModuloDTO.Soggetto("mockCF"));

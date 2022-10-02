@@ -13,8 +13,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.entando.sme.cartaesercito.smeceintegrationlayers.Utils.readCsv;
-
 @Service
 public class SmeCeBoModuloService {
 
@@ -57,9 +55,9 @@ public class SmeCeBoModuloService {
     }
 
     /*
-                    inserisce i soggetti e le residenze
-                    se il soggetto esiste lo sovrascrive con quello passato
-                 */
+        inserisce i soggetti e le residenze
+        se il soggetto esiste lo sovrascrive con quello passato
+    */
     protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTO.Soggetto> soggetti) {
         //inserimento di tutti i soggetti
         String pin = ""; //todo
@@ -71,9 +69,16 @@ public class SmeCeBoModuloService {
             }
             return tabSoggettoDaSalvare;
         }).collect(Collectors.toList());
-        //i soggetti vengono inseriti se non esistono aggiornati in caso contrario
+        //i soggetti vengono inseriti se non esistono aggiornati in caso contrario (UPSERT)
         List<Tabsoggetto> tabSoggettiSalvati = tabsoggettoJPARepository.saveAll(tabSoggettiDaSalvare);
+        insertResidenzeSoggetti(soggetti, tabSoggettiSalvati);
 
+        return tabSoggettiSalvati;
+
+    }
+
+
+    protected void insertResidenzeSoggetti(List<ModuloDTO.Soggetto> soggetti, List<Tabsoggetto> tabSoggettiSalvati) {
         List<Tabresidenze> tabResidenzeDaSalvare = IntStream.range(0, soggetti.size()).mapToObj(index -> {
             ModuloDTO.Soggetto soggetto = soggetti.get(index);
             Tabresidenze tabresidenze = new Tabresidenze(soggetto.getResidenza());
@@ -81,20 +86,6 @@ public class SmeCeBoModuloService {
             return tabresidenze;
         }).collect(Collectors.toList());
         tabresidenzeJPARepository.saveAll(tabResidenzeDaSalvare);
-        return tabSoggettiSalvati;
-
-    }
-
-
-    protected void insertResidenzeSoggetti(List<Tabsoggetto> soggetti, String csvResidenzeSoggetti) {
-        List<String[]> residenzeSoggetti = readCsv(csvResidenzeSoggetti);
-        List<Tabresidenze> tabResidenzeSoggetti = IntStream.range(0, residenzeSoggetti.size()).mapToObj(index -> {
-            Tabresidenze tabresidenze = new Tabresidenze(residenzeSoggetti.get(index));
-            tabresidenze.setRifSoggetto(soggetti.get(index).getIdSoggetto());
-            return tabresidenze;
-        }).collect(Collectors.toList());
-
-        tabresidenzeJPARepository.saveAll(tabResidenzeSoggetti);
 
     }
 
@@ -118,14 +109,16 @@ public class SmeCeBoModuloService {
         return tabnucleifullCapofamigliaoSponsor;
     }
 
-    protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullCapofamiglia, CostiDTO costiDTO) {
+    protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullCapofamiglia, int importoPagato, int importoPagatoSpedizione) {
         Tabmandato tabmandato = new Tabmandato();
         tabmandato.setRifSponsor(sponsor.getIdSoggetto());
         tabmandato.setRifNucleofull(tabnucleifullCapofamiglia.getId());
+        tabmandato.setQuotaVersata(Math.round((float)importoPagato/100));
 
         Tabmandatopvc tabmandatopvc = new Tabmandatopvc();
         tabmandatopvc.setRifSponsor(sponsor.getIdSoggetto());
         tabmandatopvc.setRifNucleoFull(tabnucleifullCapofamiglia.getId());
+        tabmandatopvc.setQuotaVersata(String.valueOf((double)importoPagatoSpedizione/100));
         //il salvataggio avviene semmpre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
         tabmandatoJPARepository.save(tabmandato);
         tabmandatopvcJPARepository.save(tabmandatopvc);
@@ -162,12 +155,97 @@ public class SmeCeBoModuloService {
         // c'è già un nucleo famigliare esterno: --> 4
         // Non esiste alcun nucleo esterno --> 3
 
-
         //controllo che i costi non siano cambiati;
-        CostiDTO costiDTO = checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
+        CostiDTO costiDTO = smeCeBoCostiService.checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
 
+        //gestione del nucleo principale
+        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getSponsor(), moduloDTO.getNucleoPrincipaleConSponsor(), costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizione());
+
+        //gestione dei Nuclei Esterni TODO WARN per ora uno solo
+        //spedizione già pagata perchè per ora il nucleo principale viene creato
+        gestisciNucleoEsterno(moduloDTO.getNucleiEsterni(),tabSoggettoSponsor, costiDTO.calcolaTotaleNucleiEsterni(),0);
+
+    }
+
+    protected Tabsoggetto gestisciNucleoPrincipale(ModuloDTO.Soggetto sponsor, List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor,  Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoPagatoPerSpedizione){
+        Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = calcolaTipoIstanzaNucleoPrincipale(sponsor.getCodiceFiscale());
+
+
+        List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertSoggettiAndResidenze(nucleoPricipaleConSponsor);
+        Tabsoggetto tabSoggettoSponsor = listaSoggettiDelNucleoPrincipale.get(0);
+
+
+        //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo familiare
+        // e aggancio dei soggetti all'istanza
+        Tabistanza tabistanza = insertIstanza(
+                tipoIstanzaDaCrearePerNucleoFamiliarePrincipale,
+                tabSoggettoSponsor,
+                listaSoggettiDelNucleoPrincipale
+        );
+
+        //creazione del nucleo familiare principale: il capofamiglia è sponsor
+        Tabnucleifull tabnucleifullSponsorECapofamigliaNucleoPrincipale = insertNucleiFullPerISoggetti(
+                true,
+                listaSoggettiDelNucleoPrincipale,
+                tabistanza
+        );
+
+
+        //inserimento dei mandati di pagamento
+        insertMandati(
+                tabSoggettoSponsor,
+                tabnucleifullSponsorECapofamigliaNucleoPrincipale,
+                importoPagatoPerNucleoPrincipaleESponsor,
+                importoPagatoPerSpedizione
+
+        );
+
+        return tabSoggettoSponsor;
+    }
+
+    protected void gestisciNucleoEsterno(List<List<ModuloDTO.Soggetto>> nucleiEsterni, Tabsoggetto sponsor, Integer importoPagatoPerIlNucleoEsterno, Integer importoPagatoPerLaSpedizione){
+        if (nucleiEsterni.size() == 0 || nucleiEsterni.get(0).size() == 0) return;
+        Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno = calcolaTipoIstanzaNucleiEsterni(sponsor.getCodiceFiscale());
+        List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggettiAndResidenze(nucleiEsterni.get(0)); //TODO WARN un solo nuceo esterno
+        //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo esterno
+        // e aggancio dei soggetti all'istanza
+        Tabistanza tabistanzaNucleoEsterno = insertIstanza(
+                tipoIstanzaDaCrearePerNucleoFamiliareEsterno,
+                sponsor,
+                listaSoggettiDelNucleoEsterno
+        );
+
+        //creazione del nucleo familiare principale: il capofamiglia è sponsor
+        Tabnucleifull tabnucleifullCapofamigliaNucleoEsterno = insertNucleiFullPerISoggetti(
+                false,
+                listaSoggettiDelNucleoEsterno,
+                tabistanzaNucleoEsterno
+        );
+
+        //inserimento dei mandati di pagamento
+        insertMandati(
+                sponsor,
+                tabnucleifullCapofamigliaNucleoEsterno,
+                importoPagatoPerIlNucleoEsterno,
+                importoPagatoPerLaSpedizione //spedizione già pagata nel mandato del nucleo principale
+        );
+
+    }
+
+
+
+    /**
+     * ritorna il tipo dio istanza nucleo principale da inserire
+     * dato il modulo
+     * per il nucleo famigliare principale:
+     * Non esiste lo sponsor --> 1
+     * Esiste lo sponsor e:
+     *  c'è già un nucleo famigliare principale: --> 3
+     *  Non esiste alcun nucleo principale --> 1
+     * @return
+     */
+    protected Integer calcolaTipoIstanzaNucleoPrincipale (String codiceFiscaleSponsor){
         int tipoIstanzaDaCrearePerNucleoFamiliarePrincipale;
-        String codiceFiscaleSponsor = moduloDTO.getSponsor().getCodiceFiscale();
         Tabsoggetto tabsoggettoSponsor = tabsoggettoJPARepository.findByCodiceFiscale(codiceFiscaleSponsor);
         if (tabsoggettoSponsor == null) { //sponsor non c'è
             tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = 1;
@@ -179,92 +257,24 @@ public class SmeCeBoModuloService {
             }
         }
 
-        boolean creaNucleiEsterni = false;
-        int tipoIstanzaDaCrearePerNucleoFamiliareEsterno = -1;
-        if (moduloDTO.getNucleiEsterni().size() > 0 && moduloDTO.getNucleiEsterni().get(0).size() > 0) {
-            creaNucleiEsterni = true;
+        return tipoIstanzaDaCrearePerNucleoFamiliarePrincipale;
+    }
+
+    /**
+     *per il nucleo famigliare esterno:
+     *Non esiste lo sponsor --> 3 (non è possibile va creato prima il nucleo principale)
+     *Esiste lo sponsor e:
+     * c'è già un nucleo famigliare esterno: --> 4
+     * Non esiste alcun nucleo esterno --> 3
+     */
+    protected Integer calcolaTipoIstanzaNucleiEsterni(String codiceFiscaleSponsor){
+        int tipoIstanzaDaCrearePerNucleoFamiliareEsterno;
             if (queryExecutorService.nucleoFamiliareEsternoSponsor(codiceFiscaleSponsor).size() > 0) { //esiste un nucleo esterno associato TODO WARNING gestiamo solo uno!
                 tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 4;
             } else {
                 tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 3;
             }
-        }
-
-        List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertSoggettiAndResidenze(moduloDTO.getNucleoPrincipaleConSponsor());
-        Tabsoggetto sponsor = listaSoggettiDelNucleoPrincipale.get(0);
-
-
-        //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo familiare
-        // e aggancio dei soggetti all'istanza
-        Tabistanza tabistanza = insertIstanza(
-                tipoIstanzaDaCrearePerNucleoFamiliarePrincipale,
-                sponsor,
-                listaSoggettiDelNucleoPrincipale
-        );
-
-        //creazione del nucleo familiare principale: il capofamiglia è sponsor
-        Tabnucleifull tabnucleifullSponsorECapofamiglia = insertNucleiFullPerISoggetti(
-                true,
-                listaSoggettiDelNucleoPrincipale,
-                tabistanza
-        );
-
-        /*
-        //inserimento dei mandati di pagamento
-        insertMandati(
-                sponsor,
-                tabnucleifullSponsorECapofamiglia,
-                csvMandatoPagamentoPrincipale,
-                csvMandatoPagamentoPVCPrincipale
-        );
-
-
-        String csvSoggettiNucleoEsterno = csvPath + CSVFileNames.SOGGETTINUCLEOESTERNO;
-        String csvResidenzeNucleoEsterno = csvPath + CSVFileNames.RESIDENZENUCLEOESTERNO;
-        String csvMandatoPagamentoEsterno = csvPath + CSVFileNames.MANDATOPAGAMENTONUCLEOESTERNO;
-        String csvMandatoPagamentoPVCEsterno = csvPath + CSVFileNames.MANDATOPAGAMENTOPVCNUCLEOESTERNO;
-
-        //creazione degli altri soggetti
-        List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggetti(csvSoggettiNucleoEsterno);
-        //aggancio delle residenze altri
-        insertResidenzeSoggetti(
-                listaSoggettiDelNucleoEsterno,
-                csvResidenzeNucleoEsterno
-        );
-        //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo familiare esterno
-        // e aggancio dei soggetti all'istanza
-        Tabistanza tabistanzaNucleoEsterno = insertIstanza(
-                configParameters.getInstanzaNucleoEsterno(),
-                sponsor,
-                listaSoggettiDelNucleoEsterno
-        );
-        //creazione del nucleo familiare esterno: il capofamiglia (il primo soggetto nel csv del nucleo esterno) non è sponsor
-        Tabnucleifull tabnucleifullCapofamiglia = insertNucleiFullPerISoggetti(
-                false,
-                listaSoggettiDelNucleoEsterno,
-                tabistanzaNucleoEsterno
-        );
-
-        //inserimento dei mandati di pagamento per il nucleo esterno
-        insertMandati(
-                sponsor,
-                tabnucleifullCapofamiglia,
-                csvMandatoPagamentoEsterno,
-                csvMandatoPagamentoPVCEsterno
-        );
-*/
-
+        return tipoIstanzaDaCrearePerNucleoFamiliareEsterno;
     }
 
-
-    protected CostiDTO checkCostiNonSonoCambiati(ModuloDTO moduloDTO, CostiDTO oldCostiDTO) {
-        CostiDTO currCostiDTO = smeCeBoCostiService.calcoloCosti(moduloDTO);
-
-        if (!currCostiDTO.equals(oldCostiDTO)) {
-            throw new RuntimeException("costi non uguali!");
-        }
-
-        return currCostiDTO;
-
-    }
 }

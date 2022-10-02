@@ -14,10 +14,10 @@ import java.util.stream.Stream;
 @Service
 public class SmeCeBoCostiService {
 
-    final
+    private final
     SmeCEBOJdbcProtocolConfigurationParameters configParameters;
 
-    final
+    private final
     QueryExecutorService queryExecutorService;
 
     public SmeCeBoCostiService(SmeCEBOJdbcProtocolConfigurationParameters configParameters, QueryExecutorService queryExecutorService) {
@@ -36,6 +36,7 @@ public class SmeCeBoCostiService {
         List<List<CostiDTO.CostoPerSoggettoDTO>> costiNucleiEsterni = new ArrayList<>();
         costiNucleiEsterni.add(costiNucleoEsterno); //TODO WARNING UN SOLO NUCLEO
         costiDTO.setNucleiEsterni(costiNucleiEsterni);
+        costiDTO.setCostoSpedizione(calcolaCostoSpedizione(moduloDTO));
         return costiDTO;
     }
 
@@ -108,13 +109,13 @@ public class SmeCeBoCostiService {
                  */
                 int costo = 0;
                 if (cartaEsercito.getStatoCarta() != 1) {
-                    costo = 10*100;
+                    costo = 10 * 100;
                 }
                 costoPerSoggettoDTO.setCosto(costo);
             }, () -> {
                 //la carta non esiste prima emissione
                 costoPerSoggettoDTO.setStatoCarta(-1); //-1 prima emissione
-                int costo = 10*100;
+                int costo = 10 * 100;
                 costoPerSoggettoDTO.setCosto(costo);
             });
             return costoPerSoggettoDTO;
@@ -123,5 +124,22 @@ public class SmeCeBoCostiService {
         return costoPerSoggettoDTOStream.collect(Collectors.toList());
     }
 
+    protected Integer calcolaCostoSpedizione(ModuloDTO moduloDTO) {
+        if (moduloDTO.getResidenzaDiSpedizione() != null) { //aggiungo il costo di spedizione
+            return 450;
+        }
+        return 0;
+    }
+
+    protected CostiDTO checkCostiNonSonoCambiati(ModuloDTO moduloDTO, CostiDTO oldCostiDTO) {
+        CostiDTO currCostiDTO = calcoloCosti(moduloDTO);
+
+        if (!currCostiDTO.equals(oldCostiDTO)) {
+            throw new RuntimeException("costi non uguali!");
+        }
+
+        return currCostiDTO;
+
+    }
 
 }
