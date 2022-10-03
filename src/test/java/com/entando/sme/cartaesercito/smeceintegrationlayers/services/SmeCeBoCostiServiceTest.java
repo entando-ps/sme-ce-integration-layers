@@ -41,7 +41,7 @@ class SmeCeBoCostiServiceTest {
         moduloDTO.setNucleoPrincipale(nucleoPrincipale);
         moduloDTO.setSponsor(sponsor);
         Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> stringStatoCartaEsercitoPerSoggettoDTOViewMap = queryExecutorService.carteEsercitoPerNucleoFamiliarePrincipaleSponsor(moduloDTO);
-        List<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOS = smeCeBoCostiService.calcoloCostiNucleoPrincipaleESponsor(stringStatoCartaEsercitoPerSoggettoDTOViewMap, moduloDTO);
+        List<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOS = smeCeBoCostiService.calcoloCostiNucleoPrincipaleESponsor(stringStatoCartaEsercitoPerSoggettoDTOViewMap, moduloDTO.getNucleoPrincipaleConSponsor());
         System.out.println("costoPerSoggettoDTOS = " + costoPerSoggettoDTOS);
 
     }

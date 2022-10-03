@@ -29,10 +29,10 @@ public class SmeCeBoCostiService {
     public CostiDTO calcoloCosti(ModuloDTO moduloDTO) {
         CostiDTO costiDTO = new CostiDTO();
         Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliarePrincipaleConSponsor = queryExecutorService.carteEsercitoPerNucleoFamiliarePrincipaleSponsor(moduloDTO);
-        List<CostiDTO.CostoPerSoggettoDTO> costiNucleoPrincipaleESponsor = calcoloCostiNucleoPrincipaleESponsor(carteEsercitoNucleoFamiliarePrincipaleConSponsor, moduloDTO);
+        List<CostiDTO.CostoPerSoggettoDTO> costiNucleoPrincipaleESponsor = calcoloCostiNucleoPrincipaleESponsor(carteEsercitoNucleoFamiliarePrincipaleConSponsor, moduloDTO.getNucleoPrincipaleConSponsor());
         costiDTO.setNucleoPrincipaleConSponsor(costiNucleoPrincipaleESponsor);
         Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoEsterno = queryExecutorService.carteEsercitoPerNucleoEsterno(moduloDTO);
-        List<CostiDTO.CostoPerSoggettoDTO> costiNucleoEsterno = calcoloCostoNucleoEsterno(carteEsercitoNucleoEsterno, moduloDTO);
+        List<CostiDTO.CostoPerSoggettoDTO> costiNucleoEsterno = calcoloCostoNucleoEsterno(carteEsercitoNucleoEsterno, moduloDTO.getNucleiEsterni());
         List<List<CostiDTO.CostoPerSoggettoDTO>> costiNucleiEsterni = new ArrayList<>();
         costiNucleiEsterni.add(costiNucleoEsterno); //TODO WARNING UN SOLO NUCLEO
         costiDTO.setNucleiEsterni(costiNucleiEsterni);
@@ -40,8 +40,7 @@ public class SmeCeBoCostiService {
         return costiDTO;
     }
 
-    protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostiNucleoPrincipaleESponsor(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliarePrincipale, ModuloDTO moduloDTO) {
-        List<ModuloDTO.Soggetto> nucleoPrincipaleConSponsor = moduloDTO.getNucleoPrincipaleConSponsor();
+    protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostiNucleoPrincipaleESponsor(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliarePrincipale, List<ModuloDTO.Soggetto> nucleoPrincipaleConSponsor) {
         Stream<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOStream = nucleoPrincipaleConSponsor.stream().map(soggetto -> {
             Optional<StatoCartaEsercitoPerSoggettoDTOView> statoCartaEsercitoPerSoggettoDTOView = carteEsercitoNucleoFamiliarePrincipale.get(soggetto.getCodiceFiscale());
             CostiDTO.CostoPerSoggettoDTO costoPerSoggettoDTO = new CostiDTO.CostoPerSoggettoDTO();
@@ -60,7 +59,7 @@ public class SmeCeBoCostiService {
                     8,Requisiti persi
                  */
                 int costo = 0;
-                if (cartaEsercito.getStatoCarta() != 1) {
+                if (cartaEsercito.getStatoCarta() != 1) { //va rinnvovata
                     if (soggetto.getIsSponsor()) {
                         costo = 8 * 100;
                     } else {
@@ -86,8 +85,7 @@ public class SmeCeBoCostiService {
     }
 
 
-    protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostoNucleoEsterno(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliareEsterno, ModuloDTO moduloDTO) {
-        List<List<ModuloDTO.Soggetto>> nucleiEsterni = moduloDTO.getNucleiEsterni();
+    protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostoNucleoEsterno(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliareEsterno, List<List<ModuloDTO.Soggetto>> nucleiEsterni) {
         if (nucleiEsterni.size() == 0) return new ArrayList<>(); //nessun nucleo esterno
         List<ModuloDTO.Soggetto> nucleoPrincipaleConSponsor = nucleiEsterni.get(0); //TODO WARNING GESTISCO UN SOLO NUCLEO ESTERNO
         Stream<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOStream = nucleoPrincipaleConSponsor.stream().map(soggetto -> {

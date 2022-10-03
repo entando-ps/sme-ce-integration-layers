@@ -62,10 +62,11 @@ public class SmeCeBoModuloService {
         //inserimento di tutti i soggetti
         String pin = ""; //todo
         List<Tabsoggetto> tabSoggettiDaSalvare = soggetti.stream().map(soggetto -> {
-            Tabsoggetto currentSavedTabSoggetto = tabsoggettoJPARepository.findByCodiceFiscale(soggetto.getCodiceFiscale());
-            Tabsoggetto tabSoggettoDaSalvare = new Tabsoggetto(pin, configParameters.getSoggettoRifStato(), soggetto);
-            if (currentSavedTabSoggetto != null) {
-                tabSoggettoDaSalvare.setIdSoggetto(currentSavedTabSoggetto.getIdSoggetto());
+            Tabsoggetto tabSoggettoDaSalvare = tabsoggettoJPARepository.findByCodiceFiscale(soggetto.getCodiceFiscale()); //recupero dal db
+            if (tabSoggettoDaSalvare != null) {
+                tabSoggettoDaSalvare.copyFrom(pin, configParameters.getSoggettoRifStato(), soggetto); //TODO cosa avviene nel caso di salvataggio dei dati di un soggetto già presente? Per ora ricreo pin e metto non validato
+            } else {
+                tabSoggettoDaSalvare = new Tabsoggetto(pin, configParameters.getSoggettoRifStato(), soggetto);
             }
             return tabSoggettoDaSalvare;
         }).collect(Collectors.toList());
@@ -113,12 +114,12 @@ public class SmeCeBoModuloService {
         Tabmandato tabmandato = new Tabmandato();
         tabmandato.setRifSponsor(sponsor.getIdSoggetto());
         tabmandato.setRifNucleofull(tabnucleifullCapofamiglia.getId());
-        tabmandato.setQuotaVersata(Math.round((float)importoPagato/100));
+        tabmandato.setQuotaVersata(Math.round((float) importoPagato / 100));
 
         Tabmandatopvc tabmandatopvc = new Tabmandatopvc();
         tabmandatopvc.setRifSponsor(sponsor.getIdSoggetto());
         tabmandatopvc.setRifNucleoFull(tabnucleifullCapofamiglia.getId());
-        tabmandatopvc.setQuotaVersata(String.valueOf((double)importoPagatoSpedizione/100));
+        tabmandatopvc.setQuotaVersata(String.valueOf((double) importoPagatoSpedizione / 100));
         //il salvataggio avviene semmpre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
         tabmandatoJPARepository.save(tabmandato);
         tabmandatopvcJPARepository.save(tabmandatopvc);
@@ -150,7 +151,7 @@ public class SmeCeBoModuloService {
         // Non esiste alcun nucleo principale --> 1
 
         //per il nucleo famigliare esterno:
-        //Non esiste lo sponsor --> 3
+        //Non esiste lo sponsor --> 4
         //Esiste lo sponsor e:
         // c'è già un nucleo famigliare esterno: --> 4
         // Non esiste alcun nucleo esterno --> 3
@@ -163,11 +164,11 @@ public class SmeCeBoModuloService {
 
         //gestione dei Nuclei Esterni TODO WARN per ora uno solo
         //spedizione già pagata perchè per ora il nucleo principale viene creato
-        gestisciNucleoEsterno(moduloDTO.getNucleiEsterni(),tabSoggettoSponsor, costiDTO.calcolaTotaleNucleiEsterni(),0);
+        gestisciNucleoEsterno(moduloDTO.getNucleiEsterni(), tabSoggettoSponsor, costiDTO.calcolaTotaleNucleiEsterni(), 0);
 
     }
 
-    protected Tabsoggetto gestisciNucleoPrincipale(ModuloDTO.Soggetto sponsor, List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor,  Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoPagatoPerSpedizione){
+    protected Tabsoggetto gestisciNucleoPrincipale(ModuloDTO.Soggetto sponsor, List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor, Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoPagatoPerSpedizione) {
         Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = calcolaTipoIstanzaNucleoPrincipale(sponsor.getCodiceFiscale());
 
 
@@ -184,6 +185,7 @@ public class SmeCeBoModuloService {
         );
 
         //creazione del nucleo familiare principale: il capofamiglia è sponsor
+
         Tabnucleifull tabnucleifullSponsorECapofamigliaNucleoPrincipale = insertNucleiFullPerISoggetti(
                 true,
                 listaSoggettiDelNucleoPrincipale,
@@ -203,7 +205,7 @@ public class SmeCeBoModuloService {
         return tabSoggettoSponsor;
     }
 
-    protected void gestisciNucleoEsterno(List<List<ModuloDTO.Soggetto>> nucleiEsterni, Tabsoggetto sponsor, Integer importoPagatoPerIlNucleoEsterno, Integer importoPagatoPerLaSpedizione){
+    protected void gestisciNucleoEsterno(List<List<ModuloDTO.Soggetto>> nucleiEsterni, Tabsoggetto sponsor, Integer importoPagatoPerIlNucleoEsterno, Integer importoPagatoPerLaSpedizione) {
         if (nucleiEsterni.size() == 0 || nucleiEsterni.get(0).size() == 0) return;
         Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno = calcolaTipoIstanzaNucleiEsterni(sponsor.getCodiceFiscale());
         List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggettiAndResidenze(nucleiEsterni.get(0)); //TODO WARN un solo nuceo esterno
@@ -233,18 +235,18 @@ public class SmeCeBoModuloService {
     }
 
 
-
     /**
      * ritorna il tipo dio istanza nucleo principale da inserire
      * dato il modulo
      * per il nucleo famigliare principale:
      * Non esiste lo sponsor --> 1
      * Esiste lo sponsor e:
-     *  c'è già un nucleo famigliare principale: --> 3
-     *  Non esiste alcun nucleo principale --> 1
+     * c'è già un nucleo famigliare principale: --> 3
+     * Non esiste alcun nucleo principale --> 1
+     *
      * @return
      */
-    protected Integer calcolaTipoIstanzaNucleoPrincipale (String codiceFiscaleSponsor){
+    protected Integer calcolaTipoIstanzaNucleoPrincipale(String codiceFiscaleSponsor) {
         int tipoIstanzaDaCrearePerNucleoFamiliarePrincipale;
         Tabsoggetto tabsoggettoSponsor = tabsoggettoJPARepository.findByCodiceFiscale(codiceFiscaleSponsor);
         if (tabsoggettoSponsor == null) { //sponsor non c'è
@@ -261,19 +263,19 @@ public class SmeCeBoModuloService {
     }
 
     /**
-     *per il nucleo famigliare esterno:
-     *Non esiste lo sponsor --> 3 (non è possibile va creato prima il nucleo principale)
-     *Esiste lo sponsor e:
+     * per il nucleo famigliare esterno:
+     * Non esiste lo sponsor --> 3 (non è possibile va creato prima il nucleo principale)
+     * Esiste lo sponsor e:
      * c'è già un nucleo famigliare esterno: --> 4
      * Non esiste alcun nucleo esterno --> 3
      */
-    protected Integer calcolaTipoIstanzaNucleiEsterni(String codiceFiscaleSponsor){
+    protected Integer calcolaTipoIstanzaNucleiEsterni(String codiceFiscaleSponsor) {
         int tipoIstanzaDaCrearePerNucleoFamiliareEsterno;
-            if (queryExecutorService.nucleoFamiliareEsternoSponsor(codiceFiscaleSponsor).size() > 0) { //esiste un nucleo esterno associato TODO WARNING gestiamo solo uno!
-                tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 4;
-            } else {
-                tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 3;
-            }
+        if (queryExecutorService.nucleoFamiliareEsternoSponsor(codiceFiscaleSponsor).size() > 0) { //esiste un nucleo esterno associato TODO WARNING gestiamo solo uno!
+            tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 4;
+        } else {
+            tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 3;
+        }
         return tipoIstanzaDaCrearePerNucleoFamiliareEsterno;
     }
 

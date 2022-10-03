@@ -383,6 +383,27 @@ public class Tabsoggetto implements Serializable {
 		this.rifStato = rifStato;
 	}
 
+	public void copyFrom(String pin, String rifStato, ModuloDTO.Soggetto soggetto){
+		this.codiceFiscale = soggetto.getCodiceFiscale();
+		this.cognome = soggetto.getCognome();
+		this.email = soggetto.getEmail();
+		this.enteAppartenenza = soggetto.getEnteAppartenenza();
+		this.fototessera = soggetto.getFototessera();
+		this.nascitaData = soggetto.getNascitaData();
+		this.nascitaLuogo = soggetto.getNascitaLuogo();
+		this.nazionalita = soggetto.getNazionalita();
+		this.nome = soggetto.getNome();
+		this.pin = pin;
+		this.rif_gradoQualifica = soggetto.getRifGradoQualifica();
+		this.rifPosizione = soggetto.getRifPosizione();
+		this.rifRapporto = soggetto.getRifRapporto();
+		this.sesso = soggetto.getSesso();
+		this.telCellulare = soggetto.getTelCellulare();
+		this.telUfficio = soggetto.getTelUfficio();
+		this.rifStato = rifStato;
+
+	}
+
 	public Tabsoggetto(String rifStato, String[] attributes){
 		this(
 				attributes[0],
