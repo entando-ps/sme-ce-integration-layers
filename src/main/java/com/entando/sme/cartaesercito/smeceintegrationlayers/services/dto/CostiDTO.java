@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 public class CostiDTO {
@@ -25,7 +26,14 @@ public class CostiDTO {
     }
 
     public boolean limiteNucleoPrincipaleSuperato() {
-        return calcolaTotaleSenzaSpedizione() > 20 * 100;
+        return calcolaTotaleNucleoPrincipaleSenzaSponsor() > 20 * 100;
+    }
+
+    public int calcolaTotaleNucleoPrincipaleSenzaSponsor(){
+        return nucleoPrincipaleConSponsor.stream().filter(costoPerSoggettoDTO -> !costoPerSoggettoDTO.getSoggetto().getIsSponsor()).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
+    }
+    public int calcolaCostoSponsor(){
+        return nucleoPrincipaleConSponsor.stream().filter(costoPerSoggettoDTO -> costoPerSoggettoDTO.getSoggetto().getIsSponsor()).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
     }
 
     public int calcolaTotaleNucleoPrincipaleConSponsor() {
@@ -36,14 +44,12 @@ public class CostiDTO {
     public int calcolaTotaleNucleiEsterni() {
         return nucleiEsterni.stream().flatMap(Collection::stream).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
     }
+    public List<Integer> calcolaTotalePerNucleoEsterni() {
+        return nucleiEsterni.stream().map(costoPerSoggettoNucleoEsterno -> costoPerSoggettoNucleoEsterno.stream().map(CostoPerSoggettoDTO::getCosto).reduce(0,Integer::sum)).collect(Collectors.toList());
+    }
 
     public int calcolaTotaleSenzaSpedizione() {
         return calcolaTotaleNucleiEsterni() + calcolaTotaleNucleoPrincipaleConSponsor();
-    }
-
-    public CostoPerSoggettoDTO getCostoPerSoggettoDTOSponsor(){
-        Optional<CostoPerSoggettoDTO> sponsorOptional = nucleoPrincipaleConSponsor.stream().filter(costoPerSoggettoDTO -> costoPerSoggettoDTO.getSoggetto().getIsSponsor()).findAny();
-        return sponsorOptional.orElseThrow(() -> new RuntimeException("Non esiste uno sponsor per questo modulo: "+ this));
     }
 
 }

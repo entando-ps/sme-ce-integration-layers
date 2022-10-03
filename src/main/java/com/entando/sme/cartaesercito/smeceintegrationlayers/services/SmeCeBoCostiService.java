@@ -32,9 +32,7 @@ public class SmeCeBoCostiService {
         List<CostiDTO.CostoPerSoggettoDTO> costiNucleoPrincipaleESponsor = calcoloCostiNucleoPrincipaleESponsor(carteEsercitoNucleoFamiliarePrincipaleConSponsor, moduloDTO.getNucleoPrincipaleConSponsor());
         costiDTO.setNucleoPrincipaleConSponsor(costiNucleoPrincipaleESponsor);
         Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoEsterno = queryExecutorService.carteEsercitoPerNucleoEsterno(moduloDTO);
-        List<CostiDTO.CostoPerSoggettoDTO> costiNucleoEsterno = calcoloCostoNucleoEsterno(carteEsercitoNucleoEsterno, moduloDTO.getNucleiEsterni());
-        List<List<CostiDTO.CostoPerSoggettoDTO>> costiNucleiEsterni = new ArrayList<>();
-        costiNucleiEsterni.add(costiNucleoEsterno); //TODO WARNING UN SOLO NUCLEO
+        List<List<CostiDTO.CostoPerSoggettoDTO>> costiNucleiEsterni = calcoloCostiNucleiEsterni(carteEsercitoNucleoEsterno, moduloDTO.getNucleiEsterni());
         costiDTO.setNucleiEsterni(costiNucleiEsterni);
         costiDTO.setCostoSpedizione(calcolaCostoSpedizione(moduloDTO));
         return costiDTO;
@@ -43,6 +41,7 @@ public class SmeCeBoCostiService {
     protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostiNucleoPrincipaleESponsor(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliarePrincipale, List<ModuloDTO.Soggetto> nucleoPrincipaleConSponsor) {
         Stream<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOStream = nucleoPrincipaleConSponsor.stream().map(soggetto -> {
             Optional<StatoCartaEsercitoPerSoggettoDTOView> statoCartaEsercitoPerSoggettoDTOView = carteEsercitoNucleoFamiliarePrincipale.get(soggetto.getCodiceFiscale());
+            if (statoCartaEsercitoPerSoggettoDTOView == null) statoCartaEsercitoPerSoggettoDTOView = Optional.empty();
             CostiDTO.CostoPerSoggettoDTO costoPerSoggettoDTO = new CostiDTO.CostoPerSoggettoDTO();
             costoPerSoggettoDTO.setSoggetto(soggetto);
             statoCartaEsercitoPerSoggettoDTOView.ifPresentOrElse(cartaEsercito -> {
@@ -85,11 +84,16 @@ public class SmeCeBoCostiService {
     }
 
 
-    protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostoNucleoEsterno(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliareEsterno, List<List<ModuloDTO.Soggetto>> nucleiEsterni) {
+    protected List<List<CostiDTO.CostoPerSoggettoDTO>> calcoloCostiNucleiEsterni(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliareEsterno, List<List<ModuloDTO.Soggetto>> nucleiEsterni) {
         if (nucleiEsterni.size() == 0) return new ArrayList<>(); //nessun nucleo esterno
-        List<ModuloDTO.Soggetto> nucleoPrincipaleConSponsor = nucleiEsterni.get(0); //TODO WARNING GESTISCO UN SOLO NUCLEO ESTERNO
-        Stream<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOStream = nucleoPrincipaleConSponsor.stream().map(soggetto -> {
+        return nucleiEsterni.stream().map(nucleoEsterno -> calcoloCostiNucleoEsterno(carteEsercitoNucleoFamiliareEsterno, nucleoEsterno)).collect(Collectors.toList());
+    }
+
+    protected List<CostiDTO.CostoPerSoggettoDTO> calcoloCostiNucleoEsterno(Map<String, Optional<StatoCartaEsercitoPerSoggettoDTOView>> carteEsercitoNucleoFamiliareEsterno, List<ModuloDTO.Soggetto> nucleoEsterno) {
+        if (nucleoEsterno.size() == 0) return new ArrayList<>(); //nessun nucleo esterno
+        Stream<CostiDTO.CostoPerSoggettoDTO> costoPerSoggettoDTOStream = nucleoEsterno.stream().map(soggetto -> {
             Optional<StatoCartaEsercitoPerSoggettoDTOView> statoCartaEsercitoPerSoggettoDTOView = carteEsercitoNucleoFamiliareEsterno.get(soggetto.getCodiceFiscale());
+            if (statoCartaEsercitoPerSoggettoDTOView == null) statoCartaEsercitoPerSoggettoDTOView = Optional.empty();
             CostiDTO.CostoPerSoggettoDTO costoPerSoggettoDTO = new CostiDTO.CostoPerSoggettoDTO();
             costoPerSoggettoDTO.setSoggetto(soggetto);
             statoCartaEsercitoPerSoggettoDTOView.ifPresentOrElse(cartaEsercito -> {

@@ -16,7 +16,7 @@ public class ModuloDTO {
     private List<Soggetto> nucleoPrincipale = new ArrayList<>();
     private List<List<Soggetto>> nucleiEsterni = new ArrayList<>();
 
-    //se la residenza di spedizione
+    //se la residenza di spedizione non è null ha richiesto la spedizione postale
     private Residenza residenzaDiSpedizione;
     private Pagamento pagamento;
 
