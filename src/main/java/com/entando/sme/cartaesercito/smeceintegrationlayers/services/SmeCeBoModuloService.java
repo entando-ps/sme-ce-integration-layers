@@ -36,12 +36,10 @@ public class SmeCeBoModuloService {
 
     final
     private SmeCeBoCostiService smeCeBoCostiService;
-
     final
-    private QueryExecutorService queryExecutorService;
+    private SmeCeBoIstanzaService smeCeBoIstanzaService;
 
-
-    public SmeCeBoModuloService(SmeCEBOJdbcProtocolConfigurationParameters configParameters, TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, SmeCeBoCostiService smeCeBoCostiService, QueryExecutorService queryExecutorService) {
+    public SmeCeBoModuloService(SmeCEBOJdbcProtocolConfigurationParameters configParameters, TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, SmeCeBoCostiService smeCeBoCostiService, SmeCeBoIstanzaService smeCeBoIstanzaService) {
         this.configParameters = configParameters;
         this.tabsoggettoJPARepository = tabsoggettoJPARepository;
         this.tabresidenzeJPARepository = tabresidenzeJPARepository;
@@ -51,13 +49,13 @@ public class SmeCeBoModuloService {
         this.tabmandatoJPARepository = tabmandatoJPARepository;
         this.tabmandatopvcJPARepository = tabmandatopvcJPARepository;
         this.smeCeBoCostiService = smeCeBoCostiService;
-        this.queryExecutorService = queryExecutorService;
+        this.smeCeBoIstanzaService = smeCeBoIstanzaService;
     }
 
     /*
-        inserisce i soggetti e le residenze
-        se il soggetto esiste lo sovrascrive con quello passato
-    */
+            inserisce i soggetti e le residenze
+            se il soggetto esiste lo sovrascrive con quello passato
+        */
     protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTO.Soggetto> soggetti) {
         //inserimento di tutti i soggetti
         String pin = ""; //todo
@@ -135,41 +133,33 @@ public class SmeCeBoModuloService {
             ModuloDTO moduloDTO, CostiDTO oldCostiDTO
     ) {
 
-        //capisco quale istanza sto creando per l'inserimento del nucleo famigliare principale
-        /*
-            1,Nucleo familiare principale
-            2,Rinnovo Carta Esercito
-            3,Richiesta integrativa per il proprio nucleo Familiare
-            4,Nucleo familiare esterno
-            5,Richiesta integrativa Nucleo Familiare Esterno
-        */
-
-        //per il nucleo famigliare principale:
-        //Non esiste lo sponsor --> 1
-        //Esiste lo sponsor e:
-        // c'è già un nucleo famigliare principale: --> 3
-        // Non esiste alcun nucleo principale --> 1
-
-        //per il nucleo famigliare esterno:
-        //Non esiste lo sponsor --> 4
-        //Esiste lo sponsor e:
-        // c'è già un nucleo famigliare esterno: --> 4
-        // Non esiste alcun nucleo esterno --> 3
-
         //controllo che i costi non siano cambiati;
         CostiDTO costiDTO = smeCeBoCostiService.checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
 
+
+
         //gestione del nucleo principale
+        //TODO dalla lista del nucleo principale di un modulo possono prodursi + istanze
+        //nuovo nucleo principale
+        //modifica al nucleo principale
+        //rinnovo
+        //quindi modifica nucleo + rinnovo è una possibilità
         Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getSponsor(), moduloDTO.getNucleoPrincipaleConSponsor(), costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizione());
 
         //gestione dei Nuclei Esterni TODO WARN per ora uno solo
         //spedizione già pagata perchè per ora il nucleo principale viene creato
+
+        //TODO dalla lista dei nuclei esterni di un modulo possono prodursi + istanze
+        //nuovo nucleo esterno
+        //modifica al nucleo esterno
+        //rinnovo
+        //quindi modifica nucleo + rinnovo è una possibilità
         gestisciNucleoEsterno(moduloDTO.getNucleiEsterni(), tabSoggettoSponsor, costiDTO.calcolaTotaleNucleiEsterni(), 0);
 
     }
 
     protected Tabsoggetto gestisciNucleoPrincipale(ModuloDTO.Soggetto sponsor, List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor, Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoPagatoPerSpedizione) {
-        Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = calcolaTipoIstanzaNucleoPrincipale(sponsor.getCodiceFiscale());
+        Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = smeCeBoIstanzaService.calcolaTipoIstanzaNucleoPrincipale(sponsor.getCodiceFiscale());
 
 
         List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertSoggettiAndResidenze(nucleoPricipaleConSponsor);
@@ -207,7 +197,7 @@ public class SmeCeBoModuloService {
 
     protected void gestisciNucleoEsterno(List<List<ModuloDTO.Soggetto>> nucleiEsterni, Tabsoggetto sponsor, Integer importoPagatoPerIlNucleoEsterno, Integer importoPagatoPerLaSpedizione) {
         if (nucleiEsterni.size() == 0 || nucleiEsterni.get(0).size() == 0) return;
-        Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno = calcolaTipoIstanzaNucleiEsterni(sponsor.getCodiceFiscale());
+        Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno = smeCeBoIstanzaService.calcolaTipoIstanzaNucleiEsterni(sponsor.getCodiceFiscale());
         List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggettiAndResidenze(nucleiEsterni.get(0)); //TODO WARN un solo nuceo esterno
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo esterno
         // e aggancio dei soggetti all'istanza
@@ -234,49 +224,5 @@ public class SmeCeBoModuloService {
 
     }
 
-
-    /**
-     * ritorna il tipo dio istanza nucleo principale da inserire
-     * dato il modulo
-     * per il nucleo famigliare principale:
-     * Non esiste lo sponsor --> 1
-     * Esiste lo sponsor e:
-     * c'è già un nucleo famigliare principale: --> 3
-     * Non esiste alcun nucleo principale --> 1
-     *
-     * @return
-     */
-    protected Integer calcolaTipoIstanzaNucleoPrincipale(String codiceFiscaleSponsor) {
-        int tipoIstanzaDaCrearePerNucleoFamiliarePrincipale;
-        Tabsoggetto tabsoggettoSponsor = tabsoggettoJPARepository.findByCodiceFiscale(codiceFiscaleSponsor);
-        if (tabsoggettoSponsor == null) { //sponsor non c'è
-            tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = 1;
-        } else { //sponsor c'è
-            if (queryExecutorService.nucleoFamiliarePrincipaleSponsor(codiceFiscaleSponsor).size() > 0) { //esiste un nucleo principale
-                tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = 3;
-            } else {
-                tipoIstanzaDaCrearePerNucleoFamiliarePrincipale = 1;
-            }
-        }
-
-        return tipoIstanzaDaCrearePerNucleoFamiliarePrincipale;
-    }
-
-    /**
-     * per il nucleo famigliare esterno:
-     * Non esiste lo sponsor --> 3 (non è possibile va creato prima il nucleo principale)
-     * Esiste lo sponsor e:
-     * c'è già un nucleo famigliare esterno: --> 4
-     * Non esiste alcun nucleo esterno --> 3
-     */
-    protected Integer calcolaTipoIstanzaNucleiEsterni(String codiceFiscaleSponsor) {
-        int tipoIstanzaDaCrearePerNucleoFamiliareEsterno;
-        if (queryExecutorService.nucleoFamiliareEsternoSponsor(codiceFiscaleSponsor).size() > 0) { //esiste un nucleo esterno associato TODO WARNING gestiamo solo uno!
-            tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 4;
-        } else {
-            tipoIstanzaDaCrearePerNucleoFamiliareEsterno = 3;
-        }
-        return tipoIstanzaDaCrearePerNucleoFamiliareEsterno;
-    }
 
 }

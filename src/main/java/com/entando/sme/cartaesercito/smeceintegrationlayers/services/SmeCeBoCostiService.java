@@ -14,17 +14,13 @@ import java.util.stream.Stream;
 @Service
 public class SmeCeBoCostiService {
 
-    private final
-    SmeCEBOJdbcProtocolConfigurationParameters configParameters;
 
     private final
     QueryExecutorService queryExecutorService;
 
-    public SmeCeBoCostiService(SmeCEBOJdbcProtocolConfigurationParameters configParameters, QueryExecutorService queryExecutorService) {
-        this.configParameters = configParameters;
+    public SmeCeBoCostiService(QueryExecutorService queryExecutorService) {
         this.queryExecutorService = queryExecutorService;
     }
-
 
     public CostiDTO calcoloCosti(ModuloDTO moduloDTO) {
         CostiDTO costiDTO = new CostiDTO();

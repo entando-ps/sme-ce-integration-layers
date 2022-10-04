@@ -143,3 +143,7 @@ where tabistanza.idIstanza = (select idIstanza
                                 and rif_tipoIstanza in (4, 5)
                               ORDER BY idIstanza DESC
                               LIMIT 1);
+
+
+select * from
+

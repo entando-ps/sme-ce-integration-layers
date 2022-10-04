@@ -1,24 +1,21 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.StatoCartaEsercitoPerSoggettoDTOView;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.StatoCartaEsercitoPerSoggettoDTOView;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 class LogicheCostiTest {
 
-
-    private final String codiceFiscaleSponsor;
     private final int costoSponsor=8*100;
     private final int costoFamigliareNucleoPrincipale=4*100;
     private final int costoFamigliareNucleoEsterno=10*100;
@@ -27,13 +24,7 @@ class LogicheCostiTest {
     @Autowired
     private SmeCeBoCostiService smeCeBoCostiService;
 
-    @Autowired
-    private QueryExecutorService queryExecutorService;
 
-    public LogicheCostiTest() {
-        codiceFiscaleSponsor = "GDFGMN70D16H501T";
-
-    }
 
     @Test
     public void calcoloCostiNucleoPrincipaleESponsorNoSoglia() {
