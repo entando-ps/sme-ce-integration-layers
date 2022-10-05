@@ -14,13 +14,17 @@ STATO ISTANZA
 6,Istanza processata correttamente
 */
 
-select tabnucleifull.rif_nucleo,
-       tabistanza.rif_tipoIstanza,
+select tabnucleifull.rif_nucleo as rifNucleo,
+       tabistanza.rif_tipoIstanza as rifTipoIstanza,
        tabsoggetto.nome,
        tabsoggetto.cognome,
-       tabistanza.rif_statoIstanza,
-       tabcartaesercito.rif_statoCarta,
-       tabcartaesercito.dataScadenzaCarta
+       tabsoggetto.codiceFiscale,
+       tabnucleifull.is_sponsor as isSponsor,
+       tabistanza.rif_statoIstanza as rifStatoIstanza,
+       tabcartaesercito.numeroCarta,
+       tabcartaesercito.rif_statoCarta as rifStatoCarta,
+       tabcartaesercito.dataScadenzaCarta,
+       tabcartaesercito.dataRilascioCarta
 from tabnucleifull
          join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
          join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
