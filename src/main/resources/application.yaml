@@ -69,3 +69,17 @@ app:
       and rif_tipoIstanza in (4, 5)
       ORDER BY idIstanza DESC
       LIMIT 1);
+    carteEsercitoPerSponsor: |
+      select tabnucleifull.rif_nucleo,
+       tabistanza.rif_tipoIstanza,
+       tabsoggetto.nome,
+       tabsoggetto.cognome,
+       tabistanza.rif_statoIstanza,
+       tabcartaesercito.rif_statoCarta,
+       tabcartaesercito.dataScadenzaCarta
+      from tabnucleifull
+         join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
+         join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
+         left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
+      where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale)
+
