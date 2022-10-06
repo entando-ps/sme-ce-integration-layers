@@ -35,7 +35,7 @@ public class SmeCeBoCostiServiceDopoSME {
 
         List<CostiDTOdopoSME.CostoPerSoggettoDTO > costiPerNucleoPrincipaleConSponsor = new ArrayList<>();
         costiPerNucleoPrincipaleConSponsor.add(costoPerSoggettoDTO);
-        List<CostiDTOdopoSME.CostoPerSoggettoDTO> costiPerNucleoPrincipale = moduloDTO.getNucleoPrincipale().stream().map(soggetto -> new CostiDTOdopoSME.CostoPerSoggettoDTO(soggetto, costoPerFamigliare)).collect(Collectors.toList());
+        List<CostiDTOdopoSME.CostoPerSoggettoDTO> costiPerNucleoPrincipale = moduloDTO.getNucleoPrincipale().getComponenti().stream().map(soggetto -> new CostiDTOdopoSME.CostoPerSoggettoDTO(soggetto, costoPerFamigliare)).collect(Collectors.toList());
         costiPerNucleoPrincipaleConSponsor.addAll(costiPerNucleoPrincipale);
 
         List<CostiDTOdopoSME.CostoPerNucleoEsternoDTO> costiPerNucleoEsterno= moduloDTO.getNucleiEsterni().stream().map(nucleoEsterno ->

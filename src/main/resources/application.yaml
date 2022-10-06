@@ -70,13 +70,30 @@ app:
       ORDER BY idIstanza DESC
       LIMIT 1);
     carteEsercitoPerSponsor: |
-      select tabnucleifull.rif_nucleo,
-       tabistanza.rif_tipoIstanza,
-       tabsoggetto.nome,
-       tabsoggetto.cognome,
-       tabistanza.rif_statoIstanza,
-       tabcartaesercito.rif_statoCarta,
-       tabcartaesercito.dataScadenzaCarta
+      select tabnucleifull.rif_nucleo as rifNucleo,
+      tabistanza.rif_tipoIstanza as rifTipoIstanza,
+      tabsoggetto.nome,
+      tabsoggetto.cognome,
+      tabsoggetto.email,
+      tabsoggetto.enteAppartenenza,
+      tabsoggetto.fototessera,
+      tabsoggetto.nascitaData,
+      tabsoggetto.nascitaLuogo,
+      tabsoggetto.nazionalita,
+      tabsoggetto.rif_gradoQualifica as rifGradoQualifica,
+      tabsoggetto.rif_posizione as rifPosizione,
+      tabsoggetto.rif_rapporto as rifRapporto,
+      tabsoggetto.sesso,
+      tabsoggetto.telCellulare,
+      tabsoggetto.telUfficio,
+      tabsoggetto.codiceFiscale,
+      tabnucleifull.is_sponsor as isSponsor,
+      tabistanza.rif_statoIstanza as rifStatoIstanza,
+      tabcartaesercito.numeroCarta,
+      tabcartaesercito.rif_statoCarta as rifStatoCarta,
+      tabcartaesercito.dataScadenzaCarta,
+      tabcartaesercito.dataRilascioCarta,
+      tabsoggetto.rif_stato as rifStato
       from tabnucleifull
          join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
          join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto

@@ -30,22 +30,22 @@ class SmeCeBoCostiServiceDopoSMETest {
         List<ModuloDTODopoSME.Soggetto> nucleoPrincipale =
                 IntStream.range(1, 5).mapToObj(index -> new ModuloDTODopoSME.Soggetto("codiceFiscaleSoggettoNP" + index)).collect(Collectors.toList());
 
-        moduloDTO.setNucleoPrincipale(nucleoPrincipale);
+        moduloDTO.setNucleoPrincipale(new ModuloDTODopoSME.Nucleo(nucleoPrincipale));
 
-        List<ModuloDTODopoSME.NucleoEsterno> nucleiEsterni =
+        List<ModuloDTODopoSME.Nucleo> nucleiEsterni =
                 IntStream.range(1, 5).mapToObj(index -> {
                     List<ModuloDTODopoSME.Soggetto> componenti = IntStream.range(1, 10).mapToObj(i -> new ModuloDTODopoSME.Soggetto("codiceFiscaleSoggettoNS" + index + "-" + i)).collect(Collectors.toList());
-                    return new ModuloDTODopoSME.NucleoEsterno(componenti);
+                    return new ModuloDTODopoSME.Nucleo(componenti);
                 }).collect(Collectors.toList());
 
         moduloDTO.setNucleiEsterni(nucleiEsterni);
         moduloDTO.setResidenzaDiSpedizione(new ModuloDTODopoSME.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
         CostiDTOdopoSME costiDTO = smeCeBoCostiServiceDopoSME.calcoloCostiNuovoSponsor(moduloDTO);
 
-        assertEquals(moduloDTO.getNucleoPrincipale().size() + 1, costiDTO.getNucleoPrincipaleConSponsor().size());
+        assertEquals(moduloDTO.getNucleoPrincipale().getComponenti().size() + 1, costiDTO.getNucleoPrincipaleConSponsor().size());
         assertEquals(moduloDTO.getNucleiEsterni().size(), costiDTO.getNucleiEsterni().size());
         IntStream.range(0, moduloDTO.getNucleiEsterni().size()).forEach(index -> {
-                    ModuloDTODopoSME.NucleoEsterno nucleoEsterno = moduloDTO.getNucleiEsterni().get(index);
+                    ModuloDTODopoSME.Nucleo nucleoEsterno = moduloDTO.getNucleiEsterni().get(index);
                     CostiDTOdopoSME.CostoPerNucleoEsternoDTO costoPerNucleoEsternoDTO = costiDTO.getNucleiEsterni().get(index);
                     assertEquals(nucleoEsterno.getComponenti().size(), costoPerNucleoEsternoDTO.getComponenti().size());
                     IntStream.range(0,nucleoEsterno.getComponenti().size()).forEach(i -> assertEquals(nucleoEsterno.getComponenti().get(i).getCodiceFiscale(),costoPerNucleoEsternoDTO.getComponenti().get(i).getSoggetto().getCodiceFiscale()));
@@ -54,7 +54,7 @@ class SmeCeBoCostiServiceDopoSMETest {
         assertEquals(moduloDTO.getSponsor().getCodiceFiscale(), costiDTO.getNucleoPrincipaleConSponsor().get(0).getSoggetto().getCodiceFiscale());
 
         //nucleo principale
-        assertEquals(costoPerSponsor + moduloDTO.getNucleoPrincipale().size() * costoPerFamigliare, costiDTO.calcolaTotaleNucleoPrincipaleConSponsor());
+        assertEquals(costoPerSponsor + moduloDTO.getNucleoPrincipale().getComponenti().size() * costoPerFamigliare, costiDTO.calcolaTotaleNucleoPrincipaleConSponsor());
         //nuclei esterni
         assertEquals(moduloDTO.getNucleiEsterni().stream().map(ne-> ne.getComponenti().size()*costoPerOspite).reduce(0,Integer::sum),costiDTO.calcolaTotaleNucleiEsterni());
         //spedizione
