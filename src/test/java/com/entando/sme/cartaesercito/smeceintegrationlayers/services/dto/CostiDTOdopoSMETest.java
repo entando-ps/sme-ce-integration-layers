@@ -55,6 +55,6 @@ class CostiDTOdopoSMETest {
 
     @Test
     void limiteNucleoPrincipaleSuperato() {
-        assertEquals((costoPerSponsor + (costiDTOdopoSME.getNucleoPrincipaleConSponsor().size() - 1) * costoPerFamigliare) > limiteNucleoFamigliarePrincipale, costiDTOdopoSME.limiteNucleoPrincipaleSuperato());
+        assertEquals((costoPerSponsor + (costiDTOdopoSME.getNucleoPrincipaleConSponsor().size() - 1) * costoPerFamigliare) > limiteNucleoFamigliarePrincipale, costiDTOdopoSME.limiteNucleoPrincipaleSenzaSponsorSuperato());
     }
 }

@@ -3,7 +3,6 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,8 +36,7 @@ public class CostiDTOdopoSME {
         }
     }
 
-
-    public boolean limiteNucleoPrincipaleSuperato() {
+    public boolean limiteNucleoPrincipaleSenzaSponsorSuperato() {
         return calcolaTotaleNucleoPrincipaleSenzaSponsor() > limiteNucleoFamigliarePrincipale;
     }
 

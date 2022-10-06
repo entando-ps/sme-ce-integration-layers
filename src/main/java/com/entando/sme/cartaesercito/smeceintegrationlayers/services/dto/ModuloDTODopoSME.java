@@ -141,6 +141,7 @@ public class ModuloDTODopoSME {
     }
 
     @Data
+    @AllArgsConstructor
     public static class Pagamento {
         private String cro;
     }

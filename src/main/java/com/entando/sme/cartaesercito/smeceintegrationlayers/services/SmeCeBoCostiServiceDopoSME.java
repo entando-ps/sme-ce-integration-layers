@@ -18,21 +18,10 @@ public class SmeCeBoCostiServiceDopoSME {
     private Integer limiteNucleoFamigliarePrincipale = 2000;
 
 
-    private final
-    QueryExecutorService queryExecutorService;
-
-    public SmeCeBoCostiServiceDopoSME(QueryExecutorService queryExecutorService) {
-        this.queryExecutorService = queryExecutorService;
-    }
-
     public CostiDTOdopoSME calcoloCostiNuovoSponsor(ModuloDTODopoSME moduloDTO) {
         //controllo che lo sponsor sia effettivamente nuovo
-
-
         ModuloDTODopoSME.Sponsor sponsor = moduloDTO.getSponsor();
-
         CostiDTOdopoSME.CostoPerSoggettoDTO costoPerSoggettoDTO = new CostiDTOdopoSME.CostoPerSoggettoDTO(sponsor, costoPerSponsor);
-
         List<CostiDTOdopoSME.CostoPerSoggettoDTO > costiPerNucleoPrincipaleConSponsor = new ArrayList<>();
         costiPerNucleoPrincipaleConSponsor.add(costoPerSoggettoDTO);
         List<CostiDTOdopoSME.CostoPerSoggettoDTO> costiPerNucleoPrincipale = moduloDTO.getNucleoPrincipale().getComponenti().stream().map(soggetto -> new CostiDTOdopoSME.CostoPerSoggettoDTO(soggetto, costoPerFamigliare)).collect(Collectors.toList());

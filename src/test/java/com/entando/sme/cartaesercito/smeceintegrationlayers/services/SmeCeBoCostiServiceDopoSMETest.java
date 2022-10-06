@@ -19,7 +19,7 @@ class SmeCeBoCostiServiceDopoSMETest {
     static Integer limiteNucleoFamigliarePrincipale = 2000;
 
 
-    private SmeCeBoCostiServiceDopoSME smeCeBoCostiServiceDopoSME = new SmeCeBoCostiServiceDopoSME(null);
+    private SmeCeBoCostiServiceDopoSME smeCeBoCostiServiceDopoSME = new SmeCeBoCostiServiceDopoSME();
 
 
     @Test
@@ -59,7 +59,7 @@ class SmeCeBoCostiServiceDopoSMETest {
         assertEquals(moduloDTO.getNucleiEsterni().stream().map(ne-> ne.getComponenti().size()*costoPerOspite).reduce(0,Integer::sum),costiDTO.calcolaTotaleNucleiEsterni());
         //spedizione
         assertEquals(costoSpedizione, costiDTO.getCostoSpedizione());
-        assertFalse(costiDTO.limiteNucleoPrincipaleSuperato());
+        assertFalse(costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato());
 
     }
 }

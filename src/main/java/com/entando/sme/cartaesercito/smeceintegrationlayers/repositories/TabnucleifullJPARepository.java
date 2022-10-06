@@ -4,4 +4,5 @@ import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabnucleifu
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TabnucleifullJPARepository extends JpaRepository<Tabnucleifull, Integer>{
+
 }

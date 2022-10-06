@@ -121,31 +121,6 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
     }
 
 
-    /*
-            private String codiceFiscale;
-        private String nome;
-        private String cognome;
-        private String email;
-        private String enteAppartenenza;
-        private String fototessera;
-        private String nascitaData;
-        private String nascitaLuogo;
-        private String nazionalita;
-        private int rifGradoQualifica;
-        private int rifPosizione;
-        private int rifRapporto;
-        private String sesso;
-        private String telCellulare;
-        private String telUfficio;
-        private Boolean isSponsor = false;
-        //non usato
-        private Residenza residenza;
-        //lettura
-        private CartaEsercito cartaEsercito;
-        //lettura
-        private Integer stato;
-
-     */
     @Test
     public void convertiInSoggetto() {
         EasyRandom easyRandom = new EasyRandom();

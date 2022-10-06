@@ -8,10 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,4 +60,9 @@ public class QueryExecutorServiceDopoSME {
         return CartaEsercitoPerSoggettoPerNucleoDTOView.groupByTipoNucleo(cartaEsercitoPerSoggettoPerNucleoDTOViewList, tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno);
     }
 
+    public Integer getNextRifNucleo(){
+        //TODO WARN problematiche di concorrenza!
+        Integer rifNucleo = jdbcTemplate.queryForObject("select max(rif_nucleo) from tabnucleifull", new HashMap<>(), Integer.class);
+        return rifNucleo!=null?rifNucleo+1:1;
+    }
 }
