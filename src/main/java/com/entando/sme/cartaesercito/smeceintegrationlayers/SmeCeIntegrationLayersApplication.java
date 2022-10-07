@@ -1,6 +1,5 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.SmeCeBoJPAIntegrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -13,14 +12,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @Slf4j
 @ConfigurationPropertiesScan
 public class SmeCeIntegrationLayersApplication implements CommandLineRunner {
-
-
-
-    SmeCeBoJPAIntegrationService smeCeBoJPAIntegrationService;
-
-    public SmeCeIntegrationLayersApplication(SmeCeBoJPAIntegrationService smeCeBoJPAIntegrationService) {
-        this.smeCeBoJPAIntegrationService = smeCeBoJPAIntegrationService;
-    }
 
     @Value("${app.csv.folder}")
     String csvPath;

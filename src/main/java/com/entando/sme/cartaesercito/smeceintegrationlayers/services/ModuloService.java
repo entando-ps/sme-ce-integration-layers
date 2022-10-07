@@ -2,10 +2,10 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.*;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.*;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTOdopoSME;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTODopoSME;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.SmeCEBOJdbcProtocolConfigurationParameters;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorServiceDopoSME;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ConfigurationParameters;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,14 +16,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class SmeCeBoModuloServiceDopoSME {
+public class ModuloService {
 
     private Integer limiteNucleoFamigliarePrincipale = 2000;
     private Integer costoPerSponsor = 800;
 
 
     final
-    private SmeCEBOJdbcProtocolConfigurationParameters configParameters;
+    private ConfigurationParameters configParameters;
 
     final
     private TabsoggettoJPARepository tabsoggettoJPARepository;
@@ -41,12 +41,12 @@ public class SmeCeBoModuloServiceDopoSME {
     private TabmandatopvcJPARepository tabmandatopvcJPARepository;
 
     final
-    private SmeCeBoCostiServiceDopoSME smeCeBoCostiService;
+    private CostiService smeCeBoCostiService;
 
     final
-    private QueryExecutorServiceDopoSME queryExecutor;
+    private QueryExecutorService queryExecutor;
 
-    public SmeCeBoModuloServiceDopoSME(SmeCEBOJdbcProtocolConfigurationParameters configParameters, TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, SmeCeBoCostiServiceDopoSME smeCeBoCostiService, QueryExecutorServiceDopoSME queryExecutor) {
+    public ModuloService(ConfigurationParameters configParameters, TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, CostiService smeCeBoCostiService, QueryExecutorService queryExecutor) {
         this.configParameters = configParameters;
         this.tabsoggettoJPARepository = tabsoggettoJPARepository;
         this.tabresidenzeJPARepository = tabresidenzeJPARepository;
@@ -63,7 +63,7 @@ public class SmeCeBoModuloServiceDopoSME {
                 inserisce i soggetti e le residenze
                 se il soggetto esiste lo sovrascrive con quello passato
             */
-    protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTODopoSME.Soggetto> soggetti) {
+    protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTO.Soggetto> soggetti) {
         //inserimento di tutti i soggetti
         String pin = ""; //todo
         List<Tabsoggetto> tabSoggettiDaSalvare = soggetti.stream().map(soggetto -> {
@@ -85,9 +85,9 @@ public class SmeCeBoModuloServiceDopoSME {
     }
 
 
-    protected void insertResidenzeSoggetti(List<ModuloDTODopoSME.Soggetto> soggetti, List<Tabsoggetto> tabSoggettiSalvati) {
+    protected void insertResidenzeSoggetti(List<ModuloDTO.Soggetto> soggetti, List<Tabsoggetto> tabSoggettiSalvati) {
         List<Tabresidenze> tabResidenzeDaSalvare = IntStream.range(0, soggetti.size()).filter(index -> soggetti.get(index).getResidenza() != null).mapToObj(index -> {
-            ModuloDTODopoSME.Soggetto soggetto = soggetti.get(index);
+            ModuloDTO.Soggetto soggetto = soggetti.get(index);
             Tabresidenze tabresidenze = new Tabresidenze(soggetto.getResidenza());
             tabresidenze.setRifSoggetto(tabSoggettiSalvati.get(index).getIdSoggetto());
             return tabresidenze;
@@ -144,13 +144,13 @@ public class SmeCeBoModuloServiceDopoSME {
      * che differenza abbiamo tra il rinnovo e la modifica nucleo famigliare?
      */
     public void inserimentoNuovoModulo(
-            ModuloDTODopoSME moduloDTO
+            ModuloDTO moduloDTO
     ) {
 
         //controllo che i costi non siano cambiati;
         //CostiDTO costiDTO = smeCeBoCostiService.checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
 
-        CostiDTOdopoSME costiDTO = smeCeBoCostiService.calcoloCostiNuovoSponsor(moduloDTO);
+        CostiDTO costiDTO = smeCeBoCostiService.calcoloCostiNuovoSponsor(moduloDTO);
 
 
         //gestione del nucleo principale
@@ -185,7 +185,7 @@ public class SmeCeBoModuloServiceDopoSME {
 
     }
 
-    protected Tabsoggetto gestisciNucleoPrincipale(List<ModuloDTODopoSME.Soggetto> nucleoPricipaleConSponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale, String cro, Integer importoDaPagarePerNucleoPrincipaleESponsor, Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoDaPagarePerSpedizione, Integer importoPagatoPerSpedizione) {
+    protected Tabsoggetto gestisciNucleoPrincipale(List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale, String cro, Integer importoDaPagarePerNucleoPrincipaleESponsor, Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoDaPagarePerSpedizione, Integer importoPagatoPerSpedizione) {
 
         List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertSoggettiAndResidenze(nucleoPricipaleConSponsor);
         Tabsoggetto tabSoggettoSponsor = listaSoggettiDelNucleoPrincipale.get(0);
@@ -223,7 +223,7 @@ public class SmeCeBoModuloServiceDopoSME {
     }
 
 
-    protected void gestisciNucleoEsterno(ModuloDTODopoSME.Nucleo nucleoEsterno, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, String cro, Integer importoDaPagarePerIlNucleoEsterno, Integer importoPagatoPerIlNucleoEsterno, Integer importoDaPagarePerLaSpedizione, Integer importoPagatoPerLaSpedizione) {
+    protected void gestisciNucleoEsterno(ModuloDTO.Nucleo nucleoEsterno, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, String cro, Integer importoDaPagarePerIlNucleoEsterno, Integer importoPagatoPerIlNucleoEsterno, Integer importoDaPagarePerLaSpedizione, Integer importoPagatoPerLaSpedizione) {
         List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggettiAndResidenze(nucleoEsterno.getComponenti());
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo esterno
         // e aggancio dei soggetti all'istanza
@@ -253,10 +253,10 @@ public class SmeCeBoModuloServiceDopoSME {
 
     }
 
-    protected void gestisciNucleiEsterni(List<ModuloDTODopoSME.Nucleo> nucleiEsterni, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, String cro, CostiDTOdopoSME costiDTO) {
+    protected void gestisciNucleiEsterni(List<ModuloDTO.Nucleo> nucleiEsterni, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, String cro, CostiDTO costiDTO) {
         IntStream.range(0, nucleiEsterni.size()).forEach(index -> {
-            ModuloDTODopoSME.Nucleo nucleoEsterno = nucleiEsterni.get(index);
-            CostiDTOdopoSME.CostoPerNucleoEsternoDTO costoPerNucleoEsterno = costiDTO.getNucleiEsterni().get(index);
+            ModuloDTO.Nucleo nucleoEsterno = nucleiEsterni.get(index);
+            CostiDTO.CostoPerNucleoEsternoDTO costoPerNucleoEsterno = costiDTO.getNucleiEsterni().get(index);
             gestisciNucleoEsterno(
                     nucleoEsterno,
                     sponsor,

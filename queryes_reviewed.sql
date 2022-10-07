@@ -29,7 +29,7 @@ from tabnucleifull
          join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
          join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
          left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
-where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale = '')
-  and tabistanza.rif_tipoIstanza in (1, 3) -- nucleo principale
+where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale = 'testSp')
+  -- and tabistanza.rif_tipoIstanza in (1, 3) -- nucleo principale
   and tabistanza.rif_tipoIstanza in (4, 5); -- nucleo esterno
 

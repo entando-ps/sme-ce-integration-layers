@@ -1,7 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTODopoSME;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -136,11 +135,6 @@ VALUES (?,?,?,?,?,?)
     }
 
     public Tabresidenze(ModuloDTO.Residenza residenza) {
-        this(
-                residenza.getCap(), residenza.getCitta(), residenza.getCivico(), residenza.getPresso(), residenza.getProvincia(), residenza.getVia()
-        );
-    }
-    public Tabresidenze(ModuloDTODopoSME.Residenza residenza) {
         this(
                 residenza.getCap(), residenza.getCitta(), residenza.getCivico(), residenza.getPresso(), residenza.getProvincia(), residenza.getVia()
         );

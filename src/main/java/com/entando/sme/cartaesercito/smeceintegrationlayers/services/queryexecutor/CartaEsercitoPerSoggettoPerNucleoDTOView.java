@@ -1,6 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTODopoSME;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.data.util.Pair;
@@ -74,8 +74,8 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
         return list.stream().filter(cartaEsercitoPerSoggettoPerNucleoDTOView -> cartaEsercitoPerSoggettoPerNucleoDTOView.getTipoNucleo(tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno).isPresent()).collect(groupingBy(cartaEsercitoPerSoggettoPerNucleoDTOView -> cartaEsercitoPerSoggettoPerNucleoDTOView.getTipoNucleo(tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno).get()));
     }
 
-    public static ModuloDTODopoSME.Soggetto converti(CartaEsercitoPerSoggettoPerNucleoDTOView daConvertire){
-        return new ModuloDTODopoSME.Soggetto(
+    public static ModuloDTO.Soggetto converti(CartaEsercitoPerSoggettoPerNucleoDTOView daConvertire){
+        return new ModuloDTO.Soggetto(
                 daConvertire.getCodiceFiscale(),
                 daConvertire.getNome(),
                 daConvertire.getCognome(),
@@ -93,54 +93,54 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
                 daConvertire.getTelUfficio(),
                 daConvertire.getIsSponsor(),
                 null,
-                new ModuloDTODopoSME.CartaEsercito(daConvertire.getRifStatoCarta(), daConvertire.getNumeroCarta(), daConvertire.getDataRilascioCarta(), daConvertire.getDataScadenzaCarta()),
+                new ModuloDTO.CartaEsercito(daConvertire.getRifStatoCarta(), daConvertire.getNumeroCarta(), daConvertire.getDataRilascioCarta(), daConvertire.getDataScadenzaCarta()),
                 daConvertire.getRifStato());
     }
 
 
-    public static List<ModuloDTODopoSME.Nucleo> estraiNucleiEsterni(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
+    public static List<ModuloDTO.Nucleo> estraiNucleiEsterni(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
         Map<Integer, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> nucleiEsterniPerId = daConvertire.get(CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo.Esterno).stream().collect(Collectors.groupingBy(CartaEsercitoPerSoggettoPerNucleoDTOView::getRifNucleo));
 
         return nucleiEsterniPerId.keySet().stream().map(rifNucleoId -> {
-            List<ModuloDTODopoSME.Soggetto> componentiNucleo = convertiViewInListaSoggetti(nucleiEsterniPerId.get(rifNucleoId));
-            ModuloDTODopoSME.Nucleo nucleoEsterno = new ModuloDTODopoSME.Nucleo(componentiNucleo);
+            List<ModuloDTO.Soggetto> componentiNucleo = convertiViewInListaSoggetti(nucleiEsterniPerId.get(rifNucleoId));
+            ModuloDTO.Nucleo nucleoEsterno = new ModuloDTO.Nucleo(componentiNucleo);
             nucleoEsterno.setId(rifNucleoId);
             return nucleoEsterno;
         }).collect(Collectors.toList());
     }
 
 
-    public static Pair<ModuloDTODopoSME.Sponsor, ModuloDTODopoSME.Nucleo> estraiSponsorENucleoPrincipale(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
+    public static Pair<ModuloDTO.Sponsor, ModuloDTO.Nucleo> estraiSponsorENucleoPrincipale(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoPrincipaleConSponsorView = daConvertire.get(CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo.Principale);
         Integer rifNucleoPrincipale = nucleoPrincipaleConSponsorView.get(0).getRifNucleo();
-        List<ModuloDTODopoSME.Soggetto> componentiNucleoPrincipaleConSponsor = convertiViewInListaSoggetti(nucleoPrincipaleConSponsorView);
-        Optional<ModuloDTODopoSME.Soggetto> soggettoOptional = componentiNucleoPrincipaleConSponsor.stream().filter(ModuloDTODopoSME.Soggetto::getIsSponsor).findAny();
+        List<ModuloDTO.Soggetto> componentiNucleoPrincipaleConSponsor = convertiViewInListaSoggetti(nucleoPrincipaleConSponsorView);
+        Optional<ModuloDTO.Soggetto> soggettoOptional = componentiNucleoPrincipaleConSponsor.stream().filter(ModuloDTO.Soggetto::getIsSponsor).findAny();
         if (soggettoOptional.isEmpty()) {
             throw new RuntimeException("Il nucleo principale con rifNucleo " + rifNucleoPrincipale + " non contiene uno sponsor");
         }
-        ModuloDTODopoSME.Sponsor sponsor = new ModuloDTODopoSME.Sponsor(soggettoOptional.get());
-        ModuloDTODopoSME.Nucleo nucleoPrincipale = new ModuloDTODopoSME.Nucleo(componentiNucleoPrincipaleConSponsor.stream().filter(soggetto -> !soggetto.getIsSponsor()).collect(Collectors.toList()));
+        ModuloDTO.Sponsor sponsor = new ModuloDTO.Sponsor(soggettoOptional.get());
+        ModuloDTO.Nucleo nucleoPrincipale = new ModuloDTO.Nucleo(componentiNucleoPrincipaleConSponsor.stream().filter(soggetto -> !soggetto.getIsSponsor()).collect(Collectors.toList()));
         nucleoPrincipale.setId(rifNucleoPrincipale);
         return Pair.of(sponsor, nucleoPrincipale);
     }
 
-    public static List<ModuloDTODopoSME.Soggetto> convertiViewInListaSoggetti(List<CartaEsercitoPerSoggettoPerNucleoDTOView> view) {
+    public static List<ModuloDTO.Soggetto> convertiViewInListaSoggetti(List<CartaEsercitoPerSoggettoPerNucleoDTOView> view) {
         return view.stream().map(CartaEsercitoPerSoggettoPerNucleoDTOView::converti).collect(Collectors.toList());
     }
-    public static ModuloDTODopoSME converti(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
-        ModuloDTODopoSME moduloDTODopoSME = new ModuloDTODopoSME();
+    public static ModuloDTO converti(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
+        ModuloDTO moduloDTO = new ModuloDTO();
 
-        Pair<ModuloDTODopoSME.Sponsor, ModuloDTODopoSME.Nucleo> sponsorEnucleoPrincipale = estraiSponsorENucleoPrincipale(daConvertire);
-        moduloDTODopoSME.setSponsor(sponsorEnucleoPrincipale.getFirst());
-        moduloDTODopoSME.setNucleoPrincipale(sponsorEnucleoPrincipale.getSecond());
+        Pair<ModuloDTO.Sponsor, ModuloDTO.Nucleo> sponsorEnucleoPrincipale = estraiSponsorENucleoPrincipale(daConvertire);
+        moduloDTO.setSponsor(sponsorEnucleoPrincipale.getFirst());
+        moduloDTO.setNucleoPrincipale(sponsorEnucleoPrincipale.getSecond());
 
-        List<ModuloDTODopoSME.Nucleo> nucleiEsterni = estraiNucleiEsterni(daConvertire);
-        moduloDTODopoSME.setNucleiEsterni(nucleiEsterni);
+        List<ModuloDTO.Nucleo> nucleiEsterni = estraiNucleiEsterni(daConvertire);
+        moduloDTO.setNucleiEsterni(nucleiEsterni);
 
         //TODO da capire
-        moduloDTODopoSME.setPagamento(null);
-        moduloDTODopoSME.setResidenzaDiSpedizione(null);
-        return moduloDTODopoSME;
+        moduloDTO.setPagamento(null);
+        moduloDTO.setResidenzaDiSpedizione(null);
+        return moduloDTO;
     }
 
 }

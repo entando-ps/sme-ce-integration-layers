@@ -1,6 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTODopoSME;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import org.jeasy.random.EasyRandom;
 import org.junit.jupiter.api.Test;
 
@@ -125,7 +125,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
     public void convertiInSoggetto() {
         EasyRandom easyRandom = new EasyRandom();
         CartaEsercitoPerSoggettoPerNucleoDTOView daConvertire = easyRandom.nextObject(CartaEsercitoPerSoggettoPerNucleoDTOView.class);
-        ModuloDTODopoSME.Soggetto convertito = CartaEsercitoPerSoggettoPerNucleoDTOView.converti(daConvertire);
+        ModuloDTO.Soggetto convertito = CartaEsercitoPerSoggettoPerNucleoDTOView.converti(daConvertire);
 
         assertEquals(daConvertire.getNome(), convertito.getNome());
         assertEquals(daConvertire.getCognome(), convertito.getCognome());
@@ -239,7 +239,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
         list.addAll(nucleoEsterno2);
         Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire = CartaEsercitoPerSoggettoPerNucleoDTOView.groupByTipoNucleo(list, tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno);
 
-        ModuloDTODopoSME convertito = CartaEsercitoPerSoggettoPerNucleoDTOView.converti(daConvertire);
+        ModuloDTO convertito = CartaEsercitoPerSoggettoPerNucleoDTOView.converti(daConvertire);
         assertEquals(convertito.getSponsor().getCodiceFiscale(), nucleoPrincipale.get(0).getCodiceFiscale());
         assertEquals(convertito.getNucleoPrincipale().getId(), nucleoPrincipale.get(0).getRifNucleo());
         assertEquals(convertito.getNucleoPrincipale().getComponenti().size(), nucleoPrincipale.size()-1);

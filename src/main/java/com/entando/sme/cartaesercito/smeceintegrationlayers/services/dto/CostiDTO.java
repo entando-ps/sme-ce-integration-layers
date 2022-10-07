@@ -1,39 +1,51 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+/**
+ * totti gli importi sono in centesimi
+ */
 @Data
+@AllArgsConstructor
 public class CostiDTO {
-    private List<CostoPerSoggettoDTO> nucleoPrincipaleConSponsor = new ArrayList<>();
+    private List<CostoPerSoggettoDTO> nucleoPrincipaleConSponsor;
     ;
-    private List<List<CostoPerSoggettoDTO>> nucleiEsterni = new ArrayList<>();
+    private List<CostoPerNucleoEsternoDTO> nucleiEsterni;
 
 
     private Integer costoSpedizione;
+    private Integer limiteNucleoFamigliarePrincipale;
 
     @Data
+    @AllArgsConstructor
     public static class CostoPerSoggettoDTO {
         private ModuloDTO.Soggetto soggetto;
-        private Integer statoCarta;
         private Integer costo;
-
     }
 
-    public boolean limiteNucleoPrincipaleSuperato() {
-        return calcolaTotaleNucleoPrincipaleSenzaSponsor() > 20 * 100;
+    @Data
+    @AllArgsConstructor
+    public static class CostoPerNucleoEsternoDTO {
+        private List<CostoPerSoggettoDTO> componenti;
+
+        public Integer calcolaCosto() {
+            return getComponenti().stream().map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
+        }
     }
 
-    public int calcolaTotaleNucleoPrincipaleSenzaSponsor(){
+    public boolean limiteNucleoPrincipaleSenzaSponsorSuperato() {
+        return calcolaTotaleNucleoPrincipaleSenzaSponsor() > limiteNucleoFamigliarePrincipale;
+    }
+
+    public int calcolaTotaleNucleoPrincipaleSenzaSponsor() {
         return nucleoPrincipaleConSponsor.stream().filter(costoPerSoggettoDTO -> !costoPerSoggettoDTO.getSoggetto().getIsSponsor()).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
     }
-    public int calcolaCostoSponsor(){
-        return nucleoPrincipaleConSponsor.stream().filter(costoPerSoggettoDTO -> costoPerSoggettoDTO.getSoggetto().getIsSponsor()).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
+
+    public int calcolaCostoSponsor() {
+        return nucleoPrincipaleConSponsor.stream().filter(costoPerSoggettoDTO-> costoPerSoggettoDTO.getSoggetto().getIsSponsor()).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
     }
 
     public int calcolaTotaleNucleoPrincipaleConSponsor() {
@@ -42,10 +54,7 @@ public class CostiDTO {
     }
 
     public int calcolaTotaleNucleiEsterni() {
-        return nucleiEsterni.stream().flatMap(Collection::stream).map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);
-    }
-    public List<Integer> calcolaTotalePerNucleoEsterni() {
-        return nucleiEsterni.stream().map(costoPerSoggettoNucleoEsterno -> costoPerSoggettoNucleoEsterno.stream().map(CostoPerSoggettoDTO::getCosto).reduce(0,Integer::sum)).collect(Collectors.toList());
+        return nucleiEsterni.stream().map(CostoPerNucleoEsternoDTO::calcolaCosto).reduce(0, Integer::sum);
     }
 
     public int calcolaTotaleSenzaSpedizione() {

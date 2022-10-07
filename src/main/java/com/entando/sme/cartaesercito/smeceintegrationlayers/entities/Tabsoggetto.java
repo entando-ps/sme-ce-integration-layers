@@ -1,7 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.entities;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTODopoSME;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -404,26 +403,6 @@ public class Tabsoggetto implements Serializable {
 		this.rifStato = rifStato;
 
 	}
-	public void copyFrom(String pin, String rifStato, ModuloDTODopoSME.Soggetto soggetto){
-		this.codiceFiscale = soggetto.getCodiceFiscale();
-		this.cognome = soggetto.getCognome();
-		this.email = soggetto.getEmail();
-		this.enteAppartenenza = soggetto.getEnteAppartenenza();
-		this.fototessera = soggetto.getFototessera();
-		this.nascitaData = soggetto.getNascitaData();
-		this.nascitaLuogo = soggetto.getNascitaLuogo();
-		this.nazionalita = soggetto.getNazionalita();
-		this.nome = soggetto.getNome();
-		this.pin = pin;
-		this.rif_gradoQualifica = soggetto.getRifGradoQualifica();
-		this.rifPosizione = soggetto.getRifPosizione();
-		this.rifRapporto = soggetto.getRifRapporto();
-		this.sesso = soggetto.getSesso();
-		this.telCellulare = soggetto.getTelCellulare();
-		this.telUfficio = soggetto.getTelUfficio();
-		this.rifStato = rifStato;
-
-	}
 
 	public Tabsoggetto(String rifStato, String[] attributes){
 		this(
@@ -447,28 +426,6 @@ public class Tabsoggetto implements Serializable {
 		);
 	}
 	public Tabsoggetto(String pin, String rifStato, ModuloDTO.Soggetto soggetto){
-		this(
-				soggetto.getCodiceFiscale(),
-				soggetto.getCognome(),
-				soggetto.getEmail(),
-				soggetto.getEnteAppartenenza(),
-				soggetto.getFototessera(),
-				soggetto.getNascitaData(),
-				soggetto.getNascitaLuogo(),
-				soggetto.getNazionalita(),
-				soggetto.getNome(),
-				pin,
-				soggetto.getRifGradoQualifica(),
-				soggetto.getRifPosizione(),
-				soggetto.getRifRapporto(),
-				soggetto.getSesso(),
-				soggetto.getTelCellulare(),
-				soggetto.getTelUfficio(),
-				rifStato
-
-		);
-	}
-	public Tabsoggetto(String pin, String rifStato, ModuloDTODopoSME.Soggetto soggetto){
 		this(
 				soggetto.getCodiceFiscale(),
 				soggetto.getCognome(),

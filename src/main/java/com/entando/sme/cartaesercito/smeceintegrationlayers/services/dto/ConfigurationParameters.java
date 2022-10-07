@@ -9,7 +9,7 @@ import javax.annotation.PostConstruct;
 @ConfigurationProperties("app.bo-protocol-config")
 @Data
 @Slf4j
-public class SmeCEBOJdbcProtocolConfigurationParameters {
+public class ConfigurationParameters {
     //soggetto
     private String soggettoRifStato;
 
