@@ -45,10 +45,6 @@ public class ModuloService {
         this.queryExecutor = queryExecutor;
     }
 
-    /*
-                inserisce i soggetti e le residenze
-                se il soggetto esiste lo sovrascrive con quello passato
-            */
     protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTO.Soggetto> soggetti) {
         //inserimento di tutti i soggetti
         String pin = ""; //todo

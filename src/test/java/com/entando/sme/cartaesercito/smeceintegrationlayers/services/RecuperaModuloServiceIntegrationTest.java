@@ -14,6 +14,6 @@ class RecuperaModuloServiceIntegrationTest {
     @Test
     void recuperaModulo() {
         ModuloDTO moduloDTO = recuperaModuloService.recuperaModulo("testSp");
-        System.out.println("moduloDTODopoSME = " + moduloDTO);
+        System.out.println("moduloDTO = " + moduloDTO);
     }
 }
