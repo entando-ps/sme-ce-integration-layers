@@ -342,26 +342,6 @@ public class Tabsoggetto implements Serializable {
 	}
 
 
-	/*
-	        private String codiceFiscale;
-        private String rif_gradoQualifica;
-        private String rif_posizione;
-        private String nome;
-        private String cognome;
-        private String nascitaData;
-        private String nascitaLuogo;
-        private String nazionalita;
-        private String fototessera;
-        private String anagraficaVerificataDa;
-        private String enteAppartenenza;
-        private String telUfficio;
-        private String telCellulare;
-        private String email;
-        private String rif_rapporto;
-        private String pin;
-        private String sesso;
-
-	 */
 
 	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, String pin, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
 		this.codiceFiscale = codiceFiscale;

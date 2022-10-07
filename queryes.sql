@@ -145,5 +145,3 @@ where tabistanza.idIstanza = (select idIstanza
                               LIMIT 1);
 
 
-select * from
-

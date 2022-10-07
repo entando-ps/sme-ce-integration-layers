@@ -1,7 +1,9 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -16,10 +18,21 @@ class CostiServiceTest {
     static Integer costoPerFamigliare = 400;
     static Integer costoPerOspite = 1000;
     static Integer costoSpedizione = 450;
-    static Integer limiteNucleoFamigliarePrincipale = 2000;
+    static Integer limiteNucleoFamigliarePrincipaleNoSponsor = 2000;
+
+    static ConfigurationParameters configurationParameters;
+    static  CostiService costiService;
+    @BeforeAll
+    public static void initialize(){
+        ConfigurationParameters.Soggetto soggetto = new ConfigurationParameters.Soggetto("1");
+        ConfigurationParameters.Istanza istanza = new ConfigurationParameters.Istanza(1,1,1,1,3,4,5);
+        ConfigurationParameters.Mandato mandato = new ConfigurationParameters.Mandato(1,1,1,1);
+        ConfigurationParameters.Costi costi = new ConfigurationParameters.Costi(800,400,1000,450,2000);
+        configurationParameters = new ConfigurationParameters(soggetto, istanza, mandato, costi, new ConfigurationParameters.Query());
+        costiService = new CostiService(configurationParameters);
+    }
 
 
-    private CostiService costiService = new CostiService();
 
 
     @Test

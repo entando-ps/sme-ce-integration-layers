@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CostiDTO {
     private List<CostoPerSoggettoDTO> nucleoPrincipaleConSponsor;
-    ;
+
     private List<CostoPerNucleoEsternoDTO> nucleiEsterni;
 
 

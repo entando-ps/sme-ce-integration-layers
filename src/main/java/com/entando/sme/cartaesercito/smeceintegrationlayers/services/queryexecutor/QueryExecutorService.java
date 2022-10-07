@@ -1,6 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
-import org.springframework.beans.factory.annotation.Value;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -14,19 +14,20 @@ import java.util.stream.Collectors;
 
 @Service
 public class QueryExecutorService {
-
-    @Value("${app.query.carteEsercitoPerSponsor}")
-    private String carteEsercitoPerSponsor;
-    static Set<Integer> tipiIstanzaNucleoPrincipale = Set.of(1, 3);
-    static Set<Integer> tipiIstanzaNucleoEsterno = Set.of(4, 5);
+    private final String carteEsercitoPerSponsor;
+    private final Set<Integer> tipiIstanzaNucleoPrincipale;
+    private final Set<Integer> tipiIstanzaNucleoEsterno;
 
 
-    final
+    private final
     NamedParameterJdbcTemplate jdbcTemplate;
 
-
-    public QueryExecutorService(NamedParameterJdbcTemplate jdbcTemplate) {
+    public QueryExecutorService(NamedParameterJdbcTemplate jdbcTemplate, ConfigurationParameters configurationParameters) {
         this.jdbcTemplate = jdbcTemplate;
+        tipiIstanzaNucleoPrincipale = Set.of(configurationParameters.getIstanza().getNucleoPrincipale(), configurationParameters.getIstanza().getItegrNucleoPrincipale());
+        tipiIstanzaNucleoEsterno = Set.of(configurationParameters.getIstanza().getNucleoEsterno(), configurationParameters.getIstanza().getIntegrNucleoEsterno());
+        carteEsercitoPerSponsor = configurationParameters.getQuery().getCarteEsercitoPerSponsor();
+
     }
 
 
