@@ -4,7 +4,7 @@ import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.*;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.*;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ConfigurationParameters;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto;
+package com.entando.sme.cartaesercito.smeceintegrationlayers.config;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
