@@ -129,6 +129,9 @@ public class ModuloService {
 
     @Transactional
     /**
+     *   !!! unico meth utilizzabile del service !!!
+     *   unico entry point per il salvataggio dei dati (esclusi documenti e immagini)
+     *
      *  metodo che si occupa dell'inserimento del "modulo" contenente tutti i dati di tutti i nuclei (esterni e principale)
      *  esclusi documenti ed immagini
      *
