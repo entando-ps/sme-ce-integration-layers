@@ -21,7 +21,7 @@ public class Tabsoggetto implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer idSoggetto;
 
-	private int anagraficaVerificataDa;
+	private int anagraficaVerificataDa;  // id operatore che convalida
 
 	@Column(columnDefinition = "TEXT")
 	private String avviso;
@@ -52,6 +52,7 @@ public class Tabsoggetto implements Serializable {
 
 	private String nome;
 
+	// da qui competenza inserimento BO
 	@Column(columnDefinition = "TEXT")
 	private String nota;
 
@@ -64,7 +65,7 @@ public class Tabsoggetto implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	private String notaRespintaFoto;
 
-	private int nuovaDirettiva;
+	private int nuovaDirettiva; // non c'è in insert loro (SME)
 
 	private String pin;
 
@@ -343,7 +344,9 @@ public class Tabsoggetto implements Serializable {
 
 
 
-	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, String pin, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
+
+
+	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
 		this.codiceFiscale = codiceFiscale;
 		this.cognome = cognome;
 		this.email = email;
@@ -353,7 +356,7 @@ public class Tabsoggetto implements Serializable {
 		this.nascitaLuogo = nascitaLuogo;
 		this.nazionalita = nazionalita;
 		this.nome = nome;
-		this.pin = pin;
+//		this.pin = pin;
 		this.rif_gradoQualifica = rif_gradoQualifica;
 		this.rifPosizione = rifPosizione;
 		this.rifRapporto = rifRapporto;
@@ -363,7 +366,7 @@ public class Tabsoggetto implements Serializable {
 		this.rifStato = rifStato;
 	}
 
-	public void copyFrom(String pin, String rifStato, ModuloDTO.Soggetto soggetto){
+	public void copyFrom(String rifStato, ModuloDTO.Soggetto soggetto){
 		this.codiceFiscale = soggetto.getCodiceFiscale();
 		this.cognome = soggetto.getCognome();
 		this.email = soggetto.getEmail();
@@ -373,7 +376,10 @@ public class Tabsoggetto implements Serializable {
 		this.nascitaLuogo = soggetto.getNascitaLuogo();
 		this.nazionalita = soggetto.getNazionalita();
 		this.nome = soggetto.getNome();
-		this.pin = pin;
+		/** si lascia il pin già salvato
+		 * se non è già presente non si deve creare
+		 */
+//		this.pin = soggetto.pin();
 		this.rif_gradoQualifica = soggetto.getRifGradoQualifica();
 		this.rifPosizione = soggetto.getRifPosizione();
 		this.rifRapporto = soggetto.getRifRapporto();
@@ -395,7 +401,7 @@ public class Tabsoggetto implements Serializable {
 				attributes[6],
 				attributes[7],
 				attributes[8],
-				attributes[9],
+//				attributes[9], // pin
 				Integer.parseInt(attributes[10]),
 				Integer.parseInt(attributes[11]),
 				Integer.parseInt(attributes[12]),
@@ -405,7 +411,7 @@ public class Tabsoggetto implements Serializable {
 				rifStato
 		);
 	}
-	public Tabsoggetto(String pin, String rifStato, ModuloDTO.Soggetto soggetto){
+	public Tabsoggetto(String rifStato, ModuloDTO.Soggetto soggetto){ //String pin,
 		this(
 				soggetto.getCodiceFiscale(),
 				soggetto.getCognome(),
@@ -416,7 +422,7 @@ public class Tabsoggetto implements Serializable {
 				soggetto.getNascitaLuogo(),
 				soggetto.getNazionalita(),
 				soggetto.getNome(),
-				pin,
+//				pin,
 				soggetto.getRifGradoQualifica(),
 				soggetto.getRifPosizione(),
 				soggetto.getRifRapporto(),

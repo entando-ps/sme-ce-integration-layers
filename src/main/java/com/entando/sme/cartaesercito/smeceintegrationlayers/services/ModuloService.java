@@ -47,14 +47,18 @@ public class ModuloService {
 
     protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTO.Soggetto> soggetti) {
         //inserimento di tutti i soggetti
-        String pin = ""; //todo
+        String pin = ""; //todo pin non necessario: serviva prima per permettere accesso a BO da parte di soggetto richiedente
+        // si potrebbe impementare in intranet con il loro generatore di pin (se il pin non esiste si genera, sennò no)
         List<Tabsoggetto> tabSoggettiDaSalvare = soggetti.stream().map(soggetto -> {
             Tabsoggetto tabSoggettoDaSalvare = tabsoggettoJPARepository.findByCodiceFiscale(soggetto.getCodiceFiscale()); //recupero dal db
             if (tabSoggettoDaSalvare != null) {
-                //TODO cosa avviene nel caso di salvataggio dei dati di un soggetto già presente? Per ora ricreo pin e metto non validato
-                tabSoggettoDaSalvare.copyFrom(pin, configParameters.getSoggetto().getRifStato(), soggetto);
+                //cosa avviene nel caso di salvataggio dei dati di un soggetto già presente? Per ora ricreo pin e metto non validato
+                // TODO se soggetto presente pin già resente da non sovrascrivere, lo stato va messo a "in attesa di pagamento" (stato 5)
+                //          in funzione della creazione mandato
+                tabSoggettoDaSalvare.copyFrom(configParameters.getSoggetto().getRifStato(), soggetto);
             } else {
-                tabSoggettoDaSalvare = new Tabsoggetto(pin, configParameters.getSoggetto().getRifStato(), soggetto);
+                // non necessaria creazione del pin (esiste funzione su BO pin alfanum 7 cifre) ma non usata
+                tabSoggettoDaSalvare = new Tabsoggetto(configParameters.getSoggetto().getRifStato(), soggetto);
             }
             return tabSoggettoDaSalvare;
         }).collect(Collectors.toList());
