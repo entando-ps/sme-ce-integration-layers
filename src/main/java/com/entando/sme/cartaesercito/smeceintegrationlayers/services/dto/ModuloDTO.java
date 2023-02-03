@@ -15,14 +15,17 @@ import java.util.List;
 @Data
 public class ModuloDTO {
     private Sponsor sponsor;
-    //non contiene lo sponsor
+
+    /**nucleo princi non contiene lo sponsor*/
     private Nucleo nucleoPrincipale = new Nucleo(new ArrayList<>());
     private List<Nucleo> nucleiEsterni = new ArrayList<>();
 
-    //se la residenza di spedizione non è null ha richiesto la spedizione postale
+    /**diamo per scontato se la residenza di spedizione non è null ha richiesto la spedizione postale*/
     //usato solo nella fase di creazione carta
-    private Residenza residenzaDiSpedizione;
-    //usato solo nella fase di creazione carta
+//    private Residenza residenzaDiSpedizione;
+
+    //pagamento usato solo nella fase di creazione carta
+    /** non serve salvare cro da Front Office ma può servire per read*/
     private Pagamento pagamento;
 
     @Data
@@ -43,7 +46,7 @@ public class ModuloDTO {
         private String telCellulare;
         private String telUfficio;
         private Boolean isSponsor = false;
-        //non usato
+
         private Residenza residenza;
         //lettura
         private CartaEsercito cartaEsercito;
@@ -123,7 +126,7 @@ public class ModuloDTO {
         private String cap;
         private String citta;
         private String civico;
-        private String presso;
+        private String presso; // serve per spedizioni presso altro soggetto diverso da sponsor
         private String provincia;
         private String via;
 
@@ -155,10 +158,16 @@ public class ModuloDTO {
         private Date dataScadenza;
     }
 
+    // TODO prevedere spedizione per ogni nucleo, residenzaSpedizione per ogni nucleo
     @Data
     public static class Nucleo {
         //lettura
         private Integer id;
+
+        //se la residenza di spedizione non è null ha richiesto la spedizione postale
+        //usato solo nella fase di creazione carta
+        private Residenza residenzaDiSpedizione;
+
         private List<Soggetto> componenti;
 
         public Nucleo(List<Soggetto> componenti) {

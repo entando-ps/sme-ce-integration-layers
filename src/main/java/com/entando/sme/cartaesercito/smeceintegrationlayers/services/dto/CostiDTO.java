@@ -15,8 +15,8 @@ public class CostiDTO {
 
     private List<CostoPerNucleoEsternoDTO> nucleiEsterni;
 
-
-    private Integer costoSpedizione;
+// necessario spostare su singoli nuclei
+    private Integer costoSpedizioneNucleoPricipale;
     private Integer limiteNucleoFamigliarePrincipale;
 
     @Data
@@ -30,6 +30,8 @@ public class CostiDTO {
     @AllArgsConstructor
     public static class CostoPerNucleoEsternoDTO {
         private List<CostoPerSoggettoDTO> componenti;
+
+        private Integer costoSpedizioneNucleoEsterno;
 
         public Integer calcolaCosto() {
             return getComponenti().stream().map(CostoPerSoggettoDTO::getCosto).reduce(0, Integer::sum);

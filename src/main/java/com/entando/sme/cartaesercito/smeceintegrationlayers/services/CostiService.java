@@ -29,10 +29,16 @@ public class CostiService {
         costiPerNucleoPrincipaleConSponsor.addAll(costiPerNucleoPrincipale);
 
         List<CostiDTO.CostoPerNucleoEsternoDTO> costiPerNucleoEsterno= moduloDTO.getNucleiEsterni().stream().map(nucleoEsterno ->
-                new CostiDTO.CostoPerNucleoEsternoDTO(nucleoEsterno.getComponenti().stream().map(soggetto -> new CostiDTO.CostoPerSoggettoDTO(soggetto, configurazioneCosti.getPerOspite())).collect(Collectors.toList()))
+                new CostiDTO.CostoPerNucleoEsternoDTO(nucleoEsterno.getComponenti().stream().map(soggetto -> new CostiDTO.CostoPerSoggettoDTO(soggetto, configurazioneCosti.getPerOspite())).collect(Collectors.toList()), nucleoEsterno.getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0)
         ).collect(Collectors.toList());
-
-        return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno, moduloDTO.getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
+        /**
+         * attualmente calcola costo spedizione per principale e per ogni nucleo esterno
+         * controllo costo di spedizione su inidirizzoResidenzaSpedizione, preso da form!!
+         *
+         *  se inidirizzoResidenzaSpedizione è null la spedizione non si paga perchè richiesta consegna a mano
+        */
+        return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,
+                moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
 
     }
 

@@ -135,11 +135,16 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
         moduloDTO.setNucleoPrincipale(sponsorEnucleoPrincipale.getSecond());
 
         List<ModuloDTO.Nucleo> nucleiEsterni = estraiNucleiEsterni(daConvertire);
+        // TODO da capire come inserire scelta unica spedizione per tutti
+        // TODO da capire se arriva residenza spedizione query da aggiornare (forse)
+//        nucleiEsterni.forEach(nucleo -> nucleo.setResidenzaDiSpedizione(null));
         moduloDTO.setNucleiEsterni(nucleiEsterni);
 
         //TODO da capire
         moduloDTO.setPagamento(null);
-        moduloDTO.setResidenzaDiSpedizione(null);
+        // TODO da capire se arriva residenza query da aggiornare (forse)
+        moduloDTO.getNucleoPrincipale().setResidenzaDiSpedizione(null);
+
         return moduloDTO;
     }
 

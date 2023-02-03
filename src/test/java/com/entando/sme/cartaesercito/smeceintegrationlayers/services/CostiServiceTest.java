@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class CostiServiceTest {
     static Integer costoPerSponsor = 800;
     static Integer costoPerFamigliare = 400;
-    static Integer costoPerOspite = 1000;
-    static Integer costoSpedizione = 450;
+    static Integer costoPerOspite = 800;
+    static Integer costoSpedizione = 450;//2250 costo per 5 spedizioni, una per nucleo mentre 450 singola spediz;
     static Integer limiteNucleoFamigliarePrincipaleNoSponsor = 2000;
 
     static ConfigurationParameters configurationParameters;
@@ -27,7 +27,7 @@ class CostiServiceTest {
         ConfigurationParameters.Soggetto soggetto = new ConfigurationParameters.Soggetto("1");
         ConfigurationParameters.Istanza istanza = new ConfigurationParameters.Istanza(1,1,1,1,3,4,5);
         ConfigurationParameters.Mandato mandato = new ConfigurationParameters.Mandato(1,1,1,1);
-        ConfigurationParameters.Costi costi = new ConfigurationParameters.Costi(800,400,1000,450,2000);
+        ConfigurationParameters.Costi costi = new ConfigurationParameters.Costi(800,400,800,450,2000);
         configurationParameters = new ConfigurationParameters(soggetto, istanza, mandato, costi, new ConfigurationParameters.Query());
         costiService = new CostiService(configurationParameters);
     }
@@ -52,7 +52,7 @@ class CostiServiceTest {
                 }).collect(Collectors.toList());
 
         moduloDTO.setNucleiEsterni(nucleiEsterni);
-        moduloDTO.setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
+        moduloDTO.getNucleoPrincipale().setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
         CostiDTO costiDTO = costiService.calcoloCostiNuovoSponsor(moduloDTO);
 
         assertEquals(moduloDTO.getNucleoPrincipale().getComponenti().size() + 1, costiDTO.getNucleoPrincipaleConSponsor().size());
@@ -71,7 +71,7 @@ class CostiServiceTest {
         //nuclei esterni
         assertEquals(moduloDTO.getNucleiEsterni().stream().map(ne-> ne.getComponenti().size()*costoPerOspite).reduce(0,Integer::sum),costiDTO.calcolaTotaleNucleiEsterni());
         //spedizione
-        assertEquals(costoSpedizione, costiDTO.getCostoSpedizione());
+        assertEquals(costoSpedizione, costiDTO.getCostoSpedizioneNucleoPricipale());
         assertFalse(costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato());
 
     }

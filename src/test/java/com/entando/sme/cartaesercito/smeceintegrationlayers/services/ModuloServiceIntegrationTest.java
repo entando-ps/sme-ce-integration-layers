@@ -1,5 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
@@ -16,7 +17,8 @@ class ModuloServiceIntegrationTest {
 
     @Autowired
     ModuloService smeCeBoModuloService;
-
+    @Autowired
+    CostiService costiService;
     @Test
     void inserimentoNuovoModulo() {
 
@@ -43,13 +45,20 @@ class ModuloServiceIntegrationTest {
                     return new ModuloDTO.Nucleo(componenti);
                 }).collect(Collectors.toList());
 
+        nucleiEsterni.forEach(nucleo -> nucleo.setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via")));
+
         moduloDTO.setNucleiEsterni(nucleiEsterni);
+
 
         moduloDTO.setPagamento(new ModuloDTO.Pagamento("cro-unico"));
 
-        moduloDTO.setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
+        moduloDTO.getNucleoPrincipale().setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
 
-
+//        System.out.println("AAAAAAAAAAAA" + costiService.calcoloCostiNuovoSponsor(moduloDTO).getCostoSpedizioneNucleoPricipale());
+//        costiService.calcoloCostiNuovoSponsor(moduloDTO).getNucleiEsterni().forEach(nucleo -> System.out.println("B      " + nucleo.getCostoSpedizioneNucleoEsterno()));
+//        moduloDTO.setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
+//        System.out.println("AAAAAAAAAAAA" + costiService.calcoloCostiNuovoSponsor(moduloDTO).getCostoSpedizione());
+//    System.out.println(moduloDTO);
         return moduloDTO;
     }
 

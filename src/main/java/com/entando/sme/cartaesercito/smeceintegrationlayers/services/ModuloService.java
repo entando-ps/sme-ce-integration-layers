@@ -142,9 +142,10 @@ public class ModuloService {
         //modifica al nucleo principale
         //rinnovo
         //quindi modifica nucleo + rinnovo è una possibilità
-        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), moduloDTO.getPagamento().getCro(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizione(), costiDTO.getCostoSpedizione());
+        // TODO WARN qui viene calcolato solo costo spedizione per nucleo principale
+        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), moduloDTO.getPagamento().getCro(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizioneNucleoPricipale(), costiDTO.getCostoSpedizioneNucleoPricipale());
 
-        //TODO WARN spedizione già pagata perchè per ora il nucleo principale viene creato, ma doppia
+        //TODO WARN spedizione già pagata perchè per ora il nucleo principale viene creato, ma doppia (comportamento atteso, controllare costi)
 
         //TODO dalla lista dei nuclei esterni di un modulo possono prodursi + istanze
         //nuovo nucleo esterno
@@ -197,7 +198,8 @@ public class ModuloService {
         IntStream.range(0, nucleiEsterni.size()).forEach(index -> {
             ModuloDTO.Nucleo nucleoEsterno = nucleiEsterni.get(index);
             CostiDTO.CostoPerNucleoEsternoDTO costoPerNucleoEsterno = costiDTO.getNucleiEsterni().get(index);
-            gestisciNucleoEsterno(nucleoEsterno, sponsor, tipoIstanzaDaCrearePerNucleoFamiliareEsterno, cro, costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.calcolaCosto(), costiDTO.getCostoSpedizione(), costiDTO.getCostoSpedizione());
+            costoPerNucleoEsterno.setCostoSpedizioneNucleoEsterno(costiDTO.getNucleiEsterni().get(index).getCostoSpedizioneNucleoEsterno());
+            gestisciNucleoEsterno(nucleoEsterno, sponsor, tipoIstanzaDaCrearePerNucleoFamiliareEsterno, cro, costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno());
         });
     }
 

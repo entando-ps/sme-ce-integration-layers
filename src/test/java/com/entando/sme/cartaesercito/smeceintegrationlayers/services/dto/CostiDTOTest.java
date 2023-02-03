@@ -24,7 +24,7 @@ class CostiDTOTest {
 
         List<CostiDTO.CostoPerSoggettoDTO> componentiNucleoEsterno1 = List.of((new CostiDTO.CostoPerSoggettoDTO(new ModuloDTO.Soggetto(), costoPerOspite)), new CostiDTO.CostoPerSoggettoDTO(new ModuloDTO.Soggetto(), costoPerOspite));
         List<CostiDTO.CostoPerSoggettoDTO> componentiNucleoEsterno2 = List.of((new CostiDTO.CostoPerSoggettoDTO(new ModuloDTO.Soggetto(), costoPerOspite)), new CostiDTO.CostoPerSoggettoDTO(new ModuloDTO.Soggetto(), costoPerOspite), new CostiDTO.CostoPerSoggettoDTO(new ModuloDTO.Soggetto(), costoPerOspite));
-        List<CostiDTO.CostoPerNucleoEsternoDTO> nucleiEsterni = List.of(new CostiDTO.CostoPerNucleoEsternoDTO(componentiNucleoEsterno1), new CostiDTO.CostoPerNucleoEsternoDTO(componentiNucleoEsterno2));
+        List<CostiDTO.CostoPerNucleoEsternoDTO> nucleiEsterni = List.of(new CostiDTO.CostoPerNucleoEsternoDTO(componentiNucleoEsterno1, costoSpedizione), new CostiDTO.CostoPerNucleoEsternoDTO(componentiNucleoEsterno2, costoSpedizione));
         costiDTO = new CostiDTO(nucleoPrincipaleConSponsor, nucleiEsterni, costoSpedizione, limiteNucleoFamigliarePrincipale);
     }
 
