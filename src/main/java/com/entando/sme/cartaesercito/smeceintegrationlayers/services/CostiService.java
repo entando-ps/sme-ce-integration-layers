@@ -21,7 +21,7 @@ public class CostiService {
     /**
      * metodo che si occupa del calcolo dei costi per soggetto (abbonamento) e per nucleo (spedizione)
      * costo di spedizione calcolato su presenza di indirizzo di spedizione o meno
-     * 
+     *
      * scompatta il "modulo" e legge le informazioni in cerca degli indirizzi di spedizione (per nucleo) e calcola costo abbonamento secondo direttive
      *
      * @param moduloDTO oggetto contenente tutti i dati di sponsor, nucleo principale e nuclei esterni (il cro "ModuloDTO.Pagamento" non serve in scrittura)
