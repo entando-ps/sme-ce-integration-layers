@@ -13,24 +13,24 @@ spring:
 app:
   config:
       soggetto:
-        rifStato: 1
+        rifStato: 1 #tabTipoStatoSoggetto
       istanza:
-        rifCanale: 1
-        rifOperatore: 1
-        rifStatoIstanza: 1
-        nucleoPrincipale: 1
-        itegrNucleoPrincipale: 3
-        nucleoEsterno: 4
-        integrNucleoEsterno: 5
+        rifCanale: 1  # da dove proveniene inserimento (web = aggate, ops = strutture)
+        rifOperatore: 1   # tab login operatore che lavora la richiesta
+        rifStatoIstanza: 1 # tipologica tabstato istanza(dump)
+        nucleoPrincipale: 1 # non presente in tab istanza (a quale tab si riferisce)
+        itegrNucleoPrincipale: 3  # modifiche dati di nucleo principale già inserito
+        nucleoEsterno: 4 #a quale tab si riferisce
+        integrNucleoEsterno: 5 # modifiche dati di nucleo principale già inserito
       mandato:
         rifOperatore: 1
-        rifOperatorePagamento: 1
-        rifStatoMandato: 1
-        rifTipoPagamento: 1
+        rifOperatorePagamento: 1 #chi convalida il pagamento
+        rifStatoMandato: 1 # stato del mandato (dump)
+        rifTipoPagamento: 1 # modalità pagamento (dump)
       costi:
         perSponsor: 800
         perFamigliare: 400
-        perOspite: 1000
+        perOspite: 800 #1000 8euro per nuclei esterni
         spedizione: 450
         limiteNucleoFamigliarePrincipaleNoSponsor: 2000
       query:

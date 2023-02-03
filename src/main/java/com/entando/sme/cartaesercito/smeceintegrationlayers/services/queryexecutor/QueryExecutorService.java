@@ -63,7 +63,7 @@ public class QueryExecutorService {
     }
 
     public Integer getNextRifNucleo(){
-        //TODO WARN problematiche di concorrenza!
+        //TODO WARN problematiche di concorrenza! implementare lato nostro e BO autoincrement
         Integer rifNucleo = jdbcTemplate.queryForObject("select max(rif_nucleo) from tabnucleifull", new HashMap<>(), Integer.class);
         return rifNucleo!=null?rifNucleo+1:1;
     }

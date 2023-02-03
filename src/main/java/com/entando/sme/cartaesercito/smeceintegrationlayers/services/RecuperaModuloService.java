@@ -1,5 +1,6 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.CartaEsercitoPerSoggettoPerNucleoDTOView;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
@@ -18,6 +19,15 @@ public class RecuperaModuloService {
         this.queryExecutorService = queryExecutorService;
     }
 
+    /**
+     * metodo che si occupa di recuperare tutte le informazioni di tutti i nuclei collegati allo sponsor
+     *
+     * scompatta il "modulo" e legge le informazioni in cerca degli indirizzi di spedizione (per nucleo) e calcola costo abbonamento secondo direttive
+     *
+     * @param codiceFiscale del soggetto sponsor cercato
+     * @return ModuloDTO con tutte le informazioni dello sponsor e tutti i soggetti di tutti i inuclei a esso collegati
+     * @see ModuloDTO
+     */
     ModuloDTO recuperaModulo(String codiceFiscale){
         Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> carteEsercitoPerSponsor = queryExecutorService.getCarteEsercitoPerSponsor(codiceFiscale);
         return CartaEsercitoPerSoggettoPerNucleoDTOView.converti(carteEsercitoPerSponsor);

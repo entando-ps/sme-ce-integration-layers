@@ -118,7 +118,9 @@ public class ModuloService {
         tabmandatopvc.setQuotaVersata(String.valueOf((double) importoPagatoSpedizione / 100));
         tabmandatopvc.setAttestazionePagamento(cro);
         tabmandatopvc.setQuotaMandato(String.valueOf((double) importoDaPagareSpedizione / 100));
-        //il salvataggio avviene semmpre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
+        /**
+         * il salvataggio avviene sempre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
+         */
         tabmandatoJPARepository.save(tabmandato);
         tabmandatopvcJPARepository.save(tabmandatopvc);
 
@@ -127,8 +129,20 @@ public class ModuloService {
 
     @Transactional
     /**
-     * che differenza abbiamo tra il rinnovo e la modifica nucleo famigliare?
-     */ public void inserimentoNuovoModulo(ModuloDTO moduloDTO) {
+     *  metodo che si occupa dell'inserimento del "modulo" contenente tutti i dati di tutti i nuclei (esterni e principale)
+     *  esclusi documenti ed immagini
+     *
+     *  scompatta il "modulo" e salva le informazioni in tutte le tabelle SME mantenendo la logica preesistente on premise
+     *
+     *  @param ModuloDTO oggetto contenente tutti i dati di sponsor, nucleo principale e nuclei esterni (il cro "ModuloDTO.Pagamento" non serve in scrittura)
+     *  @see ModuloDTO per visualizzare dettaglio del DTO
+     */
+    public void inserimentoNuovoModulo(ModuloDTO moduloDTO) {
+
+//        che differenza abbiamo tra il rinnovo e la modifica nucleo famigliare?
+//                rinnovo crea un nuovo mandato senza mandato pvc e verranno inseriti data pagamento e cro insieme all'aggiornamento dello stato soggetto (e altri domini)
+//        da "in attesa di pagamento" a "in regola"
+//        modifica al nucleo avviene una modifica nei dati del nucleo familiare, update su tutti i campi dei domini colpiti
 
         //controllo che i costi non siano cambiati;
         //CostiDTO costiDTO = smeCeBoCostiService.checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
