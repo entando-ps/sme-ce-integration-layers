@@ -25,23 +25,23 @@ public class Tabistanza implements Serializable {
     private Date dataIstanza;
 
     @Column(name = "id_sponsor")
-    private int idSponsor;
+    private Integer idSponsor;
 
     @Column(name = "rif_canale")
-    private int rifCanale;
+    private Integer rifCanale;
 
     @Column(name = "rif_operatore")
-    private int rifOperatore;
+    private Integer rifOperatore;
 
     @Column(name = "rif_ops")
-    private int rifOps;
+    private Integer rifOps;
 
     @Column(name = "rif_stabilimento")
-    private int rifStabilimento;
+    private Integer rifStabilimento;
 
-    private int rif_statoIstanza;
+    private Integer rif_statoIstanza;
 
-    private int rif_tipoIstanza;
+    private Integer rif_tipoIstanza;
 
     public Tabistanza() {
     }
@@ -78,7 +78,7 @@ public class Tabistanza implements Serializable {
         this.idSponsor = idSponsor;
     }
 
-    public int getRifCanale() {
+    public Integer getRifCanale() {
         return this.rifCanale;
     }
 
@@ -86,7 +86,7 @@ public class Tabistanza implements Serializable {
         this.rifCanale = rifCanale;
     }
 
-    public int getRifOperatore() {
+    public Integer getRifOperatore() {
         return this.rifOperatore;
     }
 
@@ -94,7 +94,7 @@ public class Tabistanza implements Serializable {
         this.rifOperatore = rifOperatore;
     }
 
-    public int getRifOps() {
+    public Integer getRifOps() {
         return this.rifOps;
     }
 
@@ -102,7 +102,7 @@ public class Tabistanza implements Serializable {
         this.rifOps = rifOps;
     }
 
-    public int getRifStabilimento() {
+    public Integer getRifStabilimento() {
         return this.rifStabilimento;
     }
 
@@ -110,7 +110,7 @@ public class Tabistanza implements Serializable {
         this.rifStabilimento = rifStabilimento;
     }
 
-    public int getRif_statoIstanza() {
+    public Integer getRif_statoIstanza() {
         return this.rif_statoIstanza;
     }
 
@@ -118,7 +118,7 @@ public class Tabistanza implements Serializable {
         this.rif_statoIstanza = rif_statoIstanza;
     }
 
-    public int getRif_tipoIstanza() {
+    public Integer getRif_tipoIstanza() {
         return this.rif_tipoIstanza;
     }
 

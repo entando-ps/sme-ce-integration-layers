@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 
-@ConfigurationProperties("app.config")
+@ConfigurationProperties("smece.config")
 @Data
 @Slf4j
 @AllArgsConstructor
