@@ -13,11 +13,11 @@ spring:
 smece:
   config:
       soggetto:
-        rifStato: 1 #tabTipoStatoSoggetto
+        rifStato: 5 #tabTipoStatoSoggetto
       istanza:
         rifCanale: 1  # da dove proveniene inserimento (web = aggate, ops = strutture)
         rifOperatore: 1   # tab login operatore che lavora la richiesta
-        rifStatoIstanza: 1 # tipologica tabstato istanza(dump)
+        rifStatoIstanza: 2 # tipologica tabstato istanza(dump)
         nucleoPrincipale: 1 # non presente in tab istanza (a quale tab si riferisce)
         itegrNucleoPrincipale: 3  # modifiche dati di nucleo principale già inserito
         nucleoEsterno: 4 #a quale tab si riferisce
@@ -64,5 +64,39 @@ smece:
              join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
              left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
           where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale)
-  
+
+        mandatiPerSponsor: |
+          select tabmandato.idMandato,
+          tabmandato.rif_statoMandato as rifStatoMandato,
+          tabmandato.rif_nucleofull as rifNucleoFull,
+          tabmandato.quotaMandato,
+          tabmandato.dataMandato,
+          tabmandato.dataEmissione,
+          tabmandato.dataScadenza,
+          tabmandato.rif_sponsor as rifSponsor,
+          tabmandato.nota,
+          tabmandato.notaConvalida,
+          tabmandato.notaAnnullamento,
+          tabmandato.dataAggiornamento,
+          tabmandato.convalidaMandatoCovid
+          from tabmandato
+          where tabmandato.rif_sponsor = 
+          (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale) AND tabmandato.rif_statoMandato = (1 OR 5)
+
+        mandatiPVCPerSponsor: |
+          select tabMandatoPVC.idmandatopvc,
+          tabMandatoPVC.rifnucleofull            as rifnucleofullPvc,
+          tabMandatoPVC.quotamandato             as quotamandatoPvc,
+          tabMandatoPVC.rifsponsor               as rifsponsorPvc,
+          tabMandatoPVC.note                     as notePvc,
+          tabMandatoPVC.notaconvalida            as notaconvalidaPvc,
+          tabMandatoPVC.notaannullamento         as notaannullamentoPvc,
+          tabMandatoPVC.rifstatomandatopvc       as rifstatomandatoPvc,
+          tabMandatoPVC.dataaggiornamento        as dataaggiornamentoPvc,
+          tabMandatoPVC.datamandatopvc           as datamandatoPvc,
+          tabMandatoPVC.dataemissionepvc         as dataemissionePvc,
+          tabMandatoPVC.riftipomandato           as riftipomandatoPvc
+          from tabMandatoPVC
+          where tabMandatoPVC.rifSponsor =
+          (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale)  AND tabMandatoPVC.rifStatoMandatoPVC = (1 OR 5);
 
