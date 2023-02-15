@@ -111,6 +111,7 @@ public class ModuloService {
         tabmandato.setQuotaVersata(Math.round((float) importoPagato / 100));
         tabmandato.setAttestazionePagamento(cro);
         tabmandato.setQuotaMandato(Math.round((float) importoDaPagare / 100));
+        tabmandato.setRif_statoMandato(configParameters.getMandato().getRifStatoMandato());
 
         Tabmandatopvc tabmandatopvc = new Tabmandatopvc();
         tabmandatopvc.setRifSponsor(sponsor.getIdSoggetto());
@@ -118,6 +119,8 @@ public class ModuloService {
         tabmandatopvc.setQuotaVersata(String.valueOf((double) importoPagatoSpedizione / 100));
         tabmandatopvc.setAttestazionePagamento(cro);
         tabmandatopvc.setQuotaMandato(String.valueOf((double) importoDaPagareSpedizione / 100));
+        tabmandatopvc.setRifStatoMandatoPVC(configParameters.getMandato().getRifStatoMandato());
+        // TODO data salvata da DB?
         /**
          * il salvataggio avviene sempre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
          */
