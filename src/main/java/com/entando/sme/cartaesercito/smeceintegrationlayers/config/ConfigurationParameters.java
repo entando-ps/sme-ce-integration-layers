@@ -92,6 +92,10 @@ public class ConfigurationParameters {
     public static class Query{
         private String carteEsercitoPerSponsor;
 
+        private String mandatiPVCPerSponsor;
+
+        private String  mandatiPerSponsor;
+
         public Query() {
         }
     }

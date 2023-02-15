@@ -12,57 +12,90 @@ spring:
       ddl-auto: validate
 app:
   config:
-      soggetto:
-        rifStato: 1 #tabTipoStatoSoggetto
-      istanza:
-        rifCanale: 1  # da dove proveniene inserimento (web = aggate, ops = strutture)
-        rifOperatore: 1   # tab login operatore che lavora la richiesta
-        rifStatoIstanza: 1 # tipologica tabstato istanza(dump)
-        nucleoPrincipale: 1 # non presente in tab istanza (a quale tab si riferisce)
-        itegrNucleoPrincipale: 3  # modifiche dati di nucleo principale già inserito
-        nucleoEsterno: 4 #a quale tab si riferisce
-        integrNucleoEsterno: 5 # modifiche dati di nucleo principale già inserito
-      mandato:
-        rifOperatore: 1
-        rifOperatorePagamento: 1 #chi convalida il pagamento
-        rifStatoMandato: 1 # stato del mandato (dump)
-        rifTipoPagamento: 1 # modalità pagamento (dump)
-      costi:
-        perSponsor: 800
-        perFamigliare: 400
-        perOspite: 800 #1000 8euro per nuclei esterni
-        spedizione: 450
-        limiteNucleoFamigliarePrincipaleNoSponsor: 2000
-      query:
-        carteEsercitoPerSponsor: |
-          select tabnucleifull.rif_nucleo as rifNucleo,
-          tabistanza.rif_tipoIstanza as rifTipoIstanza,
-          tabsoggetto.nome,
-          tabsoggetto.cognome,
-          tabsoggetto.email,
-          tabsoggetto.enteAppartenenza,
-          tabsoggetto.fototessera,
-          tabsoggetto.nascitaData,
-          tabsoggetto.nascitaLuogo,
-          tabsoggetto.nazionalita,
-          tabsoggetto.rif_gradoQualifica as rifGradoQualifica,
-          tabsoggetto.rif_posizione as rifPosizione,
-          tabsoggetto.rif_rapporto as rifRapporto,
-          tabsoggetto.sesso,
-          tabsoggetto.telCellulare,
-          tabsoggetto.telUfficio,
-          tabsoggetto.codiceFiscale,
-          tabnucleifull.is_sponsor as isSponsor,
-          tabistanza.rif_statoIstanza as rifStatoIstanza,
-          tabcartaesercito.numeroCarta,
-          tabcartaesercito.rif_statoCarta as rifStatoCarta,
-          tabcartaesercito.dataScadenzaCarta,
-          tabcartaesercito.dataRilascioCarta,
-          tabsoggetto.rif_stato as rifStato
-          from tabnucleifull
-             join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
-             join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
-             left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
-          where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale)
-  
+    soggetto:
+      rifStato: 5 #tabTipoStatoSoggetto stato "in attesa di pagamento come richieste tecniche
+    istanza:
+      rifCanale: 1  # da dove proveniene inserimento (web = aggate, ops = strutture)
+      rifOperatore: 1   # tab login operatore che lavora la richiesta
+      rifStatoIstanza: 2 # tabtipostatoistanza stato "in attesa di pagamento come richieste tecniche
+      nucleoPrincipale: 1 # non presente in tab istanza (a quale tab si riferisce)
+      itegrNucleoPrincipale: 3  # modifiche dati di nucleo principale già inserito
+      nucleoEsterno: 4 #a quale tab si riferisce
+      integrNucleoEsterno: 5 # modifiche dati di nucleo principale già inserito
+    mandato:
+      rifOperatore: 1
+      rifOperatorePagamento: 1 #chi convalida il pagamento
+      rifStatoMandato: 1 # stato del mandato (dump)
+      rifTipoPagamento: 1 # modalità pagamento (dump)
+    costi:
+      perSponsor: 800
+      perFamigliare: 400
+      perOspite: 800 #1000 8euro per nuclei esterni
+      spedizione: 450
+      limiteNucleoFamigliarePrincipaleNoSponsor: 2000
+    query:
+      carteEsercitoPerSponsor: |
+        select tabnucleifull.rif_nucleo as rifNucleo,
+        tabistanza.rif_tipoIstanza as rifTipoIstanza,
+        tabsoggetto.nome,
+        tabsoggetto.cognome,
+        tabsoggetto.email,
+        tabsoggetto.enteAppartenenza,
+        tabsoggetto.fototessera,
+        tabsoggetto.nascitaData,
+        tabsoggetto.nascitaLuogo,
+        tabsoggetto.nazionalita,
+        tabsoggetto.rif_gradoQualifica as rifGradoQualifica,
+        tabsoggetto.rif_posizione as rifPosizione,
+        tabsoggetto.rif_rapporto as rifRapporto,
+        tabsoggetto.sesso,
+        tabsoggetto.telCellulare,
+        tabsoggetto.telUfficio,
+        tabsoggetto.codiceFiscale,
+        tabnucleifull.is_sponsor as isSponsor,
+        tabistanza.rif_statoIstanza as rifStatoIstanza,
+        tabcartaesercito.numeroCarta,
+        tabcartaesercito.rif_statoCarta as rifStatoCarta,
+        tabcartaesercito.dataScadenzaCarta,
+        tabcartaesercito.dataRilascioCarta,
+        tabsoggetto.rif_stato as rifStato
+        from tabnucleifull
+           join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
+           join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
+           left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
+        where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale)
+      
+      mandatiPerSponsor: |
+        select tabmandato.idMandato,
+        tabmandato.rif_statoMandato as rifStatoMandato,
+        tabmandato.rif_nucleofull as rifNucleoFull,
+        tabmandato.quotaMandato,
+        tabmandato.dataMandato,
+        tabmandato.dataEmissione,
+        tabmandato.dataScadenza,
+        tabmandato.rif_sponsor as rifSponsor,
+        tabmandato.nota,
+        tabmandato.notaConvalida,
+        tabmandato.notaAnnullamento,
+        tabmandato.dataAggiornamento,
+        tabmandato.convalidaMandatoCovid
+        from tabmandato
+        where tabmandato.rif_sponsor = 
+        (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale) AND tabmandato.rif_statoMandato = (1 OR 5)
 
+      mandatiPVCPerSponsor: |
+        select tabMandatoPVC.idmandatopvc,
+        tabMandatoPVC.rifnucleofull            as rifnucleofullPvc,
+        tabMandatoPVC.quotamandato             as quotamandatoPvc,
+        tabMandatoPVC.rifsponsor               as rifsponsorPvc,
+        tabMandatoPVC.note                     as notePvc,
+        tabMandatoPVC.notaconvalida            as notaconvalidaPvc,
+        tabMandatoPVC.notaannullamento         as notaannullamentoPvc,
+        tabMandatoPVC.rifstatomandatopvc       as rifstatomandatoPvc,
+        tabMandatoPVC.dataaggiornamento        as dataaggiornamentoPvc,
+        tabMandatoPVC.datamandatopvc           as datamandatoPvc,
+        tabMandatoPVC.dataemissionepvc         as dataemissionePvc,
+        tabMandatoPVC.riftipomandato           as riftipomandatoPvc
+        from tabMandatoPVC
+        where tabMandatoPVC.rifSponsor =
+        (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale)  AND tabMandatoPVC.rifStatoMandatoPVC = (1 OR 5);

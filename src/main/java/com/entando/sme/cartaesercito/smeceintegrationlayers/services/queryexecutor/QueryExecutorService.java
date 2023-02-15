@@ -1,6 +1,8 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiPVCDTO;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,6 +20,9 @@ public class QueryExecutorService {
     private final Set<Integer> tipiIstanzaNucleoPrincipale;
     private final Set<Integer> tipiIstanzaNucleoEsterno;
 
+    private final String mandatiPerSponsor;
+
+    private final String mandatiPVCPerSponsor;
 
     private final
     NamedParameterJdbcTemplate jdbcTemplate;
@@ -27,7 +32,8 @@ public class QueryExecutorService {
         tipiIstanzaNucleoPrincipale = Set.of(configurationParameters.getIstanza().getNucleoPrincipale(), configurationParameters.getIstanza().getItegrNucleoPrincipale());
         tipiIstanzaNucleoEsterno = Set.of(configurationParameters.getIstanza().getNucleoEsterno(), configurationParameters.getIstanza().getIntegrNucleoEsterno());
         carteEsercitoPerSponsor = configurationParameters.getQuery().getCarteEsercitoPerSponsor();
-
+        mandatiPerSponsor = configurationParameters.getQuery().getMandatiPerSponsor();
+        mandatiPVCPerSponsor = configurationParameters.getQuery().getMandatiPVCPerSponsor();
     }
 
 
@@ -62,8 +68,47 @@ public class QueryExecutorService {
         return CartaEsercitoPerSoggettoPerNucleoDTOView.groupByTipoNucleo(cartaEsercitoPerSoggettoPerNucleoDTOViewList, tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno);
     }
 
+    public List<MandatiDTO> getMandatiPerSponsor(String codiceFiscale) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
+        List<MandatiDTO> mandatiPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPerSponsor, namedParameters, (rs, rowNum) -> new MandatiDTO(
+                rs.getInt("idMandato"),
+                rs.getInt("rifStatoMandato"),
+                rs.getInt("rifNucleoFull"),
+                rs.getInt("quotaMandato"),
+                rs.getString("dataMandato"),
+                rs.getString("dataEmissione"),
+                rs.getString("dataScadenza"),
+                rs.getInt("rifSponsor"),
+                rs.getString("nota"),
+                rs.getString("notaConvalida"),
+                rs.getString("notaAnnullamento"),
+                rs.getString("dataAggiornamento"),
+                rs.getInt("convalidaMandatoCovid")
+        )).collect(Collectors.toList());
+        return mandatiPerNucleoDTOViewList;
+    }
+
+    public List<MandatiPVCDTO> getMandatiPVCPerSponsor(String codiceFiscale) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
+        List<MandatiPVCDTO> mandatiPVCPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPVCPerSponsor, namedParameters, (rs, rowNum) -> new MandatiPVCDTO(
+                rs.getInt("idmandatopvc"),
+                rs.getInt("rifnucleofullPvc"),
+                rs.getInt("quotamandatoPvc"),
+                rs.getInt("rifsponsorPvc"),
+                rs.getString("notePvc"),
+                rs.getString("notaconvalidaPvc"),
+                rs.getString("notaannullamentoPvc"),
+                rs.getInt("rifstatomandatoPvc"),
+                rs.getString("dataaggiornamentoPvc"),
+                rs.getString("datamandatoPvc"),
+                rs.getString("dataemissionePvc"),
+                rs.getInt("riftipomandatoPvc")
+        )).collect(Collectors.toList());
+        return mandatiPVCPerNucleoDTOViewList;
+    }
+
     public Integer getNextRifNucleo(){
-        //TODO WARN problematiche di concorrenza! implementare lato nostro e BO autoincrement
+        //TODO WARN problematiche di concorrenza! implementare lato nostro e BO autoincrement aggiungere sequence
         Integer rifNucleo = jdbcTemplate.queryForObject("select max(rif_nucleo) from tabnucleifull", new HashMap<>(), Integer.class);
         return rifNucleo!=null?rifNucleo+1:1;
     }
