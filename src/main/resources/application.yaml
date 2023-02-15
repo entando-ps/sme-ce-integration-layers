@@ -1,16 +1,4 @@
-spring:
-  datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    username: root
-    url: jdbc:mariadb://localhost:3306/cartaesercito
-    password: Entando2022
-  jpa:
-    hibernate:
-      naming:
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-      ddl-auto: validate
-app:
+smece:
   config:
     soggetto:
       rifStato: 5 #tabTipoStatoSoggetto stato "in attesa di pagamento come richieste tecniche
