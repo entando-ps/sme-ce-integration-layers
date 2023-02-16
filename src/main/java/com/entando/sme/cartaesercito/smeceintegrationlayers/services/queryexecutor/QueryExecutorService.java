@@ -3,6 +3,8 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecu
 import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiPVCDTO;
+
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -25,6 +27,7 @@ public class QueryExecutorService {
     private final String mandatiPVCPerSponsor;
 
     private final
+    @Qualifier("smeceDataSource")
     NamedParameterJdbcTemplate jdbcTemplate;
 
     public QueryExecutorService(NamedParameterJdbcTemplate jdbcTemplate, ConfigurationParameters configurationParameters) {
@@ -109,7 +112,7 @@ public class QueryExecutorService {
 
     public Integer getNextRifNucleo(){
         //TODO WARN problematiche di concorrenza! implementare lato nostro e BO autoincrement aggiungere sequence
-        Integer rifNucleo = jdbcTemplate.queryForObject("select max(rif_nucleo) from tabnucleifull", new HashMap<>(), Integer.class);
+        Integer rifNucleo = jdbcTemplate.queryForObject("select max(rif_nucleo) from cartaesercito.tabnucleifull", new HashMap<>(), Integer.class);
         return rifNucleo!=null?rifNucleo+1:1;
     }
 }
