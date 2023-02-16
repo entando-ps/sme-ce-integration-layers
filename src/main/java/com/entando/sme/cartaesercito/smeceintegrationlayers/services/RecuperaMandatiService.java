@@ -19,7 +19,7 @@ public class RecuperaMandatiService {
         this.queryExecutorService = queryExecutorService;
     }
 
-    List<MandatiDTO> recuperaMandati(String codiceFiscale){
+    public List<MandatiDTO> recuperaMandati(String codiceFiscale){
         List<MandatiDTO> mandatiPerSponsor = queryExecutorService.getMandatiPerSponsor(codiceFiscale);
         return mandatiPerSponsor;
     }
