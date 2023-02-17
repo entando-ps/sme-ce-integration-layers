@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 
-public class MandatiService {
+public class MandatoService {
 
     final private TabmandatoJPARepository tabmandatoJPARepository;
     final private TabmandatopvcJPARepository tabmandatopvcJPARepository;
 
-    public MandatiService(TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, ConfigurationParameters configParam) {
+    public MandatoService(TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, ConfigurationParameters configParam) {
         this.tabmandatoJPARepository = tabmandatoJPARepository;
         this.tabmandatopvcJPARepository = tabmandatopvcJPARepository;
     }
@@ -49,7 +49,7 @@ public class MandatiService {
         Tabmandato mandato = tabmandatoJPARepository.findById(codiceMandato).get();
 
         // verifico se è già stato caricato un cro associato a quel mandato
-        if (mandato.getAttestazionePagamento() != null || mandato.getAttestazionePagamento().isBlank()) {
+        if (mandato.getAttestazionePagamento() != null) {
             throw new UnsupportedOperationException("per il mandato con codice " + codiceMandato + " è già presente un'attestazione di pagamento");
         }
         mandato.setAttestazionePagamento(cro);
@@ -69,7 +69,7 @@ public class MandatiService {
         Tabmandatopvc mandatoPVC = tabmandatopvcJPARepository.findById(codiceMandato).get();
 
         // verifico se è già stato caricato un cro associato a quel mandato
-        if (mandatoPVC.getAttestazionePagamento() != null || !mandatoPVC.getAttestazionePagamento().isBlank()) {
+        if (mandatoPVC.getAttestazionePagamento() != null) {
             throw new UnsupportedOperationException("per il mandato PVC con codice " + codiceMandato + " è già presente un'attestazione di pagamento");
         }
 
