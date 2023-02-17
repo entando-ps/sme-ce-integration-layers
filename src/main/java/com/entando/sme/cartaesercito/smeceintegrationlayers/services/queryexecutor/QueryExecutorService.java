@@ -86,7 +86,8 @@ public class QueryExecutorService {
                 rs.getString("notaConvalida"),
                 rs.getString("notaAnnullamento"),
                 rs.getString("dataAggiornamento"),
-                rs.getInt("convalidaMandatoCovid")
+                rs.getInt("convalidaMandatoCovid"),
+                rs.getString("attestazionePagamento")
         )).collect(Collectors.toList());
         return mandatiPerNucleoDTOViewList;
     }
@@ -105,7 +106,8 @@ public class QueryExecutorService {
                 rs.getString("dataaggiornamentoPvc"),
                 rs.getString("datamandatoPvc"),
                 rs.getString("dataemissionePvc"),
-                rs.getInt("riftipomandatoPvc")
+                rs.getInt("riftipomandatoPvc"),
+                rs.getString("attestazionePagamento")
         )).collect(Collectors.toList());
         return mandatiPVCPerNucleoDTOViewList;
     }

@@ -78,7 +78,8 @@ smece:
           tabmandato.notaConvalida,
           tabmandato.notaAnnullamento,
           tabmandato.dataAggiornamento,
-          tabmandato.convalidaMandatoCovid
+          tabmandato.convalidaMandatoCovid,
+          tabmandato.attestazionePagamento
           from tabmandato
           where tabmandato.rif_sponsor = 
           (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale) AND tabmandato.rif_statoMandato = (1 OR 5)
@@ -95,7 +96,8 @@ smece:
           tabMandatoPVC.dataaggiornamento        as dataaggiornamentoPvc,
           tabMandatoPVC.datamandatopvc           as datamandatoPvc,
           tabMandatoPVC.dataemissionepvc         as dataemissionePvc,
-          tabMandatoPVC.riftipomandato           as riftipomandatoPvc
+          tabMandatoPVC.riftipomandato           as riftipomandatoPvc,
+          tabMandatoPVC.attestazionePagamento
           from tabMandatoPVC
           where tabMandatoPVC.rifSponsor =
           (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale)  AND tabMandatoPVC.rifStatoMandatoPVC = (1 OR 5);

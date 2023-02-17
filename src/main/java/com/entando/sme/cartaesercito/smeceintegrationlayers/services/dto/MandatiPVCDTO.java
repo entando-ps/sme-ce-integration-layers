@@ -23,6 +23,7 @@ public class MandatiPVCDTO {
     private String dataemissionePvc; // varchar
     private Integer riftipomandatoPvc;
 
+    private String cro;
 
 }
 
