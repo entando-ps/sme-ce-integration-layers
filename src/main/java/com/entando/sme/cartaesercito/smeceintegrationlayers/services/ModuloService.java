@@ -104,12 +104,11 @@ public class ModuloService {
         return tabnucleifullCapofamigliaoSponsor;
     }
 
-    protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullCapofamiglia, String cro, int importoDaPagare, int importoPagato, int importoDaPagareSpedizione, int importoPagatoSpedizione) {
+    protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullCapofamiglia, int importoDaPagare, int importoPagato, int importoDaPagareSpedizione, int importoPagatoSpedizione) {
         Tabmandato tabmandato = new Tabmandato();
         tabmandato.setRifSponsor(sponsor.getIdSoggetto());
         tabmandato.setRifNucleofull(tabnucleifullCapofamiglia.getId());
         tabmandato.setQuotaVersata(Math.round((float) importoPagato / 100));
-        tabmandato.setAttestazionePagamento(cro);
         tabmandato.setQuotaMandato(Math.round((float) importoDaPagare / 100));
         tabmandato.setRif_statoMandato(configParameters.getMandato().getRifStatoMandato());
 
@@ -117,7 +116,6 @@ public class ModuloService {
         tabmandatopvc.setRifSponsor(sponsor.getIdSoggetto());
         tabmandatopvc.setRifNucleoFull(tabnucleifullCapofamiglia.getId());
         tabmandatopvc.setQuotaVersata(String.valueOf((double) importoPagatoSpedizione / 100));
-        tabmandatopvc.setAttestazionePagamento(cro);
         tabmandatopvc.setQuotaMandato(String.valueOf((double) importoDaPagareSpedizione / 100));
         tabmandatopvc.setRifStatoMandatoPVC(configParameters.getMandato().getRifStatoMandato());
         // TODO data salvata da DB?
@@ -163,7 +161,7 @@ public class ModuloService {
         //rinnovo
         //quindi modifica nucleo + rinnovo è una possibilità
         // TODO WARN qui viene calcolato solo costo spedizione per nucleo principale
-        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), moduloDTO.getPagamento().getCro(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizioneNucleoPricipale(), costiDTO.getCostoSpedizioneNucleoPricipale());
+        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizioneNucleoPricipale(), costiDTO.getCostoSpedizioneNucleoPricipale());
 
         //TODO WARN spedizione già pagata perchè per ora il nucleo principale viene creato, ma doppia (comportamento atteso, controllare costi)
 
@@ -171,12 +169,12 @@ public class ModuloService {
         //nuovo nucleo esterno
         //modifica al nucleo esterno
         //rinnovo
-        gestisciNucleiEsterni(moduloDTO.getNucleiEsterni(), tabSoggettoSponsor, configParameters.getIstanza().getNucleoEsterno(), moduloDTO.getPagamento().getCro(), costiDTO);
+        gestisciNucleiEsterni(moduloDTO.getNucleiEsterni(), tabSoggettoSponsor, configParameters.getIstanza().getNucleoEsterno(), costiDTO);
         //quindi modifica nucleo + rinnovo è una possibilità
 
     }
 
-    protected Tabsoggetto gestisciNucleoPrincipale(List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale, String cro, Integer importoDaPagarePerNucleoPrincipaleESponsor, Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoDaPagarePerSpedizione, Integer importoPagatoPerSpedizione) {
+    protected Tabsoggetto gestisciNucleoPrincipale(List<ModuloDTO.Soggetto> nucleoPricipaleConSponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliarePrincipale, Integer importoDaPagarePerNucleoPrincipaleESponsor, Integer importoPagatoPerNucleoPrincipaleESponsor, Integer importoDaPagarePerSpedizione, Integer importoPagatoPerSpedizione) {
 
         List<Tabsoggetto> listaSoggettiDelNucleoPrincipale = insertSoggettiAndResidenze(nucleoPricipaleConSponsor);
         Tabsoggetto tabSoggettoSponsor = listaSoggettiDelNucleoPrincipale.get(0);
@@ -191,7 +189,7 @@ public class ModuloService {
 
 
         //inserimento dei mandati di pagamento
-        insertMandati(tabSoggettoSponsor, tabnucleifullSponsorECapofamigliaNucleoPrincipale, cro, importoDaPagarePerNucleoPrincipaleESponsor, importoPagatoPerNucleoPrincipaleESponsor, importoDaPagarePerSpedizione, importoPagatoPerSpedizione
+        insertMandati(tabSoggettoSponsor, tabnucleifullSponsorECapofamigliaNucleoPrincipale, importoDaPagarePerNucleoPrincipaleESponsor, importoPagatoPerNucleoPrincipaleESponsor, importoDaPagarePerSpedizione, importoPagatoPerSpedizione
 
         );
 
@@ -199,7 +197,7 @@ public class ModuloService {
     }
 
 
-    protected void gestisciNucleoEsterno(ModuloDTO.Nucleo nucleoEsterno, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, String cro, Integer importoDaPagarePerIlNucleoEsterno, Integer importoPagatoPerIlNucleoEsterno, Integer importoDaPagarePerLaSpedizione, Integer importoPagatoPerLaSpedizione) {
+    protected void gestisciNucleoEsterno(ModuloDTO.Nucleo nucleoEsterno, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, Integer importoDaPagarePerIlNucleoEsterno, Integer importoPagatoPerIlNucleoEsterno, Integer importoDaPagarePerLaSpedizione, Integer importoPagatoPerLaSpedizione) {
         List<Tabsoggetto> listaSoggettiDelNucleoEsterno = insertSoggettiAndResidenze(nucleoEsterno.getComponenti());
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo esterno
         // e aggancio dei soggetti all'istanza
@@ -209,19 +207,19 @@ public class ModuloService {
         Tabnucleifull tabnucleifullCapofamigliaNucleoEsterno = insertNucleiFullPerISoggetti(false, listaSoggettiDelNucleoEsterno, tabistanzaNucleoEsterno);
 
         //inserimento dei mandati di pagamento
-        insertMandati(sponsor, tabnucleifullCapofamigliaNucleoEsterno, cro, importoDaPagarePerIlNucleoEsterno, importoPagatoPerIlNucleoEsterno, importoDaPagarePerLaSpedizione, importoPagatoPerLaSpedizione //spedizione già pagata nel mandato del nucleo principale
+        insertMandati(sponsor, tabnucleifullCapofamigliaNucleoEsterno, importoDaPagarePerIlNucleoEsterno, importoPagatoPerIlNucleoEsterno, importoDaPagarePerLaSpedizione, importoPagatoPerLaSpedizione //spedizione già pagata nel mandato del nucleo principale
         );
 
     }
 
-    protected void gestisciNucleiEsterni(List<ModuloDTO.Nucleo> nucleiEsterni, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, String cro, CostiDTO costiDTO) {
+    protected void gestisciNucleiEsterni(List<ModuloDTO.Nucleo> nucleiEsterni, Tabsoggetto sponsor, Integer tipoIstanzaDaCrearePerNucleoFamiliareEsterno, CostiDTO costiDTO) {
         IntStream.range(0, nucleiEsterni.size()).forEach(index -> {
             ModuloDTO.Nucleo nucleoEsterno = nucleiEsterni.get(index);
             CostiDTO.CostoPerNucleoEsternoDTO costoPerNucleoEsterno = costiDTO.getNucleiEsterni().get(index);
             costoPerNucleoEsterno.setCostoSpedizioneNucleoEsterno(costiDTO.getNucleiEsterni().get(index).getCostoSpedizioneNucleoEsterno());
-            gestisciNucleoEsterno(nucleoEsterno, sponsor, tipoIstanzaDaCrearePerNucleoFamiliareEsterno, cro, costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno());
+            gestisciNucleoEsterno(nucleoEsterno, sponsor, tipoIstanzaDaCrearePerNucleoFamiliareEsterno, costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno());
         });
     }
-
+//costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor()
 
 }

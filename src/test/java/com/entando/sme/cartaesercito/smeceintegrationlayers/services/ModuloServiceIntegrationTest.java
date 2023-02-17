@@ -50,7 +50,6 @@ class ModuloServiceIntegrationTest {
         moduloDTO.setNucleiEsterni(nucleiEsterni);
 
 
-        moduloDTO.setPagamento(new ModuloDTO.Pagamento("cro-unico"));
 
         moduloDTO.getNucleoPrincipale().setResidenzaDiSpedizione(new ModuloDTO.Residenza("cap", "citta", "civico", "presso", "provincia", "via"));
 
