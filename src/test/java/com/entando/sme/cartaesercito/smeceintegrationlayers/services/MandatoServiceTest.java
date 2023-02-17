@@ -11,12 +11,12 @@ public class MandatoServiceTest {
     MandatoService mandatoService;
     @Test
     void aggiornaMandato() {
-        mandatoService.aggiornaMandatoConCRO(25, "cro-update");
+        mandatoService.aggiornaMandatoConCRO(26, "cro-update");
     }
 
     @Test
     void aggiornaMandatoPVC() {
-        mandatoService.aggiornaMandatoPVCConCRO(25, "cro-update");
+        mandatoService.aggiornaMandatoPVCConCRO(26, "cro-update");
     }
 
 }

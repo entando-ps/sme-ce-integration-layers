@@ -52,6 +52,7 @@ public class MandatoService {
         if (mandato.getAttestazionePagamento() != null) {
             throw new UnsupportedOperationException("per il mandato con codice " + codiceMandato + " è già presente un'attestazione di pagamento");
         }
+        mandato.setDataAggiornamento(null);
         mandato.setAttestazionePagamento(cro);
         tabmandatoJPARepository.save(mandato);
     }
@@ -72,7 +73,7 @@ public class MandatoService {
         if (mandatoPVC.getAttestazionePagamento() != null) {
             throw new UnsupportedOperationException("per il mandato PVC con codice " + codiceMandato + " è già presente un'attestazione di pagamento");
         }
-
+        mandatoPVC.setDataAggiornamento(null);
         mandatoPVC.setAttestazionePagamento(cro);
         tabmandatopvcJPARepository.save(mandatoPVC);
     }

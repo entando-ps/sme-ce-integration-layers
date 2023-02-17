@@ -118,7 +118,7 @@ public class ModuloService {
         tabmandatopvc.setQuotaVersata(String.valueOf((double) importoPagatoSpedizione / 100));
         tabmandatopvc.setQuotaMandato(String.valueOf((double) importoDaPagareSpedizione / 100));
         tabmandatopvc.setRifStatoMandatoPVC(configParameters.getMandato().getRifStatoMandato());
-        // TODO data salvata da DB?
+        // TODO data salvata da DB? data aggiornamento autosalvata in db solo su tabmandato
         /**
          * il salvataggio avviene sempre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
          */
