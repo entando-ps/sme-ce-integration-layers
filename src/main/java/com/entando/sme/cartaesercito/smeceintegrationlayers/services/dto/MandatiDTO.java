@@ -23,4 +23,6 @@ public class MandatiDTO {
         private String dataAggiornamento; // timestamp letta correttamente
         private Integer convalidaMandatoCovid;
 
+        private String cro;
+
 }
