@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 
@@ -11,6 +12,7 @@ import javax.annotation.PostConstruct;
 @Data
 @Slf4j
 @AllArgsConstructor
+@Configuration
 public class ConfigurationParameters {
 
     private Soggetto soggetto;
