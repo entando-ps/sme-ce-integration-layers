@@ -9,8 +9,12 @@ import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecut
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -112,13 +116,19 @@ public class ModuloService {
         tabmandato.setQuotaMandato(Math.round((float) importoDaPagare / 100));
         tabmandato.setRif_statoMandato(configParameters.getMandato().getRifStatoMandato());
 
+        tabmandato.setDataMandato(LocalDateTime.now().format(DateTimeFormatter
+                .ofPattern("dd-MM-yyyy HH:mm")));
+        tabmandato.setDataEmissione(new Date(System.currentTimeMillis()));
+
         Tabmandatopvc tabmandatopvc = new Tabmandatopvc();
         tabmandatopvc.setRifSponsor(sponsor.getIdSoggetto());
         tabmandatopvc.setRifNucleoFull(tabnucleifullCapofamiglia.getId());
         tabmandatopvc.setQuotaVersata(String.valueOf((double) importoPagatoSpedizione / 100));
         tabmandatopvc.setQuotaMandato(String.valueOf((double) importoDaPagareSpedizione / 100));
         tabmandatopvc.setRifStatoMandatoPVC(configParameters.getMandato().getRifStatoMandato());
-        // TODO data salvata da DB? data aggiornamento autosalvata in db solo su tabmandato
+
+        tabmandatopvc.setDataMandatoPVC(String.valueOf(LocalDate.now()));
+        // TODO data salvata da DB? data aggiornamento autosalvata in db sia su tabmandato che tabMandatoPVC
         /**
          * il salvataggio avviene sempre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
          */

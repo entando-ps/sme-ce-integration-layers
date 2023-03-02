@@ -70,7 +70,7 @@ smece:
         tabmandato.attestazionePagamento
         from tabmandato
         where tabmandato.rif_sponsor = 
-        (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale) AND tabmandato.rif_statoMandato = (1 OR 5)
+        (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale) AND tabmandato.rif_statoMandato = 1;
 
       mandatiPVCPerSponsor: |
         select tabMandatoPVC.idmandatopvc,
@@ -88,4 +88,4 @@ smece:
         tabMandatoPVC.attestazionePagamento
         from tabMandatoPVC
         where tabMandatoPVC.rifSponsor =
-        (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale)  AND tabMandatoPVC.rifStatoMandatoPVC = (1 OR 5);
+        (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale =:codiceFiscale)  AND tabMandatoPVC.rifStatoMandatoPVC = 1;
