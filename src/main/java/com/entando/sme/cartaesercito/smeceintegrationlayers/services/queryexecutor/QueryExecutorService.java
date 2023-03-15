@@ -1,8 +1,8 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiDTO;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiPVCDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoPVCDTO;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -24,8 +24,7 @@ public class QueryExecutorService {
 
     private final String mandatiPVCPerSponsor;
 
-    private final
-    NamedParameterJdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
     public QueryExecutorService(NamedParameterJdbcTemplate jdbcTemplate, ConfigurationParameters configurationParameters) {
         this.jdbcTemplate = jdbcTemplate;
@@ -63,14 +62,26 @@ public class QueryExecutorService {
                 rs.getInt("rifStatoCarta"),
                 rs.getDate("dataScadenzaCarta"),
                 rs.getDate("dataRilascioCarta"),
-                rs.getInt("rifStato")
+                rs.getInt("rifStato"),
+                rs.getInt("numeroMandato"),
+                rs.getString("croMandato"),
+                rs.getInt("rifStatoMandato"),
+                rs.getInt("quotaMandato"),
+                rs.getString("dataMandato"),
+                rs.getInt("rifNucleoFull"),
+                rs.getInt("numeroMandatoPVC"),
+                rs.getString("croMandatoPVC"), //attestazione pagamento
+                rs.getInt("rifNucleoFullPVC"),
+                rs.getInt("quotaMandatoPVC"),
+                rs.getInt("rifStatoMandatoPVC"),
+                rs.getString("dataMandatoPVC")
         )).collect(Collectors.toList());
         return CartaEsercitoPerSoggettoPerNucleoDTOView.groupByTipoNucleo(cartaEsercitoPerSoggettoPerNucleoDTOViewList, tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno);
     }
 
-    public List<MandatiDTO> getMandatiPerSponsor(String codiceFiscale) {
+    public List<MandatoDTO> getMandatiPerSponsor(String codiceFiscale) {
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
-        List<MandatiDTO> mandatiPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPerSponsor, namedParameters, (rs, rowNum) -> new MandatiDTO(
+        List<MandatoDTO> mandatiPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPerSponsor, namedParameters, (rs, rowNum) -> new MandatoDTO(
                 rs.getInt("idMandato"),
                 rs.getInt("rifStatoMandato"),
                 rs.getInt("rifNucleoFull"),
@@ -89,9 +100,9 @@ public class QueryExecutorService {
         return mandatiPerNucleoDTOViewList;
     }
 
-    public List<MandatiPVCDTO> getMandatiPVCPerSponsor(String codiceFiscale) {
+    public List<MandatoPVCDTO> getMandatiPVCPerSponsor(String codiceFiscale) {
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
-        List<MandatiPVCDTO> mandatiPVCPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPVCPerSponsor, namedParameters, (rs, rowNum) -> new MandatiPVCDTO(
+        List<MandatoPVCDTO> mandatiPVCPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPVCPerSponsor, namedParameters, (rs, rowNum) -> new MandatoPVCDTO(
                 rs.getInt("idmandatopvc"),
                 rs.getInt("rifnucleofullPvc"),
                 rs.getInt("quotamandatoPvc"),

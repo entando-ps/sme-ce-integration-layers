@@ -21,11 +21,15 @@ public class RecuperaMandatiService {
 
     List<MandatiDTO> recuperaMandati(String codiceFiscale){
         List<MandatiDTO> mandatiPerSponsor = queryExecutorService.getMandatiPerSponsor(codiceFiscale);
+    List<MandatoDTO> recuperaMandati(String codiceFiscale) {
+        List<MandatoDTO> mandatiPerSponsor = queryExecutorService.getMandatiPerSponsor(codiceFiscale);
         return mandatiPerSponsor;
     }
 
     List<MandatiPVCDTO> recuperaMandatiPVC(String codiceFiscale){
         List<MandatiPVCDTO> mandatiPvcPerSponsor = queryExecutorService.getMandatiPVCPerSponsor(codiceFiscale);
+    List<MandatoPVCDTO> recuperaMandatiPVC(String codiceFiscale) {
+        List<MandatoPVCDTO> mandatiPvcPerSponsor = queryExecutorService.getMandatiPVCPerSponsor(codiceFiscale);
         return mandatiPvcPerSponsor;
     }
 

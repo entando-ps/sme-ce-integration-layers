@@ -1,8 +1,7 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
-import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiDTO;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatiPVCDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoPVCDTO;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +18,14 @@ public class RecuperaMandatiServiceTest {
     @Test
     @Disabled
     void recuperaMandatiPVC() {
-        List<MandatiPVCDTO> mandatiPVC = recuperaMandatiService.recuperaMandatiPVC("testSp");
+        List<MandatoPVCDTO> mandatiPVC = recuperaMandatiService.recuperaMandatiPVC("testSp");
         System.out.println("mandatiPVC = " + mandatiPVC);
     }
 
     @Test
     @Disabled
     void recuperaMandati(){
-        List<MandatiDTO> mandati = recuperaMandatiService.recuperaMandati("testSp");
+        List<MandatoDTO> mandati = recuperaMandatiService.recuperaMandati("testSp");
         System.out.println("mandati =" + mandati);
     }
 

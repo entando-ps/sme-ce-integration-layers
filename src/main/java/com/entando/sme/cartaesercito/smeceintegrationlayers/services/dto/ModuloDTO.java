@@ -170,9 +170,9 @@ public class ModuloDTO {
 
         private List<Soggetto> componenti;
 
-        private MandatiDTO mandatoDTO;
+        private MandatoDTO mandatoDTO;
 
-        private MandatiPVCDTO mandatoPVCDTO;
+        private MandatoPVCDTO mandatoPVCDTO;
 
         public Nucleo(List<Soggetto> componenti) {
             this.componenti = componenti;

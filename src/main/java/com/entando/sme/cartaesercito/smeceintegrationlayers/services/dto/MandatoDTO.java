@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class MandatiDTO {
+public class MandatoDTO {
 
         private Integer idMandato;
         private Integer rifStatoMandato;
@@ -24,5 +24,14 @@ public class MandatiDTO {
         private Integer convalidaMandatoCovid;
 
         private String cro;
+
+        public MandatoDTO(Integer idMandato, String cro, Integer rifStatoMandato, Integer quotaMandato, String dataMandato,Integer rifNucleoFull){
+                this.idMandato = idMandato;
+                this.cro = cro;
+                this.rifStatoMandato = rifStatoMandato;
+                this.quotaMandato = quotaMandato;
+                this.dataMandato = dataMandato;
+                this.rifNucleoFull = rifNucleoFull;
+        }
 
 }

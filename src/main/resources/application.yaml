@@ -46,12 +46,26 @@ smece:
         tabcartaesercito.rif_statoCarta as rifStatoCarta,
         tabcartaesercito.dataScadenzaCarta,
         tabcartaesercito.dataRilascioCarta,
-        tabsoggetto.rif_stato as rifStato
+        tabsoggetto.rif_stato as rifStato,
+        tabmandato.idMandato as numeroMandato,
+        tabmandato.attestazionePagamento as croMandato,
+        tabmandato.rif_statoMandato as rifStatoMandato,
+        tabmandato.quotaMandato,
+        tabmandato.rif_nucleofull as rifNucleoFull,
+        tabmandato.dataMandato,
+        tabMandatoPVC.idmandatopvc as numeroMandatoPVC,
+        tabMandatoPVC.attestazionePagamento as croMandatoPVC,
+        tabMandatoPVC.rifstatomandatopvc as rifStatoMandatoPVC,
+        tabMandatoPVC.quotamandato as quotaMandatoPVC,
+        tabMandatoPVC.rifnucleofull as rifNucleoFullPVC,
+        tabMandatoPVC.datamandatopvc as dataMandatoPVC
         from tabnucleifull
-           join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
-           join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
-           left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
-        where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale)
+          join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
+          join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
+          left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
+          left outer join tabmandato on tabmandato.rif_nucleofull = tabnucleifull.id  and (tabmandato.rif_statoMandato = 1 or tabmandato.rif_statoMandato = null)
+          left outer join tabMandatoPVC on tabMandatoPVC.rifnucleofull = tabnucleifull.id and (tabMandatoPVC.rifStatoMandatoPVC = 1 or tabMandatoPVC.rifStatoMandatoPVC = null)
+        where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale);
       
       mandatiPerSponsor: |
         select tabmandato.idMandato,

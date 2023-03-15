@@ -52,7 +52,19 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()),
-                        1
+                        1,
+                        123,
+                        "cro-123",
+                        1,
+                        20,
+                        "01/03/2023",
+                        1,
+                        321,
+                        "cro-321",
+                        1,
+                        20,
+                        1,
+                        "dataMandatoPVC"
                 )).collect(Collectors.toList());
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoEsterno1 =
                 IntStream.range(1,
@@ -79,7 +91,19 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()),
-                        1
+                        1,
+                        123,
+                        "cro-123",
+                        1,
+                        20,
+                        "01/03/2023",
+                        2,
+                        321,
+                        "cro-321",
+                        2,
+                        20,
+                        1,
+                        "dataMandatoPVC"
                 )).collect(Collectors.toList());
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoEsterno2 =
                 IntStream.range(1,
@@ -106,7 +130,19 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()),
-                        1
+                        1,
+                        123,
+                        "cro-123",
+                        1,
+                        20,
+                        "01/03/2023",
+                        2,
+                        321,
+                        "cro-321",
+                        2,
+                        20,
+                        1,
+                        "dataMandatoPVC"
                 )).collect(Collectors.toList());
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> list = new ArrayList<>(nucleoPrincipale);
         list.addAll(nucleoEsterno1);
@@ -152,7 +188,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
 
 
     @Test
-    public void convertiInModuloDTO(){
+    public void convertiInModuloDTO() {
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoPrincipale =
                 IntStream.range(1,
                         5).mapToObj(index -> new CartaEsercitoPerSoggettoPerNucleoDTOView(1,
@@ -178,7 +214,19 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()),
-                        1
+                        1,
+                        123,
+                        "cro-123",
+                        1,
+                        20,
+                        "01/03/2023",
+                        3,
+                        321,
+                        "cro-321",
+                        3,
+                        20,
+                        1,
+                        "dataMandatoPVC"
                 )).collect(Collectors.toList());
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoEsterno1 =
                 IntStream.range(1,
@@ -205,7 +253,19 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()),
-                        1
+                        1,
+                        123,
+                        "cro-123",
+                        1,
+                        20,
+                        "01/03/2023",
+                        4,
+                        321,
+                        "cro-321",
+                        4,
+                        20,
+                        1,
+                        "dataMandatoPVC"
                 )).collect(Collectors.toList());
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoEsterno2 =
                 IntStream.range(1,
@@ -232,7 +292,19 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         new Date(System.currentTimeMillis()),
                         new Date(System.currentTimeMillis()),
-                        1
+                        1,
+                        123,
+                        "cro-123",
+                        1,
+                        20,
+                        "01/03/2023",
+                        5,
+                        321,
+                        "cro-321",
+                        5,
+                        20,
+                        1,
+                        "dataMandatoPVC"
                 )).collect(Collectors.toList());
         List<CartaEsercitoPerSoggettoPerNucleoDTOView> list = new ArrayList<>(nucleoPrincipale);
         list.addAll(nucleoEsterno1);
@@ -242,11 +314,11 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
         ModuloDTO convertito = CartaEsercitoPerSoggettoPerNucleoDTOView.converti(daConvertire);
         assertEquals(convertito.getSponsor().getCodiceFiscale(), nucleoPrincipale.get(0).getCodiceFiscale());
         assertEquals(convertito.getNucleoPrincipale().getId(), nucleoPrincipale.get(0).getRifNucleo());
-        assertEquals(convertito.getNucleoPrincipale().getComponenti().size(), nucleoPrincipale.size()-1);
+        assertEquals(convertito.getNucleoPrincipale().getComponenti().size(), nucleoPrincipale.size() - 1);
 
         Map<Integer, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> nucleiEsterniDaConvertirePerIdNucleo = daConvertire.get(CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo.Esterno).stream().collect(Collectors.groupingBy(cartaEsercitoPerSoggettoPerNucleoDTOView -> cartaEsercitoPerSoggettoPerNucleoDTOView.getRifNucleo()));
 
-        convertito.getNucleiEsterni().forEach(nucleoEsternoConvertito->{
+        convertito.getNucleiEsterni().forEach(nucleoEsternoConvertito -> {
             assertTrue(nucleiEsterniDaConvertirePerIdNucleo.containsKey(nucleoEsternoConvertito.getId()));
             List<CartaEsercitoPerSoggettoPerNucleoDTOView> nucleoEsternoDaConvertire = nucleiEsterniDaConvertirePerIdNucleo.get(nucleoEsternoConvertito.getId());
             assertEquals(nucleoEsternoDaConvertire.size(), nucleoEsternoConvertito.getComponenti().size());

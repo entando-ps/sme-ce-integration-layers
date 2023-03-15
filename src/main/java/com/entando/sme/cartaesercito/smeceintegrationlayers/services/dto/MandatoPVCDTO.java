@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class MandatiPVCDTO {
+public class MandatoPVCDTO {
 
     private Integer idmandatopvc;
     private Integer rifnucleofullPvc;
@@ -25,6 +25,14 @@ public class MandatiPVCDTO {
 
     private String cro;
 
+    public MandatoPVCDTO(Integer idMandato, String cro, Integer rifStatoMandato, Integer quotaMandato, String dataMandato,Integer rifNucleoFull){
+        this.idmandatopvc = idMandato;
+        this.cro = cro;
+        this.rifstatomandatoPvc = rifStatoMandato;
+        this.quotamandatoPvc = quotaMandato;
+        this.datamandatoPvc = dataMandato;
+        this.rifnucleofullPvc = rifNucleoFull;
+    }
 }
 
 

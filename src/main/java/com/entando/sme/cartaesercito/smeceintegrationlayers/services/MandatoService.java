@@ -89,15 +89,6 @@ public class MandatoService {
         });
     }
 
-
-//    public void aggiornaMandatiConCRO(Integer codiceMandato, Integer codiceMandatoPVC, String croMandato, String croMandatoPVC){
-//        // update su tabMandato con controllo se cro esiste
-//        aggiornaMandatoConCRO(codiceMandato, croMandato);
-//
-//        // update su tabMandatoPVC con controllo se cro esiste
-//        aggiornaMandatoPVCConCRO(codiceMandatoPVC, croMandatoPVC);
-//    }
-
     /**
      * metodo che passato l'id del mandato ed il cro aggiorna tabMandato
      * <p>

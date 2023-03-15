@@ -1,5 +1,7 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoPVCDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -42,6 +44,24 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
     private Date dataScadenzaCarta;
     private Date dataRilascioCarta;
     private Integer rifStato;
+
+
+    // TODO nuovi campi per ritornare indirizzo spedizione, mandato e mandatoPVC
+
+    private Integer numeroMandato;
+    private String croMandato;
+    private Integer rifStatoMandato;
+    private Integer quotaMandato;
+    private String dataMandato;
+    private Integer rifNucleoFull;
+    private Integer numeroMandatoPVC;
+    private String croMandatoPVC;
+    private Integer rifNucleoFullPVC;
+    private Integer quotaMandatoPVC;
+    private Integer rifStatoMandatoPVC;
+    private String dataMandatoPVC;
+
+
 
 
     public Optional<TipoNucleo> getTipoNucleo(Set<Integer> tipiIstanzaNucleoPrincipale, Set<Integer> tipiIstanzaNucleoEsterno) {
@@ -104,6 +124,8 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
         return nucleiEsterniPerId.keySet().stream().map(rifNucleoId -> {
             List<ModuloDTO.Soggetto> componentiNucleo = convertiViewInListaSoggetti(nucleiEsterniPerId.get(rifNucleoId));
             ModuloDTO.Nucleo nucleoEsterno = new ModuloDTO.Nucleo(componentiNucleo);
+            nucleoEsterno.setMandatoDTO(new MandatoDTO(nucleiEsterniPerId.get(rifNucleoId).get(0).numeroMandato, nucleiEsterniPerId.get(rifNucleoId).get(0).croMandato, nucleiEsterniPerId.get(rifNucleoId).get(0).rifStatoMandato, nucleiEsterniPerId.get(rifNucleoId).get(0).quotaMandato, nucleiEsterniPerId.get(rifNucleoId).get(0).dataMandato, nucleiEsterniPerId.get(rifNucleoId).get(0).rifNucleoFull));
+            nucleoEsterno.setMandatoPVCDTO(new MandatoPVCDTO(nucleiEsterniPerId.get(rifNucleoId).get(0).numeroMandatoPVC, nucleiEsterniPerId.get(rifNucleoId).get(0).croMandatoPVC, nucleiEsterniPerId.get(rifNucleoId).get(0).rifStatoMandatoPVC, nucleiEsterniPerId.get(rifNucleoId).get(0).quotaMandatoPVC, nucleiEsterniPerId.get(rifNucleoId).get(0).dataMandatoPVC, nucleiEsterniPerId.get(rifNucleoId).get(0).rifNucleoFullPVC));
             nucleoEsterno.setId(rifNucleoId);
             return nucleoEsterno;
         }).collect(Collectors.toList());
@@ -120,6 +142,8 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
         }
         ModuloDTO.Sponsor sponsor = new ModuloDTO.Sponsor(soggettoOptional.get());
         ModuloDTO.Nucleo nucleoPrincipale = new ModuloDTO.Nucleo(componentiNucleoPrincipaleConSponsor.stream().filter(soggetto -> !soggetto.getIsSponsor()).collect(Collectors.toList()));
+        nucleoPrincipale.setMandatoDTO(new MandatoDTO(nucleoPrincipaleConSponsorView.get(0).numeroMandato, nucleoPrincipaleConSponsorView.get(0).croMandato, nucleoPrincipaleConSponsorView.get(0).rifStatoMandato, nucleoPrincipaleConSponsorView.get(0).quotaMandato, nucleoPrincipaleConSponsorView.get(0).dataMandato, nucleoPrincipaleConSponsorView.get(0).rifNucleoFull));
+        nucleoPrincipale.setMandatoPVCDTO(new MandatoPVCDTO(nucleoPrincipaleConSponsorView.get(0).numeroMandatoPVC, nucleoPrincipaleConSponsorView.get(0).croMandatoPVC, nucleoPrincipaleConSponsorView.get(0).rifStatoMandatoPVC, nucleoPrincipaleConSponsorView.get(0).quotaMandatoPVC, nucleoPrincipaleConSponsorView.get(0).dataMandatoPVC, nucleoPrincipaleConSponsorView.get(0).rifNucleoFullPVC));
         nucleoPrincipale.setId(rifNucleoPrincipale);
         return Pair.of(sponsor, nucleoPrincipale);
     }
@@ -135,14 +159,13 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
         moduloDTO.setNucleoPrincipale(sponsorEnucleoPrincipale.getSecond());
 
         List<ModuloDTO.Nucleo> nucleiEsterni = estraiNucleiEsterni(daConvertire);
-        // TODO da capire come inserire scelta unica spedizione per tutti
-        // TODO da capire se arriva residenza spedizione query da aggiornare (forse)
+        // TODO da capire se arriva residenza spedizione query da aggiornare
 //        nucleiEsterni.forEach(nucleo -> nucleo.setResidenzaDiSpedizione(null));
         moduloDTO.setNucleiEsterni(nucleiEsterni);
 
         //TODO da capire
         moduloDTO.setPagamento(null);
-        // TODO da capire se arriva residenza query da aggiornare (forse)
+        // TODO da capire se arriva residenza query da aggiornare
         moduloDTO.getNucleoPrincipale().setResidenzaDiSpedizione(null);
 
         return moduloDTO;
