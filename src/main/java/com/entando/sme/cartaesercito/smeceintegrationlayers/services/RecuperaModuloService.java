@@ -23,7 +23,7 @@ public class RecuperaModuloService {
      * metodo che si occupa di recuperare tutte le informazioni di tutti i nuclei collegati allo sponsor
      *
      * scompatta il "modulo" e legge le informazioni in cerca degli indirizzi di spedizione (per nucleo) e calcola costo abbonamento secondo direttive
-     *
+     * ritorna anche le informazioni dei mandati "in attesa di pagamento" per nucleo
      * @param codiceFiscale del soggetto sponsor cercato
      * @return ModuloDTO con tutte le informazioni dello sponsor e tutti i soggetti di tutti i inuclei a esso collegati
      * @see ModuloDTO

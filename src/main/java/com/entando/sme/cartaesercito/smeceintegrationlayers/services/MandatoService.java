@@ -50,7 +50,6 @@ public class MandatoService {
             if (nucleoExt.getMandatoDTO() == null || nucleoExt.getMandatoDTO().getCro().isBlank()) {
                 throw new RuntimeException("Dati mandato mancanti per chiusura mandati nuclei esterni");
             }
-            // TODO qui va eseguito controllo se cro gia esiste
             aggiornaMandatoConCRO(nucleoExt.getMandatoDTO().getIdMandato(), nucleoExt.getMandatoDTO().getCro());
         });
 

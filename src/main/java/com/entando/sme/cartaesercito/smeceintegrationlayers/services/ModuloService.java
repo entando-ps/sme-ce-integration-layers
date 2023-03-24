@@ -230,6 +230,5 @@ public class ModuloService {
             gestisciNucleoEsterno(nucleoEsterno, sponsor, tipoIstanzaDaCrearePerNucleoFamiliareEsterno, costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.calcolaCosto(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno(), costoPerNucleoEsterno.getCostoSpedizioneNucleoEsterno());
         });
     }
-//costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor()
 
 }
