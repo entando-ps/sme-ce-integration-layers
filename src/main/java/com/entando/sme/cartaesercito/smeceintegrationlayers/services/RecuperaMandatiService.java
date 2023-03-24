@@ -2,13 +2,14 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.MandatoPVCDTO;
-import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class RecuperaMandatiService {
 
     private final QueryExecutorService queryExecutorService;
@@ -27,7 +28,9 @@ public class RecuperaMandatiService {
      * @see MandatoDTO per visualizzare dettaglio del DTO
      */
     List<MandatoDTO> recuperaMandati(String codiceFiscale) {
+        log.info(String.format("recupero mandado per... %s", codiceFiscale));
         List<MandatoDTO> mandatiPerSponsor = queryExecutorService.getMandatiPerSponsor(codiceFiscale);
+        log.info(String.format("mandato recuperato... %s", mandatiPerSponsor));
         return mandatiPerSponsor;
     }
 
@@ -41,7 +44,9 @@ public class RecuperaMandatiService {
      * @see MandatoPVCDTO per visualizzare dettaglio del DTO
      */
     List<MandatoPVCDTO> recuperaMandatiPVC(String codiceFiscale) {
+        log.info(String.format("recupero mandado pvc per... %s", codiceFiscale));
         List<MandatoPVCDTO> mandatiPvcPerSponsor = queryExecutorService.getMandatiPVCPerSponsor(codiceFiscale);
+        log.info(String.format("mandato pvc recuperato... %s", mandatiPvcPerSponsor));
         return mandatiPvcPerSponsor;
     }
 

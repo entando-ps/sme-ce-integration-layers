@@ -1,11 +1,13 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
+@Slf4j
 class RecuperaModuloServiceIntegrationTest {
 
     @Autowired
@@ -14,6 +16,6 @@ class RecuperaModuloServiceIntegrationTest {
     @Test
     void recuperaModulo() {
         ModuloDTO moduloDTO = recuperaModuloService.recuperaModulo("testSp");
-        System.out.println("moduloDTO = " + moduloDTO);
+        log.info("moduloDTO = " + moduloDTO);
     }
 }

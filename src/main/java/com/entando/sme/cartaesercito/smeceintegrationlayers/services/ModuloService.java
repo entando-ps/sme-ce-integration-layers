@@ -6,6 +6,7 @@ import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.*;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.QueryExecutorService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
+@Slf4j
 public class ModuloService {
 
     final private ConfigurationParameters configParameters;
@@ -128,6 +130,10 @@ public class ModuloService {
         tabmandatopvc.setRifStatoMandatoPVC(configParameters.getMandato().getRifStatoMandato());
 
         tabmandatopvc.setDataMandatoPVC(String.valueOf(LocalDate.now()));
+
+        log.info(String.format("inserimento nuovo mandato su nuova richiesta... %s", tabmandato));
+        log.info(String.format("inserimento nuovo mandato pvc su nuova richiesta... %s", tabmandatopvc));
+
         // TODO data salvata da DB? data aggiornamento autosalvata in db sia su tabmandato che tabMandatoPVC
         /**
          * il salvataggio avviene sempre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
@@ -153,6 +159,8 @@ public class ModuloService {
      */
     public void inserimentoNuovoModulo(ModuloDTO moduloDTO) {
 
+        log.info(String.format("inserimento nuovo modulo su nuova richiesta... %s", moduloDTO));
+
 //        che differenza abbiamo tra il rinnovo e la modifica nucleo famigliare?
 //                rinnovo crea un nuovo mandato senza mandato pvc e verranno inseriti data pagamento e cro insieme all'aggiornamento dello stato soggetto (e altri domini)
 //        da "in attesa di pagamento" a "in regola"
@@ -163,6 +171,7 @@ public class ModuloService {
 
         CostiDTO costiDTO = smeCeBoCostiService.calcoloCostiNuovoSponsor(moduloDTO);
 
+        log.info(String.format("inserimento nuovo modulo costi... %s", costiDTO));
 
         //gestione del nucleo principale
         //TODO dalla lista del nucleo principale di un modulo possono prodursi + istanze
@@ -172,6 +181,7 @@ public class ModuloService {
         //quindi modifica nucleo + rinnovo è una possibilità
         // TODO WARN qui viene calcolato solo costo spedizione per nucleo principale
         Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizioneNucleoPricipale(), costiDTO.getCostoSpedizioneNucleoPricipale());
+        log.info(String.format("risposta gestisci nucleo principale tab soggetto sponsor... %s", tabSoggettoSponsor));
 
         //TODO WARN spedizione già pagata perchè per ora il nucleo principale viene creato, ma doppia (comportamento atteso, controllare costi)
 
@@ -193,15 +203,15 @@ public class ModuloService {
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo familiare
         // e aggancio dei soggetti all'istanza
         Tabistanza tabistanza = insertIstanza(tipoIstanzaDaCrearePerNucleoFamiliarePrincipale, tabSoggettoSponsor, listaSoggettiDelNucleoPrincipale);
+        log.info(String.format("gestisci nucleo principale istanza... %s", tabistanza));
 
         //creazione del nucleo familiare principale: il capofamiglia è sponsor
         Tabnucleifull tabnucleifullSponsorECapofamigliaNucleoPrincipale = insertNucleiFullPerISoggetti(true, listaSoggettiDelNucleoPrincipale, tabistanza);
+        log.info(String.format("gestisci nucleo principale nuclei full... %s", tabnucleifullSponsorECapofamigliaNucleoPrincipale));
 
 
         //inserimento dei mandati di pagamento
-        insertMandati(tabSoggettoSponsor, tabnucleifullSponsorECapofamigliaNucleoPrincipale, importoDaPagarePerNucleoPrincipaleESponsor, importoPagatoPerNucleoPrincipaleESponsor, importoDaPagarePerSpedizione, importoPagatoPerSpedizione
-
-        );
+        insertMandati(tabSoggettoSponsor, tabnucleifullSponsorECapofamigliaNucleoPrincipale, importoDaPagarePerNucleoPrincipaleESponsor, importoPagatoPerNucleoPrincipaleESponsor, importoDaPagarePerSpedizione, importoPagatoPerSpedizione);
 
         return tabSoggettoSponsor;
     }
@@ -212,9 +222,11 @@ public class ModuloService {
         //creazione dell'istanza di creazione delle carte esercito per un nuovo nucleo esterno
         // e aggancio dei soggetti all'istanza
         Tabistanza tabistanzaNucleoEsterno = insertIstanza(tipoIstanzaDaCrearePerNucleoFamiliareEsterno, sponsor, listaSoggettiDelNucleoEsterno);
+        log.info(String.format("gestisci nucleo esterno istanza... %s", tabistanzaNucleoEsterno));
 
         //creazione del nucleo familiare principale: il capofamiglia è sponsor
         Tabnucleifull tabnucleifullCapofamigliaNucleoEsterno = insertNucleiFullPerISoggetti(false, listaSoggettiDelNucleoEsterno, tabistanzaNucleoEsterno);
+        log.info(String.format("gestisci nucleo esterno nuclei full... %s", tabnucleifullCapofamigliaNucleoEsterno));
 
         //inserimento dei mandati di pagamento
         insertMandati(sponsor, tabnucleifullCapofamigliaNucleoEsterno, importoDaPagarePerIlNucleoEsterno, importoPagatoPerIlNucleoEsterno, importoDaPagarePerLaSpedizione, importoPagatoPerLaSpedizione //spedizione già pagata nel mandato del nucleo principale

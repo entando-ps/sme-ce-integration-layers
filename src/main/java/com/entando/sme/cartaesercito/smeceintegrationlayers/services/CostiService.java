@@ -3,6 +3,7 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class CostiService {
 
     private final ConfigurationParameters.Costi configurazioneCosti;
@@ -31,6 +33,9 @@ public class CostiService {
      * @see CostiDTO per le specifiche di dominio
      */
     public CostiDTO calcoloCostiNuovoSponsor(ModuloDTO moduloDTO) {
+
+        log.info(String.format("modulo in arrivo per calcolo costi nuovo sponsor... %s", moduloDTO));
+
         //controllo che lo sponsor sia effettivamente nuovo
         ModuloDTO.Sponsor sponsor = moduloDTO.getSponsor();
         CostiDTO.CostoPerSoggettoDTO costoPerSoggettoDTO = new CostiDTO.CostoPerSoggettoDTO(sponsor, configurazioneCosti.getPerSponsor());
@@ -39,9 +44,14 @@ public class CostiService {
         List<CostiDTO.CostoPerSoggettoDTO> costiPerNucleoPrincipale = moduloDTO.getNucleoPrincipale().getComponenti().stream().map(soggetto -> new CostiDTO.CostoPerSoggettoDTO(soggetto, configurazioneCosti.getPerFamigliare())).collect(Collectors.toList());
         costiPerNucleoPrincipaleConSponsor.addAll(costiPerNucleoPrincipale);
 
+        log.info(String.format("costi nucleo principale con sponsor... %s", costiPerNucleoPrincipaleConSponsor));
+
         List<CostiDTO.CostoPerNucleoEsternoDTO> costiPerNucleoEsterno= moduloDTO.getNucleiEsterni().stream().map(nucleoEsterno ->
                 new CostiDTO.CostoPerNucleoEsternoDTO(nucleoEsterno.getComponenti().stream().map(soggetto -> new CostiDTO.CostoPerSoggettoDTO(soggetto, configurazioneCosti.getPerOspite())).collect(Collectors.toList()), nucleoEsterno.getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0)
         ).collect(Collectors.toList());
+
+        log.info(String.format("costi nuclei esterni... %s", costiPerNucleoPrincipaleConSponsor));
+
         /**
          * attualmente calcola costo spedizione per principale e per ogni nucleo esterno
          * controllo costo di spedizione su inidirizzoResidenzaSpedizione, preso da form!!

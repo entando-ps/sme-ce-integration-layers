@@ -7,16 +7,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class MandatoServiceTest {
 
+    //inserire un codice valido per non ricevere errore
+    private Integer codiceMandato = 26;
+    private Integer codiceMandatoPVC = 26;
     @Autowired
     MandatoService mandatoService;
     @Test
     void aggiornaMandato() {
-        mandatoService.aggiornaMandatoConCRO(26, "cro-update");
+        mandatoService.aggiornaMandatoConCRO(codiceMandato, "cro-update");
     }
 
     @Test
     void aggiornaMandatoPVC() {
-        mandatoService.aggiornaMandatoPVCConCRO(26, "cro-update");
+        mandatoService.aggiornaMandatoPVCConCRO(codiceMandatoPVC, "cro-update");
     }
 
 }

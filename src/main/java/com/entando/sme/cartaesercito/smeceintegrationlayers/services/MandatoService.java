@@ -6,12 +6,13 @@ import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabmandatop
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.TabmandatoJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.TabmandatopvcJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-
+@Slf4j
 public class MandatoService {
 
     final private TabmandatoJPARepository tabmandatoJPARepository;
@@ -68,10 +69,16 @@ public class MandatoService {
         ModuloDTO.Nucleo nucleoPrinci = moduloDTO.getNucleoPrincipale();
         List<ModuloDTO.Nucleo> nucleiExt = moduloDTO.getNucleiEsterni();
 
+        log.info(String.format("aggiornamento mandati su nuova richiesta... %s", moduloDTO));
+        log.info(String.format("nucleo principale... %s", nucleoPrinci));
+        log.info(String.format("lista nuclei esterni... %s", nucleiExt));
+
         // controllo che il mandato ed il cro siano valorizzati per il nucleo principale
         if (nucleoPrinci.getMandatoDTO() == null || nucleoPrinci.getMandatoDTO().getCro().isBlank()) {
             throw new RuntimeException("Dati mandato mancanti per chiusura mandato nucleo principale");
         }
+
+        log.info(String.format("nucleo principale mandato inviato per aggiornamento... %s", nucleoPrinci.getMandatoDTO().toString()));
         // aggiorno mandato e mandato pvc nucleo principale con cro inserito da user
         aggiornaMandatoConCRO(nucleoPrinci.getMandatoDTO().getIdMandato(), nucleoPrinci.getMandatoDTO().getCro());
         aggiornaMandatoPVCConCRO(nucleoPrinci.getMandatoPVCDTO().getIdmandatopvc(), nucleoPrinci.getMandatoPVCDTO().getCro());
@@ -79,10 +86,13 @@ public class MandatoService {
         // aggiorno mandato e mandato pvc per ogni nucleo esterno inserendo cro fornito da user
         nucleiExt.forEach(nucleoExt -> {
 
+            log.info(String.format("nucleo esterno... %s", nucleoExt));
+
             // controllo che il mandato ed il cro siano valorizzati per tutti i nuclei esterni
             if (nucleoExt.getMandatoDTO() == null || nucleoExt.getMandatoDTO().getCro().isBlank()) {
                 throw new RuntimeException("Dati mandato mancanti per chiusura mandati nuclei esterni");
             }
+            log.info(String.format("nucleo esterno mandato inviato per aggiornamento... %s", nucleoExt.getMandatoDTO().toString()));
             aggiornaMandatoConCRO(nucleoExt.getMandatoDTO().getIdMandato(), nucleoExt.getMandatoDTO().getCro());
             aggiornaMandatoPVCConCRO(nucleoExt.getMandatoPVCDTO().getIdmandatopvc(), nucleoExt.getMandatoPVCDTO().getCro());
         });
@@ -104,6 +114,7 @@ public class MandatoService {
         if (mandato.getAttestazionePagamento() != null) {
             throw new UnsupportedOperationException("per il mandato con codice " + codiceMandato + " è già presente un'attestazione di pagamento");
         }
+        log.info("in aggiornamento mandato " + codiceMandato + "con CRO " + cro);
         mandato.setDataAggiornamento(null);
         mandato.setAttestazionePagamento(cro);
         tabmandatoJPARepository.save(mandato);
@@ -125,6 +136,7 @@ public class MandatoService {
         if (mandatoPVC.getAttestazionePagamento() != null) {
             throw new UnsupportedOperationException("per il mandato PVC con codice " + codiceMandato + " è già presente un'attestazione di pagamento");
         }
+        log.info("in aggiornamento mandatoPVC " + codiceMandato + "con CRO " + cro);
         mandatoPVC.setDataAggiornamento(null);
         mandatoPVC.setAttestazionePagamento(cro);
         tabmandatopvcJPARepository.save(mandatoPVC);
