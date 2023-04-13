@@ -27,7 +27,7 @@ public class RecuperaMandatiService {
      * il mandato deve soddisfare il requisito sullo stato = "attesa di pagamento"
      * @see MandatoDTO per visualizzare dettaglio del DTO
      */
-    List<MandatoDTO> recuperaMandati(String codiceFiscale) {
+    public List<MandatoDTO> recuperaMandati(String codiceFiscale) {
         log.info(String.format("recupero mandado per... %s", codiceFiscale));
         List<MandatoDTO> mandatiPerSponsor = queryExecutorService.getMandatiPerSponsor(codiceFiscale);
         log.info(String.format("mandato recuperato... %s", mandatiPerSponsor));
@@ -43,7 +43,7 @@ public class RecuperaMandatiService {
      * il mandatiPVC deve soddisfare il requisito sullo stato = "attesa di pagamento"
      * @see MandatoPVCDTO per visualizzare dettaglio del DTO
      */
-    List<MandatoPVCDTO> recuperaMandatiPVC(String codiceFiscale) {
+    public List<MandatoPVCDTO> recuperaMandatiPVC(String codiceFiscale) {
         log.info(String.format("recupero mandado pvc per... %s", codiceFiscale));
         List<MandatoPVCDTO> mandatiPvcPerSponsor = queryExecutorService.getMandatiPVCPerSponsor(codiceFiscale);
         log.info(String.format("mandato pvc recuperato... %s", mandatiPvcPerSponsor));

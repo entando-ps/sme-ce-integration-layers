@@ -18,14 +18,12 @@ public class RecuperaMandatiServiceTest {
     RecuperaMandatiService recuperaMandatiService;
 
     @Test
-    @Disabled
     void recuperaMandatiPVC() {
         List<MandatoPVCDTO> mandatiPVC = recuperaMandatiService.recuperaMandatiPVC("testSp");
         log.info("mandatiPVC = " + mandatiPVC);
     }
 
     @Test
-    @Disabled
     void recuperaMandati(){
         List<MandatoDTO> mandati = recuperaMandatiService.recuperaMandati("testSp");
         log.info("mandati =" + mandati);

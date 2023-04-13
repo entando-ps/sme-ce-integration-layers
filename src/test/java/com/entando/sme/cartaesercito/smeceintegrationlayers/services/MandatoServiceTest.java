@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class MandatoServiceTest {
 
     //inserire un codice valido per non ricevere errore
-    private Integer codiceMandato = 26;
+    private Integer codiceMandato = 4;
     private Integer codiceMandatoPVC = 26;
     @Autowired
     MandatoService mandatoService;
