@@ -106,7 +106,8 @@ public class ModuloService {
         tabNucleiFull.add(tabnucleifullCapofamigliaoSponsor);
         List<Tabnucleifull> tabNucleiFullRestantiSoggetti = soggetti.subList(1, soggetti.size()).stream().map(tabsoggettoNucleoFamiliare -> new Tabnucleifull(false, false, tabistanza.getIdIstanza(), rifNucleo, tabsoggettoNucleoFamiliare.getIdSoggetto())).collect(Collectors.toList());
         tabNucleiFull.addAll(tabNucleiFullRestantiSoggetti);
-        tabnucleifullJPARepository.saveAllAndFlush(tabNucleiFull);
+        tabnucleifullJPARepository.saveAll(tabNucleiFull);
+        tabnucleifullJPARepository.flush();
         return tabnucleifullCapofamigliaoSponsor;
     }
 

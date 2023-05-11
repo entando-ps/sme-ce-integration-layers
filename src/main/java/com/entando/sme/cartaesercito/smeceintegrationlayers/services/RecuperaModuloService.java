@@ -30,7 +30,7 @@ public class RecuperaModuloService {
      * @return ModuloDTO con tutte le informazioni dello sponsor e tutti i soggetti di tutti i inuclei a esso collegati
      * @see ModuloDTO
      */
-    ModuloDTO recuperaModulo(String codiceFiscale) {
+    public ModuloDTO recuperaModulo(String codiceFiscale) {
         log.info(String.format("recupero modulo per... %s", codiceFiscale));
         Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> carteEsercitoPerSponsor = queryExecutorService.getCarteEsercitoPerSponsor(codiceFiscale);
         log.info(String.format("modulo recuperato... %s", CartaEsercitoPerSoggettoPerNucleoDTOView.converti(carteEsercitoPerSponsor)));
