@@ -38,7 +38,7 @@ public class QueryExecutorService {
 
     public Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> getCarteEsercitoPerSponsor(String codiceFiscale) {
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
-        List<CartaEsercitoPerSoggettoPerNucleoDTOView> cartaEsercitoPerSoggettoPerNucleoDTOViewList = jdbcTemplate.queryForStream(carteEsercitoPerSponsor, namedParameters, (rs, rowNum) -> new CartaEsercitoPerSoggettoPerNucleoDTOView(
+        List<CartaEsercitoPerSoggettoPerNucleoDTOView> cartaEsercitoPerSoggettoPerNucleoDTOViewList = jdbcTemplate.query(carteEsercitoPerSponsor, namedParameters, (rs, rowNum) -> new CartaEsercitoPerSoggettoPerNucleoDTOView(
                 rs.getInt("rifNucleo"),
                 rs.getInt("rifTipoIstanza"),
                 rs.getString("nome"),
@@ -75,13 +75,13 @@ public class QueryExecutorService {
                 rs.getInt("quotaMandatoPVC"),
                 rs.getInt("rifStatoMandatoPVC"),
                 rs.getString("dataMandatoPVC")
-        )).collect(Collectors.toList());
+        ));
         return CartaEsercitoPerSoggettoPerNucleoDTOView.groupByTipoNucleo(cartaEsercitoPerSoggettoPerNucleoDTOViewList, tipiIstanzaNucleoPrincipale, tipiIstanzaNucleoEsterno);
     }
 
     public List<MandatoDTO> getMandatiPerSponsor(String codiceFiscale) {
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
-        List<MandatoDTO> mandatiPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPerSponsor, namedParameters, (rs, rowNum) -> new MandatoDTO(
+        List<MandatoDTO> mandatiPerNucleoDTOViewList = jdbcTemplate.query(mandatiPerSponsor, namedParameters, (rs, rowNum) -> new MandatoDTO(
                 rs.getInt("idMandato"),
                 rs.getInt("rifStatoMandato"),
                 rs.getInt("rifNucleoFull"),
@@ -96,13 +96,13 @@ public class QueryExecutorService {
                 rs.getString("dataAggiornamento"),
                 rs.getInt("convalidaMandatoCovid"),
                 rs.getString("attestazionePagamento")
-        )).collect(Collectors.toList());
+        ));
         return mandatiPerNucleoDTOViewList;
     }
 
     public List<MandatoPVCDTO> getMandatiPVCPerSponsor(String codiceFiscale) {
         SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("codiceFiscale", codiceFiscale);
-        List<MandatoPVCDTO> mandatiPVCPerNucleoDTOViewList = jdbcTemplate.queryForStream(mandatiPVCPerSponsor, namedParameters, (rs, rowNum) -> new MandatoPVCDTO(
+        List<MandatoPVCDTO> mandatiPVCPerNucleoDTOViewList = jdbcTemplate.query(mandatiPVCPerSponsor, namedParameters, (rs, rowNum) -> new MandatoPVCDTO(
                 rs.getInt("idmandatopvc"),
                 rs.getInt("rifnucleofullPvc"),
                 rs.getInt("quotamandatoPvc"),
@@ -116,7 +116,7 @@ public class QueryExecutorService {
                 rs.getString("dataemissionePvc"),
                 rs.getInt("riftipomandatoPvc"),
                 rs.getString("attestazionePagamento")
-        )).collect(Collectors.toList());
+        ));
         return mandatiPVCPerNucleoDTOViewList;
     }
 
