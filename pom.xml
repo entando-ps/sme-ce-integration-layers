@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.entando.sme.cartaesercito</groupId>
     <artifactId>sme-ce-integration-layers</artifactId>
-    <version>0.0.13</version>
+    <version>0.0.14</version>
     <name>sme-ce-integration-layers</name>
     <description>sme-ce-integration-layers</description>
     <properties>

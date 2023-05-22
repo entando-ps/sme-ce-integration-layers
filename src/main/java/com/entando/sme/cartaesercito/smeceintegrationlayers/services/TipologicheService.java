@@ -4,18 +4,21 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtipocanale;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtipoistanza;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtipopagamento;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtiporapporto;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtipostatocarta;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtipostatomandato;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.tipo.Tabtipostatosoggetto;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtipocanaleJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtipoistanzaJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtipopagamentoJPARepository;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtiporapportoJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtipostatocartaJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtipostatomandatoJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.repositories.tipo.TabtipostatosoggettoJPARepository;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtipocanaleDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtipoistanzaDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtipopagamentoDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtiporapportoDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtipostatocartaDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtipostatomandatoDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.tipo.TabtipostatosoggettoDTO;
@@ -36,6 +39,7 @@ public class TipologicheService {
     final private TabtipostatocartaJPARepository tabtipostatocartaJPARepository;
     final private TabtipostatomandatoJPARepository tabtipostatomandatoJPARepository;
     final private TabtipostatosoggettoJPARepository tabtipostatosoggettoJPARepository; 
+    final private TabtiporapportoJPARepository tabtiporapportoJPARepository; 
 
     
 
@@ -44,7 +48,8 @@ public class TipologicheService {
 			TabtipopagamentoJPARepository tabtipopagamentoJPARepository,
 			TabtipostatocartaJPARepository tabtipostatocartaJPARepository,
 			TabtipostatomandatoJPARepository tabtipostatomandatoJPARepository,
-			TabtipostatosoggettoJPARepository tabtipostatosoggettoJPARepository) {
+			TabtipostatosoggettoJPARepository tabtipostatosoggettoJPARepository, 
+			TabtiporapportoJPARepository tabtiporapportoJPARepository) {
 		super();
 		this.tabtipocanaleJPARepository = tabtipocanaleJPARepository;
 		this.tabtipoistanzaJPARepository = tabtipoistanzaJPARepository;
@@ -52,6 +57,8 @@ public class TipologicheService {
 		this.tabtipostatocartaJPARepository = tabtipostatocartaJPARepository;
 		this.tabtipostatomandatoJPARepository = tabtipostatomandatoJPARepository;
 		this.tabtipostatosoggettoJPARepository = tabtipostatosoggettoJPARepository;
+		this.tabtiporapportoJPARepository = tabtiporapportoJPARepository;
+
 	}
 
     public TabtipocanaleDTO toDTO(Tabtipocanale tabtipocanale) {
@@ -76,7 +83,9 @@ public class TipologicheService {
     public TabtipostatosoggettoDTO toDTO(Tabtipostatosoggetto tabtipostatosoggetto) {
     	return new TabtipostatosoggettoDTO(tabtipostatosoggetto.getIdStatoSoggetto(), tabtipostatosoggetto.getDenominazioneStato());
     }
-    
+    public TabtiporapportoDTO toDTO(Tabtiporapporto source) {
+    	return new TabtiporapportoDTO(source.getIdRapporto(), source.getDenominazioneRapporto());
+    }
     public List<TabtipocanaleDTO>  getAllTabtipocanaleDTO(){
         log.info("recupero Tabtipocanale");
     	return tabtipocanaleJPARepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
@@ -100,5 +109,10 @@ public class TipologicheService {
     public List<TabtipostatosoggettoDTO>  getAllTabtipostatosoggettoDTO(){
         log.info("recupero TabtipostatosoggettoDTO");
     	return tabtipostatosoggettoJPARepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+    public List<TabtiporapportoDTO>  getAllTabtiporapportoDTO(){
+        log.info("recupero TabtiporapportoDTO");
+    	return tabtiporapportoJPARepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
     }	
 }
