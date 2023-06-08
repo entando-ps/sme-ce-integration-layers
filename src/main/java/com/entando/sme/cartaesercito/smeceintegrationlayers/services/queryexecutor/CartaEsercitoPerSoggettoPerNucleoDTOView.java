@@ -119,7 +119,10 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
 
 
     public static List<ModuloDTO.Nucleo> estraiNucleiEsterni(Map<CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> daConvertire) {
-        Map<Integer, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> nucleiEsterniPerId = daConvertire.get(CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo.Esterno).stream().collect(Collectors.groupingBy(CartaEsercitoPerSoggettoPerNucleoDTOView::getRifNucleo));
+    	if(daConvertire.get(CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo.Esterno) == null ) {
+    		return List.of();
+    	}
+    	Map<Integer, List<CartaEsercitoPerSoggettoPerNucleoDTOView>> nucleiEsterniPerId = daConvertire.get(CartaEsercitoPerSoggettoPerNucleoDTOView.TipoNucleo.Esterno).stream().collect(Collectors.groupingBy(CartaEsercitoPerSoggettoPerNucleoDTOView::getRifNucleo));
 
         return nucleiEsterniPerId.keySet().stream().map(rifNucleoId -> {
             List<ModuloDTO.Soggetto> componentiNucleo = convertiViewInListaSoggetti(nucleiEsterniPerId.get(rifNucleoId));
