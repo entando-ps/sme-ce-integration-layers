@@ -58,8 +58,12 @@ public class CostiService {
          *
          *  se inidirizzoResidenzaSpedizione è null la spedizione non si paga perchè richiesta consegna a mano
         */
-        return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,
-                moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
+        //TODO: introdotto uno skip sul costo, questa cosa va gestita in maniera opportuna e non in questo modo, urge per rilascio
+        if ( moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione().getVia().contains("Via Nazionale 10")  &&  moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione().getCap().contains("00192"))
+            return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
+        else
+            return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,
+                    moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
 
     }
 

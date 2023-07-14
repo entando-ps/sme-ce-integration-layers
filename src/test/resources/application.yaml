@@ -75,8 +75,8 @@ smece:
           join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
           join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
           left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
-          left outer join tabmandato on tabmandato.rif_nucleofull = tabnucleifull.id and (tabmandato.rif_statoMandato = 1 or tabmandato.rif_statoMandato = null)
-          left outer join tabMandatoPVC on tabMandatoPVC.rifnucleofull = tabnucleifull.id and (tabMandatoPVC.rifStatoMandatoPVC = 1 or tabMandatoPVC.rifStatoMandatoPVC = null)
+          left outer join tabmandato on tabmandato.rif_nucleofull = tabnucleifull.id
+          left outer join tabMandatoPVC on tabMandatoPVC.rifnucleofull = tabnucleifull.id
         where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where tabsoggetto.codiceFiscale=:codiceFiscale);
 
       mandatiPerSponsor: |
