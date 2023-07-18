@@ -52,6 +52,7 @@ public class ModuloDTO {
         private CartaEsercito cartaEsercito;
         //lettura
         private Integer stato;
+        private Integer nuovaDirettiva=0;
 
         public Soggetto() {
         }
@@ -76,6 +77,7 @@ public class ModuloDTO {
             this.residenza = residenza;
             this.cartaEsercito = cartaEsercito;
             this.stato = stato;
+            this.nuovaDirettiva = 0;
         }
 
         public Soggetto(String codiceFiscale) {
@@ -110,6 +112,7 @@ public class ModuloDTO {
                     soggettoSponsor.getResidenza(),
                     soggettoSponsor.getCartaEsercito(),
                     soggettoSponsor.getStato());
+                    soggettoSponsor.getNuovaDirettiva();
             if (!getIsSponsor()) {
                 throw new RuntimeException("conversione di un Soggetto non sponsor! " + this);
             }

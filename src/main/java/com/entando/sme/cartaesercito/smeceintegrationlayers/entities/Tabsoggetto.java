@@ -65,7 +65,7 @@ public class Tabsoggetto implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	private String notaRespintaFoto;
 
-	private int nuovaDirettiva; // non c'è in insert loro (SME)
+	private Integer nuovaDirettiva=0; // non c'è in insert loro (SME)
 
 	private String pin;
 
@@ -254,11 +254,11 @@ public class Tabsoggetto implements Serializable {
 		this.notaRespintaFoto = notaRespintaFoto;
 	}
 
-	public int getNuovaDirettiva() {
+	public Integer getNuovaDirettiva() {
 		return this.nuovaDirettiva;
 	}
 
-	public void setNuovaDirettiva(int nuovaDirettiva) {
+	public void setNuovaDirettiva(Integer nuovaDirettiva) {
 		this.nuovaDirettiva = nuovaDirettiva;
 	}
 
@@ -346,6 +346,8 @@ public class Tabsoggetto implements Serializable {
 
 
 
+
+
 	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
 		this.codiceFiscale = codiceFiscale;
 		this.cognome = cognome;
@@ -364,6 +366,7 @@ public class Tabsoggetto implements Serializable {
 		this.telCellulare = telCellulare;
 		this.telUfficio = telUfficio;
 		this.rifStato = rifStato;
+		this.nuovaDirettiva =0;
 	}
 
 	public void copyFrom(String rifStato, ModuloDTO.Soggetto soggetto){
@@ -387,6 +390,7 @@ public class Tabsoggetto implements Serializable {
 		this.telCellulare = soggetto.getTelCellulare();
 		this.telUfficio = soggetto.getTelUfficio();
 		this.rifStato = rifStato;
+		this.nuovaDirettiva = soggetto.getNuovaDirettiva();
 
 	}
 
