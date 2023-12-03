@@ -125,7 +125,7 @@ public class ModuloService {
 
     @Transactional(propagation = Propagation.MANDATORY)
     protected Tabistanza insertIstanza(Integer rifTipoIstanza, Tabsoggetto sponsor, List<Tabsoggetto> parentinucleo) {
-        Tabistanza tabistanza = new Tabistanza(new java.sql.Date(Calendar.getInstance().getTime().getTime()), configParameters.getIstanza().getRifCanale(), configParameters.getIstanza().getRifOperatore(), configParameters.getIstanza().getRifStatoIstanza(), rifTipoIstanza);
+        Tabistanza tabistanza = new Tabistanza(new java.sql.Date(Calendar.getInstance().getTime().getTime()), configParameters.getIstanza().getRifCanale(), 670, configParameters.getIstanza().getRifStatoIstanza(), rifTipoIstanza);
         tabistanza.setIdSponsor(sponsor.getIdSoggetto());
         tabistanzaJPARepository.save(tabistanza);
         List<Tabsoggettiistanze> tabsoggettiistanzeList = parentinucleo.stream().map(tabsoggettoNucleoFamiliare -> new Tabsoggettiistanze(new TabsoggettiistanzePK(tabistanza.getIdIstanza(), tabsoggettoNucleoFamiliare.getIdSoggetto()))).collect(Collectors.toList());
