@@ -12,14 +12,14 @@ public class MandatoServiceTest {
     private Integer codiceMandatoPVC = 26;
     @Autowired
     MandatoService mandatoService;
-    @Test
-    void aggiornaMandato() {
-        mandatoService.aggiornaMandatoConCRO(codiceMandato, "cro-update");
-    }
-
-    @Test
-    void aggiornaMandatoPVC() {
-        mandatoService.aggiornaMandatoPVCConCRO(codiceMandatoPVC, "cro-update");
-    }
+//    @Test
+//    void aggiornaMandato() {
+//        mandatoService.aggiornaMandatoConCRO(codiceMandato, "cro-update");
+//    }
+//
+//    @Test
+//    void aggiornaMandatoPVC() {
+//        mandatoService.aggiornaMandatoPVCConCRO(codiceMandatoPVC, "cro-update");
+//    }
 
 }

@@ -49,6 +49,7 @@ public class QueryExecutorService {
                 rs.getString("nascitaData"),
                 rs.getString("nascitaLuogo"),
                 rs.getString("nazionalita"),
+                rs.getInt("rifAmministrazione"),
                 rs.getInt("rifGradoQualifica"),
                 rs.getInt("rifPosizione"),
                 rs.getInt("rifRapporto"),

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,8 +18,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.springframework.transaction.annotation.Propagation;
 
 @Service
 @Slf4j
@@ -33,12 +36,14 @@ public class ModuloService {
     final private TabnucleifullJPARepository tabnucleifullJPARepository;
     final private TabmandatoJPARepository tabmandatoJPARepository;
     final private TabmandatopvcJPARepository tabmandatopvcJPARepository;
+    final private TabtipogradoqualificaJPARepository tabtipogradoqualificaJPARepository;
+    final private TabmandatosoggettiJPARepository tabmandatosoggettiJPARepository;
 
     final private CostiService smeCeBoCostiService;
 
     final private QueryExecutorService queryExecutor;
 
-    public ModuloService(ConfigurationParameters configParameters, TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, CostiService smeCeBoCostiService, QueryExecutorService queryExecutor) {
+    public ModuloService(ConfigurationParameters configParameters, TabsoggettoJPARepository tabsoggettoJPARepository, TabresidenzeJPARepository tabresidenzeJPARepository, TabistanzaJPARepository tabistanzaJPARepository, TabsoggettiistanzeJPARepository tabsoggettiistanzeJPARepository, TabnucleifullJPARepository tabnucleifullJPARepository, TabmandatoJPARepository tabmandatoJPARepository, TabmandatopvcJPARepository tabmandatopvcJPARepository, CostiService smeCeBoCostiService, QueryExecutorService queryExecutor, TabtipogradoqualificaJPARepository tabtipogradoqualificaJPARepository, TabmandatosoggettiJPARepository tabmandatosoggettiJPARepository) {
         this.configParameters = configParameters;
         this.tabsoggettoJPARepository = tabsoggettoJPARepository;
         this.tabresidenzeJPARepository = tabresidenzeJPARepository;
@@ -47,10 +52,13 @@ public class ModuloService {
         this.tabnucleifullJPARepository = tabnucleifullJPARepository;
         this.tabmandatoJPARepository = tabmandatoJPARepository;
         this.tabmandatopvcJPARepository = tabmandatopvcJPARepository;
+		this.tabtipogradoqualificaJPARepository = tabtipogradoqualificaJPARepository;
+		this.tabmandatosoggettiJPARepository = tabmandatosoggettiJPARepository;
         this.smeCeBoCostiService = smeCeBoCostiService;
         this.queryExecutor = queryExecutor;
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     protected List<Tabsoggetto> insertSoggettiAndResidenze(List<ModuloDTO.Soggetto> soggetti) {
         //inserimento di tutti i soggetti
         String pin = ""; //todo pin non necessario: serviva prima per permettere accesso a BO da parte di soggetto richiedente
@@ -66,6 +74,8 @@ public class ModuloService {
                 // non necessaria creazione del pin (esiste funzione su BO pin alfanum 7 cifre) ma non usata
                 tabSoggettoDaSalvare = new Tabsoggetto(configParameters.getSoggetto().getRifStato(), soggetto);
             }
+            //calculate the gade here
+            tabSoggettoDaSalvare.setRif_gradoQualifica(computeQualifica(soggetto));
             return tabSoggettoDaSalvare;
         }).collect(Collectors.toList());
         //i soggetti vengono inseriti se non esistono aggiornati in caso contrario (UPSERT)
@@ -77,6 +87,31 @@ public class ModuloService {
     }
 
 
+    private int computeQualifica(ModuloDTO.Soggetto soggetto) {
+    	if(soggetto.getGrado() != null && !soggetto.getGrado().isEmpty()) {
+    		log.debug("Searching for Tabtipogradoqualifica with SiglaGradoQualifica ({}) and IdForzaArmata ({})", soggetto.getGrado(), soggetto.getRifAmministrazione());
+    		List<Tabtipogradoqualifica> grado = tabtipogradoqualificaJPARepository.findBySiglaGradoQualifica(soggetto.getGrado());
+        	if(grado.size() == 1) {
+        		log.debug("Found only one Tabtipogradoqualifica with grado {}", soggetto.getGrado());
+        		return grado.get(0).getIdTipoGradoQualifica();
+        	}
+        	else if(grado.size()  > 1) {
+        		log.warn("Found {} instances of Tabtipogradoqualifica with grado {}. Returning 0", grado.size(), soggetto.getGrado());
+        		return 0;
+        	}
+        	else {
+        		log.warn("Grado ({}) non identificato", soggetto.getGrado());
+        		return 0;
+        	}
+    	}
+    	else {
+    		log.warn("Grado from siege null or empty, probably is a nucleo member");
+    		return 0;
+    	}
+    	
+	}
+
+	@Transactional(propagation = Propagation.MANDATORY)
     protected void insertResidenzeSoggetti(List<ModuloDTO.Soggetto> soggetti, List<Tabsoggetto> tabSoggettiSalvati) {
         List<Tabresidenze> tabResidenzeDaSalvare = IntStream.range(0, soggetti.size()).filter(index -> soggetti.get(index).getResidenza() != null).mapToObj(index -> {
             ModuloDTO.Soggetto soggetto = soggetti.get(index);
@@ -88,6 +123,7 @@ public class ModuloService {
 
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     protected Tabistanza insertIstanza(Integer rifTipoIstanza, Tabsoggetto sponsor, List<Tabsoggetto> parentinucleo) {
         Tabistanza tabistanza = new Tabistanza(new java.sql.Date(Calendar.getInstance().getTime().getTime()), configParameters.getIstanza().getRifCanale(), configParameters.getIstanza().getRifOperatore(), configParameters.getIstanza().getRifStatoIstanza(), rifTipoIstanza);
         tabistanza.setIdSponsor(sponsor.getIdSoggetto());
@@ -98,6 +134,7 @@ public class ModuloService {
 
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     protected Tabnucleifull insertNucleiFullPerISoggetti(boolean capofamigliaESponsor, List<Tabsoggetto> soggetti, Tabistanza tabistanza) {
         //genero nuovo rifNucleo
         List<Tabnucleifull> tabNucleiFull = new ArrayList<>();
@@ -111,14 +148,16 @@ public class ModuloService {
         return tabnucleifullCapofamigliaoSponsor;
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
     protected void insertMandati(Tabsoggetto sponsor, Tabnucleifull tabnucleifullCapofamiglia, int importoDaPagare, int importoPagato, int importoDaPagareSpedizione, int importoPagatoSpedizione) {
         Tabmandato tabmandato = new Tabmandato();
         tabmandato.setRifSponsor(sponsor.getIdSoggetto());
-        tabmandato.setRifNucleofull(tabnucleifullCapofamiglia.getId());
+        tabmandato.setRifNucleofull(tabnucleifullCapofamiglia.getRifNucleo());
         tabmandato.setQuotaVersata(Math.round((float) importoPagato / 100));
         tabmandato.setQuotaMandato(Math.round((float) importoDaPagare / 100));
         tabmandato.setRif_statoMandato(configParameters.getMandato().getRifStatoMandato());
-
+        //Fix tabmandati
+        tabmandato.setGruppo(1);
         tabmandato.setDataMandato(LocalDateTime.now().format(DateTimeFormatter
                 .ofPattern("dd-MM-yyyy HH:mm")));
         tabmandato.setDataEmissione(new Date(System.currentTimeMillis()));
@@ -139,14 +178,35 @@ public class ModuloService {
         /**
          * il salvataggio avviene sempre su entrambi cambiano gli importi a seconda del fatto che esista la spedizione tramite posta
          */
-        tabmandatoJPARepository.save(tabmandato);
+        Tabmandato mandato = tabmandatoJPARepository.save(tabmandato);
         tabmandatopvcJPARepository.save(tabmandatopvc);
-
+        try {
+        	log.info("Tabmandatosoggetti saving process started");
+        	saveTabmandatosoggetti(mandato);
+        	log.info("Tabmandatosoggetti saved successfully");
+        }
+        catch (Exception e) {
+			log.error("unable to save Tabmandatosoggetti");
+		}
     }
 
 
-    @Transactional
-    /**
+    @Transactional(propagation = Propagation.MANDATORY)
+    private void saveTabmandatosoggetti(Tabmandato mandato) {
+    	log.info("Saving mandato with id [{}]", mandato.getIdMandato());
+    	log.debug("Retrieving list of tabnucleifull with rifNucleo [{}]", mandato.getRifNucleofull());
+    	List<Tabmandatosoggetti> tabmandatosoggetti= tabnucleifullJPARepository.findByRifNucleo(mandato.getRifNucleofull()).stream().map(tabnucleifull->{
+				return toTabmandatosoggetto(mandato, tabnucleifull);
+		}).collect(Collectors.toList());
+    	log.debug("List of {} tabnucleifull retrieved successfully", tabmandatosoggetti.size());
+    	tabmandatosoggettiJPARepository.saveAll(tabmandatosoggetti);
+	}
+    @Transactional(propagation = Propagation.MANDATORY)
+	private Tabmandatosoggetti toTabmandatosoggetto( Tabmandato mandato, Tabnucleifull tabnuclei) {
+		return new Tabmandatosoggetti(mandato.getIdMandato(), tabnuclei.getRifSoggetto(),new Timestamp(new Date().getTime()));
+	}
+
+	/**
      *   !!! unico meth utilizzabile del service !!!
      *   unico entry point per il salvataggio dei dati (esclusi documenti e immagini)
      *
@@ -158,40 +218,45 @@ public class ModuloService {
      *  @param ModuloDTO oggetto contenente tutti i dati di sponsor, nucleo principale e nuclei esterni (il cro "ModuloDTO.Pagamento" non serve in scrittura)
      *  @see ModuloDTO per visualizzare dettaglio del DTO
      */
-    public void inserimentoNuovoModulo(ModuloDTO moduloDTO) {
-
-        log.info(String.format("inserimento nuovo modulo su nuova richiesta... %s", moduloDTO));
-
-//        che differenza abbiamo tra il rinnovo e la modifica nucleo famigliare?
-//                rinnovo crea un nuovo mandato senza mandato pvc e verranno inseriti data pagamento e cro insieme all'aggiornamento dello stato soggetto (e altri domini)
-//        da "in attesa di pagamento" a "in regola"
-//        modifica al nucleo avviene una modifica nei dati del nucleo familiare, update su tutti i campi dei domini colpiti
-
-        //controllo che i costi non siano cambiati;
-        //CostiDTO costiDTO = smeCeBoCostiService.checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
-
-        CostiDTO costiDTO = smeCeBoCostiService.calcoloCostiNuovoSponsor(moduloDTO);
-
-        log.info(String.format("inserimento nuovo modulo costi... %s", costiDTO));
-
-        //gestione del nucleo principale
-        //TODO dalla lista del nucleo principale di un modulo possono prodursi + istanze
-        //nuovo nucleo principale
-        //modifica al nucleo principale
-        //rinnovo
-        //quindi modifica nucleo + rinnovo è una possibilità
-        // TODO WARN qui viene calcolato solo costo spedizione per nucleo principale
-        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizioneNucleoPricipale(), costiDTO.getCostoSpedizioneNucleoPricipale());
-        log.info(String.format("risposta gestisci nucleo principale tab soggetto sponsor... %s", tabSoggettoSponsor));
-
-        //TODO WARN spedizione già pagata perchè per ora il nucleo principale viene creato, ma doppia (comportamento atteso, controllare costi)
-
-        //TODO dalla lista dei nuclei esterni di un modulo possono prodursi + istanze
-        //nuovo nucleo esterno
-        //modifica al nucleo esterno
-        //rinnovo
-        gestisciNucleiEsterni(moduloDTO.getNucleiEsterni(), tabSoggettoSponsor, configParameters.getIstanza().getNucleoEsterno(), costiDTO);
-        //quindi modifica nucleo + rinnovo è una possibilità
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void inserimentoNuovoModulo(ModuloDTO moduloDTO) throws InserimentoModuloException{
+    	try {
+	        log.info(String.format("inserimento nuovo modulo su nuova richiesta... %s", moduloDTO));
+	
+	//        che differenza abbiamo tra il rinnovo e la modifica nucleo famigliare?
+	//                rinnovo crea un nuovo mandato senza mandato pvc e verranno inseriti data pagamento e cro insieme all'aggiornamento dello stato soggetto (e altri domini)
+	//        da "in attesa di pagamento" a "in regola"
+	//        modifica al nucleo avviene una modifica nei dati del nucleo familiare, update su tutti i campi dei domini colpiti
+	
+	        //controllo che i costi non siano cambiati;
+	        //CostiDTO costiDTO = smeCeBoCostiService.checkCostiNonSonoCambiati(moduloDTO, oldCostiDTO);
+	
+	        CostiDTO costiDTO = smeCeBoCostiService.calcoloCostiNuovoSponsor(moduloDTO);
+	
+	        log.info(String.format("inserimento nuovo modulo costi... %s", costiDTO));
+	
+	        //gestione del nucleo principale
+	        //TODO dalla lista del nucleo principale di un modulo possono prodursi + istanze
+	        //nuovo nucleo principale
+	        //modifica al nucleo principale
+	        //rinnovo
+	        //quindi modifica nucleo + rinnovo è una possibilità
+	        // TODO WARN qui viene calcolato solo costo spedizione per nucleo principale
+	        Tabsoggetto tabSoggettoSponsor = gestisciNucleoPrincipale(moduloDTO.getNucleoPrincipaleConSponsor(), configParameters.getIstanza().getNucleoPrincipale(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.limiteNucleoPrincipaleSenzaSponsorSuperato() ? configParameters.getCosti().getLimiteNucleoFamigliarePrincipaleNoSponsor() + configParameters.getCosti().getPerSponsor() : costiDTO.calcolaTotaleNucleoPrincipaleConSponsor(), costiDTO.getCostoSpedizioneNucleoPricipale(), costiDTO.getCostoSpedizioneNucleoPricipale());
+	        log.info(String.format("risposta gestisci nucleo principale tab soggetto sponsor... %s", tabSoggettoSponsor));
+	
+	        //TODO WARN spedizione già pagata perchè per ora il nucleo principale viene creato, ma doppia (comportamento atteso, controllare costi)
+	
+	        //TODO dalla lista dei nuclei esterni di un modulo possono prodursi + istanze
+	        //nuovo nucleo esterno
+	        //modifica al nucleo esterno
+	        //rinnovo
+	        gestisciNucleiEsterni(moduloDTO.getNucleiEsterni(), tabSoggettoSponsor, configParameters.getIstanza().getNucleoEsterno(), costiDTO);
+	        //quindi modifica nucleo + rinnovo è una possibilità
+    	}
+    	catch (Exception e) {
+			throw new InserimentoModuloException("Unable to insert modulo", e);
+		}
 
     }
 
@@ -230,8 +295,7 @@ public class ModuloService {
         log.info(String.format("gestisci nucleo esterno nuclei full... %s", tabnucleifullCapofamigliaNucleoEsterno));
 
         //inserimento dei mandati di pagamento
-        insertMandati(sponsor, tabnucleifullCapofamigliaNucleoEsterno, importoDaPagarePerIlNucleoEsterno, importoPagatoPerIlNucleoEsterno, importoDaPagarePerLaSpedizione, importoPagatoPerLaSpedizione //spedizione già pagata nel mandato del nucleo principale
-        );
+        insertMandati(sponsor, tabnucleifullCapofamigliaNucleoEsterno, importoDaPagarePerIlNucleoEsterno, importoPagatoPerIlNucleoEsterno, importoDaPagarePerLaSpedizione, importoPagatoPerLaSpedizione);
 
     }
 

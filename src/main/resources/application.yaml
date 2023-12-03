@@ -4,21 +4,21 @@ smece:
       rifStato: 5 #tabTipoStatoSoggetto stato "in attesa di pagamento come richieste tecniche
     istanza:
       rifCanale: 1  # da dove proveniene inserimento (web = aggate, ops = strutture)
-      rifOperatore: 1   # tab login operatore che lavora la richiesta
+      rifOperatore: 670   # tab login operatore che lavora la richiesta
       rifStatoIstanza: 2 # tabtipostatoistanza stato "in attesa di pagamento come richieste tecniche
       nucleoPrincipale: 1 # non presente in tab istanza (a quale tab si riferisce)
       itegrNucleoPrincipale: 3  # modifiche dati di nucleo principale già inserito
       nucleoEsterno: 4 #a quale tab si riferisce
       integrNucleoEsterno: 5 # modifiche dati di nucleo principale già inserito
     mandato:
-      rifOperatore: 1
+      rifOperatore: 670
       rifOperatorePagamento: 1 #chi convalida il pagamento
       rifStatoMandato: 1 # stato del mandato (dump)
       rifTipoPagamento: 1 # modalità pagamento (dump)
     costi:
       perSponsor: 800
       perFamigliare: 400
-      perOspite: 800 #1000 8euro per nuclei esterni
+      perOspite: 1000 #1000 8euro per nuclei esterni
       spedizione: 450
       limiteNucleoFamigliarePrincipaleNoSponsor: 2000
     query:
@@ -33,6 +33,7 @@ smece:
         tabsoggetto.nascitaData,
         tabsoggetto.nascitaLuogo,
         tabsoggetto.nazionalita,
+        tabsoggetto.rif_amministrazione as rifAmministrazione,
         tabsoggetto.rif_gradoQualifica as rifGradoQualifica,
         tabsoggetto.rif_posizione as rifPosizione,
         tabsoggetto.rif_rapporto as rifRapporto,
@@ -63,10 +64,10 @@ smece:
           join tabistanza on tabistanza.idIstanza = tabnucleifull.rif_istanza
           join tabsoggetto on tabsoggetto.idSoggetto = tabnucleifull.rif_soggetto
           left join tabcartaesercito on tabnucleifull.rif_soggetto = tabcartaesercito.rif_soggetto
-          left outer join tabmandato on tabmandato.rif_nucleofull = tabnucleifull.id  
-          left outer join tabMandatoPVC on tabMandatoPVC.rifnucleofull = tabnucleifull.id
-        where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where lower(tabsoggetto.codiceFiscale)= lower(:codiceFiscale)) AND  tabnucleifull.is_sponsor = 1;
-      
+          left outer join tabmandato on tabmandato.rif_nucleofull = tabnucleifull.rif_nucleo  
+          left outer join tabMandatoPVC on tabMandatoPVC.rifnucleofull = tabnucleifull.rif_nucleo
+        where tabistanza.id_sponsor = (select tabsoggetto.idSoggetto from tabsoggetto where lower(tabsoggetto.codiceFiscale)= lower(:codiceFiscale));
+
       mandatiPerSponsor: |
         select tabmandato.idMandato,
         tabmandato.rif_statoMandato as rifStatoMandato,

@@ -39,7 +39,9 @@ public class ModuloDTO {
         private String nascitaData;
         private String nascitaLuogo;
         private String nazionalita;
+        private int rifAmministrazione;
         private int rifGradoQualifica;
+        private String grado;
         private int rifPosizione;
         private int rifRapporto;
         private String sesso;
@@ -57,7 +59,7 @@ public class ModuloDTO {
         public Soggetto() {
         }
 
-        public Soggetto(String codiceFiscale, String nome, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, int rifGradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, Boolean isSponsor, Residenza residenza, CartaEsercito cartaEsercito, Integer stato) {
+        public Soggetto(String codiceFiscale, String nome, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, int rifAmministrazione, int rifGradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, Boolean isSponsor, Residenza residenza, CartaEsercito cartaEsercito, Integer stato, String grado) {
             this.codiceFiscale = codiceFiscale;
             this.nome = nome;
             this.cognome = cognome;
@@ -67,6 +69,7 @@ public class ModuloDTO {
             this.nascitaData = nascitaData;
             this.nascitaLuogo = nascitaLuogo;
             this.nazionalita = nazionalita;
+            this.rifAmministrazione = rifAmministrazione;
             this.rifGradoQualifica = rifGradoQualifica;
             this.rifPosizione = rifPosizione;
             this.rifRapporto = rifRapporto;
@@ -78,6 +81,7 @@ public class ModuloDTO {
             this.cartaEsercito = cartaEsercito;
             this.stato = stato;
             this.nuovaDirettiva = 0;
+            this.grado = grado;
         }
 
         public Soggetto(String codiceFiscale) {
@@ -102,6 +106,7 @@ public class ModuloDTO {
                     soggettoSponsor.getNascitaData(),
                     soggettoSponsor.getNascitaLuogo(),
                     soggettoSponsor.getNazionalita(),
+                    soggettoSponsor.getRifAmministrazione(),
                     soggettoSponsor.getRifGradoQualifica(),
                     soggettoSponsor.getRifPosizione(),
                     soggettoSponsor.getRifRapporto(),
@@ -111,8 +116,10 @@ public class ModuloDTO {
                     soggettoSponsor.getIsSponsor(),
                     soggettoSponsor.getResidenza(),
                     soggettoSponsor.getCartaEsercito(),
-                    soggettoSponsor.getStato());
-                    soggettoSponsor.getNuovaDirettiva();
+                    soggettoSponsor.getStato(),
+                    soggettoSponsor.getGrado());
+            
+            		soggettoSponsor.getNuovaDirettiva();
             if (!getIsSponsor()) {
                 throw new RuntimeException("conversione di un Soggetto non sponsor! " + this);
             }
@@ -132,6 +139,7 @@ public class ModuloDTO {
         private String presso; // serve per spedizioni presso altro soggetto diverso da sponsor
         private String provincia;
         private String via;
+        private Boolean ritiroInSede=false;
 
         public Residenza() {
         }

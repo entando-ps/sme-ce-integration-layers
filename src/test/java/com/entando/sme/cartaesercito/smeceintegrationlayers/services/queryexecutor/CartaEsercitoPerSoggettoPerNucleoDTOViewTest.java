@@ -42,6 +42,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         1,
                         1,
+                        1,
                         "sesso",
                         "telCellulare",
                         "telUfficio",
@@ -81,6 +82,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         1,
                         1,
+                        1,
                         "sesso",
                         "telCellulare",
                         "telUfficio",
@@ -117,6 +119,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         "nascitaData",
                         "nascitaLuogo",
                         "nazionalita",
+                        1,
                         1,
                         1,
                         1,
@@ -171,6 +174,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
         assertEquals(daConvertire.getNascitaData(), convertito.getNascitaData());
         assertEquals(daConvertire.getNascitaLuogo(), convertito.getNascitaLuogo());
         assertEquals(daConvertire.getNazionalita(), convertito.getNazionalita());
+        assertEquals(daConvertire.getRifAmministrazione(), convertito.getRifAmministrazione());
         assertEquals(daConvertire.getRifGradoQualifica(), convertito.getRifGradoQualifica());
         assertEquals(daConvertire.getRifPosizione(), convertito.getRifPosizione());
         assertEquals(daConvertire.getRifRapporto(), convertito.getRifRapporto());
@@ -201,6 +205,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         "nascitaData",
                         "nascitaLuogo",
                         "nazionalita",
+                        1,
                         1,
                         1,
                         1,
@@ -243,6 +248,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         1,
                         1,
                         1,
+                        1,
                         "sesso",
                         "telCellulare",
                         "telUfficio",
@@ -279,6 +285,7 @@ class CartaEsercitoPerSoggettoPerNucleoDTOViewTest {
                         "nascitaData",
                         "nascitaLuogo",
                         "nazionalita",
+                        1,
                         1,
                         1,
                         1,

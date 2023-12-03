@@ -29,6 +29,7 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
     private String nascitaData;
     private String nascitaLuogo;
     private String nazionalita;
+    private Integer rifAmministrazione;
     private Integer rifGradoQualifica;
     private Integer rifPosizione;
     private Integer rifRapporto;
@@ -105,6 +106,7 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
                 daConvertire.getNascitaData(),
                 daConvertire.getNascitaLuogo(),
                 daConvertire.getNazionalita(),
+                daConvertire.getRifAmministrazione(),
                 daConvertire.getRifGradoQualifica(),
                 daConvertire.getRifPosizione(),
                 daConvertire.getRifRapporto(),
@@ -114,7 +116,7 @@ public class CartaEsercitoPerSoggettoPerNucleoDTOView {
                 daConvertire.getIsSponsor(),
                 null,
                 new ModuloDTO.CartaEsercito(daConvertire.getRifStatoCarta(), daConvertire.getNumeroCarta(), daConvertire.getDataRilascioCarta(), daConvertire.getDataScadenzaCarta()),
-                daConvertire.getRifStato());
+                daConvertire.getRifStato(), "");
     }
 
 

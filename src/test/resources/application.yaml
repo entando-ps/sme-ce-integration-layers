@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
-    url: jdbc:mariadb://localhost:3307/cartaesercito
-    password: admin
+    url: jdbc:mariadb://localhost:3306/cartaesercito
+    password: mario
   jpa:
     hibernate:
       naming:

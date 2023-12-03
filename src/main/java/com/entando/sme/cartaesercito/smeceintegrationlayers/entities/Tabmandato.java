@@ -42,7 +42,8 @@ public class Tabmandato implements Serializable {
     @Temporal(TemporalType.DATE)
     private Date dataVersamento;
 
-    private int gruppo;
+    //Fix mandati gruppo 1
+    private int gruppo=1;
 
     @Column(columnDefinition = "TEXT")
     private String nota;

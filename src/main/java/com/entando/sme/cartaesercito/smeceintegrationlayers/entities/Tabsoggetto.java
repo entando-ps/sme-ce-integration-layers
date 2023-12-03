@@ -348,7 +348,7 @@ public class Tabsoggetto implements Serializable {
 
 
 
-	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
+	public Tabsoggetto(String codiceFiscale, String cognome, String email, String enteAppartenenza, String fototessera, String nascitaData, String nascitaLuogo, String nazionalita, String nome, int rifAmministrazione, int rif_gradoQualifica, int rifPosizione, int rifRapporto, String sesso, String telCellulare, String telUfficio, String rifStato) {
 		this.codiceFiscale = codiceFiscale;
 		this.cognome = cognome;
 		this.email = email;
@@ -359,6 +359,7 @@ public class Tabsoggetto implements Serializable {
 		this.nazionalita = nazionalita;
 		this.nome = nome;
 //		this.pin = pin;
+		this.rifAmministrazione = rifAmministrazione;
 		this.rif_gradoQualifica = rif_gradoQualifica;
 		this.rifPosizione = rifPosizione;
 		this.rifRapporto = rifRapporto;
@@ -383,6 +384,7 @@ public class Tabsoggetto implements Serializable {
 		 * se non è già presente non si deve creare
 		 */
 //		this.pin = soggetto.pin();
+		this.rifAmministrazione = soggetto.getRifAmministrazione();
 		this.rif_gradoQualifica = soggetto.getRifGradoQualifica();
 		this.rifPosizione = soggetto.getRifPosizione();
 		this.rifRapporto = soggetto.getRifRapporto();
@@ -409,9 +411,10 @@ public class Tabsoggetto implements Serializable {
 				Integer.parseInt(attributes[10]),
 				Integer.parseInt(attributes[11]),
 				Integer.parseInt(attributes[12]),
-				attributes[13],
+				Integer.parseInt(attributes[13]),
 				attributes[14],
 				attributes[15],
+				attributes[16],
 				rifStato
 		);
 	}
@@ -427,6 +430,7 @@ public class Tabsoggetto implements Serializable {
 				soggetto.getNazionalita(),
 				soggetto.getNome(),
 //				pin,
+				soggetto.getRifAmministrazione(),
 				soggetto.getRifGradoQualifica(),
 				soggetto.getRifPosizione(),
 				soggetto.getRifRapporto(),

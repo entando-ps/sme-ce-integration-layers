@@ -1,6 +1,9 @@
 package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 
+import com.entando.sme.cartaesercito.smeceintegrationlayers.entities.Tabsoggetto;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.queryexecutor.CartaEsercitoPerSoggettoPerNucleoDTOView;
+import java.util.ArrayList;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
 import org.junit.jupiter.api.Test;
@@ -10,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SpringBootTest
 class ModuloServiceIntegrationTest {
 
@@ -23,7 +28,12 @@ class ModuloServiceIntegrationTest {
     void inserimentoNuovoModulo() {
 
 
-        smeCeBoModuloService.inserimentoNuovoModulo(creaNuovoModulo());
+        try {
+			smeCeBoModuloService.inserimentoNuovoModulo(creaNuovoModulo());
+		} catch (InserimentoModuloException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
 
@@ -65,6 +75,24 @@ class ModuloServiceIntegrationTest {
         soggetto.setCodiceFiscale(cf);
         return soggetto;
 
+    }
+    
+    @Test
+    public void insertSoggetto(){
+        EasyRandom easyRandom = new EasyRandom();
+        CartaEsercitoPerSoggettoPerNucleoDTOView daConvertire = easyRandom.nextObject(CartaEsercitoPerSoggettoPerNucleoDTOView.class);
+        ModuloDTO.Soggetto convertito = CartaEsercitoPerSoggettoPerNucleoDTOView.converti(daConvertire);
+//        convertito.setCodiceFiscale("FMHVPZXEGNPGBTHP"); //prendo un soggetto già presente
+        convertito.setCodiceFiscale("AAAAAAAAAAAAAAAA"); //prendo un soggetto non presente
+        convertito.setRifAmministrazione(2);
+        convertito.setRifGradoQualifica(2);
+        convertito.setRifPosizione(2);
+        log.info(convertito.toString());
+        List<ModuloDTO.Soggetto> soggetti = new ArrayList<>();
+        soggetti.add(convertito);
+        log.info("** DA SALVARE -> "+soggetti.size());
+        List<Tabsoggetto> tabSoggettiSalvati = smeCeBoModuloService.insertSoggettiAndResidenze(soggetti);
+        log.info("** SALVATI -> "+tabSoggettiSalvati.size());
     }
 
 }

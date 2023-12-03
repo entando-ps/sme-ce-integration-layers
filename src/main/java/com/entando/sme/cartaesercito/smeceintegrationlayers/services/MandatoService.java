@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -31,6 +33,7 @@ public class MandatoService {
      *
      * @param moduloDTO modulo con le info di tutti i nuclei e con i cro per tutti i nuclei
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void rinnovoCarteTuttiNuclei(ModuloDTO moduloDTO) {
 
         ModuloDTO.Nucleo nucleoPrinci = moduloDTO.getNucleoPrincipale();
@@ -65,6 +68,7 @@ public class MandatoService {
      *
      * @param moduloDTO modulo con le info di tutti i nuclei e con i cro per tutti i nuclei
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void aggiornaCroNuovaRichiestaPerNuclei(ModuloDTO moduloDTO) {
         ModuloDTO.Nucleo nucleoPrinci = moduloDTO.getNucleoPrincipale();
         List<ModuloDTO.Nucleo> nucleiExt = moduloDTO.getNucleiEsterni();
@@ -106,6 +110,7 @@ public class MandatoService {
      * @param codiceMandato id del mandato da aggiornare
      * @param cro           codice ricevuto da UI che attesta il pagamento mandato
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void aggiornaMandatoConCRO(Integer codiceMandato, String cro) {
         // cerca il mandato se non lo trova lancia NoSuchElementException
         Tabmandato mandato = tabmandatoJPARepository.findById(codiceMandato).get();
@@ -128,6 +133,7 @@ public class MandatoService {
      * @param codiceMandato id del mandato pvc da aggiornare
      * @param cro           codice ricevuto da UI che attesta il pagamento mandato pvc
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     public void aggiornaMandatoPVCConCRO(Integer codiceMandato, String cro) {
         // cerca il mandato se non lo trova lancia NoSuchElementException
         Tabmandatopvc mandatoPVC = tabmandatopvcJPARepository.findById(codiceMandato).get();

@@ -3,6 +3,8 @@ package com.entando.sme.cartaesercito.smeceintegrationlayers.services;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.config.ConfigurationParameters;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.CostiDTO;
 import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO;
+import com.entando.sme.cartaesercito.smeceintegrationlayers.services.dto.ModuloDTO.Residenza;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -46,36 +48,15 @@ public class CostiService {
 
         log.info(String.format("costi nucleo principale con sponsor... %s", costiPerNucleoPrincipaleConSponsor));
 
-        List<CostiDTO.CostoPerNucleoEsternoDTO> costiPerNucleoEsterno= moduloDTO.getNucleiEsterni().stream().map(nucleoEsterno ->
-                new CostiDTO.CostoPerNucleoEsternoDTO(nucleoEsterno.getComponenti().stream().map(soggetto -> new CostiDTO.CostoPerSoggettoDTO(soggetto, configurazioneCosti.getPerOspite())).collect(Collectors.toList()), nucleoEsterno.getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0)
+        List<CostiDTO.CostoPerNucleoEsternoDTO> costiPerNucleoEsterno= moduloDTO.getNucleiEsterni().stream().map(
+								nucleoEsterno -> new CostiDTO.CostoPerNucleoEsternoDTO(
+										nucleoEsterno.getComponenti().stream().map(soggetto -> new CostiDTO.CostoPerSoggettoDTO(soggetto, configurazioneCosti.getPerOspite())).collect(Collectors.toList()), 
+							(nucleoEsterno.getResidenzaDiSpedizione().getRitiroInSede()) ? 0:configurazioneCosti.getSpedizione())
         ).collect(Collectors.toList());
-
         log.info(String.format("costi nuclei esterni... %s", costiPerNucleoPrincipaleConSponsor));
 
-        /**
-         * attualmente calcola costo spedizione per principale e per ogni nucleo esterno
-         * controllo costo di spedizione su inidirizzoResidenzaSpedizione, preso da form!!
-         *
-         *  se inidirizzoResidenzaSpedizione è null la spedizione non si paga perchè richiesta consegna a mano
-        */
-        //TODO: introdotto uno skip sul costo, questa cosa va gestita in maniera opportuna e non in questo modo, urge per rilascio
-        try {
-            if (moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null){
-                if( moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione().getVia().contains("Via Nazionale 10")  &&  moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione().getCap().contains("00192") )
-                    return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
-                else
-                    return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
-            }
-            else
-                return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,
-                        moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null? configurazioneCosti.getSpedizione():0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
-            }
-        catch(Exception e) {
-            log.error("restituisco in consto non corretto");
-            return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,
-                    moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione()!=null? 0:0,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
-          }
-
+        int costoNucleoPrincipale = (moduloDTO.getNucleoPrincipale().getResidenzaDiSpedizione().getRitiroInSede())?0:configurazioneCosti.getSpedizione();
+        return new CostiDTO(costiPerNucleoPrincipaleConSponsor, costiPerNucleoEsterno,costoNucleoPrincipale,configurazioneCosti.getLimiteNucleoFamigliarePrincipaleNoSponsor());
     }
 
 
